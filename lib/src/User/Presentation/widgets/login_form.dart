@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:folder_it/src/core/Util/responsive_view.dart';
 import 'package:go_router/go_router.dart';
-import '../../../Util/responsive_view.dart';
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import '../../../Util/responsive_view.dart';
-import '../cubit/auth_cubit.dart';
-import '../cubit/auth_state.dart';
+
 
 class LoginScreen extends StatelessWidget {
   @override

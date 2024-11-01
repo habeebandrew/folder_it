@@ -4,7 +4,8 @@ import 'package:folder_it/src/User/domain/usecases/sign_in_usecase.dart';
 import 'package:folder_it/src/User/domain/repositories/auth_repository.dart';
 import 'package:folder_it/src/User/Data/repositories/auth_repository_impl.dart';
 import 'package:folder_it/src/User/Presentation/cubit/auth_cubit.dart';
-import 'package:folder_it/src/Util/app_routes.dart';
+import 'package:folder_it/src/core/Util/app_routes.dart';
+
 
 void main() {
   runApp(MyApp());

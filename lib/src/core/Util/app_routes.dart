@@ -1,7 +1,7 @@
+import 'package:folder_it/src/Home/presentation/pages/navigation_rail_page.dart';
+import 'package:folder_it/src/User/Presentation/pages/login_page.dart';
+import 'package:folder_it/src/User/Presentation/pages/signup_page.dart';
 import 'package:go_router/go_router.dart';
-import '../Home/presentation/pages/navigation_rail_page.dart';
-import '../User/Presentation/pages/login_page.dart';
-import '../User/Presentation/pages/signup_page.dart';
 
 final GoRouter router = GoRouter(
   initialLocation: '/login',
