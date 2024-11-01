@@ -39,8 +39,8 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(primaryColor: Colors.blue,
             colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue).copyWith(background: Colors.grey[200]).copyWith(secondary: Colors.amber),
             textTheme: const TextTheme(
-              displayLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              bodyLarge: TextStyle(fontSize: 16),
+              displayLarge: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              bodyLarge: TextStyle(fontSize: 20),
             ),
          ),
         ),
