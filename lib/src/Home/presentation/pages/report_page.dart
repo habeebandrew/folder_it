@@ -8,7 +8,7 @@ class BookmarksPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Center(
       child: Text(
-        'Bookmarks Page',
+        'Report Page',
         style: TextStyle(fontSize: 24),
       ),
     );
