@@ -18,10 +18,11 @@ class UserCubit extends Cubit<UserState> {
 
 
   UserCubit() : super(UserAuthInitialState());
-
+  
+    final TextEditingController userNameController=TextEditingController();
     final TextEditingController emailController = TextEditingController();
     final TextEditingController passwordController = TextEditingController();
-    final TextEditingController userNameController=TextEditingController();
+    
     bool rememberMe = false;
     final GlobalKey<FormState> formKey = GlobalKey<FormState>();
    

@@ -9,17 +9,12 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocListener<UserCubit, UserState>(
-        listener: (context, state) {
-          if (state is UserAuthSuccessState) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login successful')));
-          } else if (state is UserAuthFailureState) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
-          }
-        },
-        child: const LoginScreen(),
-      ),
+    return BlocBuilder<UserCubit, UserState>(
+      builder: (context, state) {
+        return const Scaffold(
+          body: LoginScreen(),
+        );
+      },
     );
   }
 }

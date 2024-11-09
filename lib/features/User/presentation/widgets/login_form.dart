@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:folder_it/core/Util/responsive_view.dart';
 import 'package:folder_it/features/User/presentation/cubit/user_cubit.dart';
+import 'package:folder_it/features/User/presentation/widgets/custom_form_field.dart';
 import 'package:go_router/go_router.dart';
 
 
@@ -100,9 +101,9 @@ class LoginForm extends StatelessWidget {
                         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 20),
-                      TextFormField(
+                      customFormFiled(
                         controller: cubit.userNameController,
-                        decoration: const InputDecoration(labelText: 'user name'),
+                        label: 'user name',
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your name';
@@ -111,9 +112,9 @@ class LoginForm extends StatelessWidget {
                         },
                       ),
                       const SizedBox(height: 10),
-                      TextFormField(
+                      customFormFiled(
                         controller: cubit.passwordController,
-                        decoration: const InputDecoration(labelText: 'Password'),
+                        label: 'Password',
                         obscureText: true,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
