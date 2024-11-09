@@ -36,7 +36,6 @@ class UserCubit extends Cubit<UserState> {
           remoteDataSource:UserRemoteDataSource(api: HttpConsumer()) ,
           localDataSource: UserLocalDataSource(cache:CacheHelper() ),
           networkInfo:NetworkInfoImpl(connectivity: Connectivity()),
-
       )
     ).call(userName: userName, email: email, password: password);
       print('cubit:$userName$email$password');

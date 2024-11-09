@@ -15,6 +15,10 @@ class UserRemoteDataSource {
     
     final response = await api.post(
       "${EndPoints.auth}/${EndPoints.signUp}",
+      headers: {
+        'Content-Type':  'application/json',
+        'Accept': 'application/json'
+      },
       data: {
         ApiKey.username : userName,
         ApiKey.email : email,
@@ -39,6 +43,7 @@ class UserRemoteDataSource {
         ApiKey.password : password 
       }, 
     );
+    print(response);
     return userModelFromJson(response);
   }
 }

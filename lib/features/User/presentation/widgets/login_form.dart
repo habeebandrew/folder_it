@@ -153,7 +153,8 @@ class LoginForm extends StatelessWidget {
                       ),
                       const SizedBox(height: 20),
                       Center(
-                        child: ElevatedButton(
+                        child: state is UserAuthLoadingState?const CircularProgressIndicator()
+                          :ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blue,
                             padding: const EdgeInsets.symmetric(
