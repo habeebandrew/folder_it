@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:folder_it/src/User/domain/usecases/sign_in_usecase.dart';
-import 'package:folder_it/src/User/domain/repositories/auth_repository.dart';
-import 'package:folder_it/src/User/Data/repositories/auth_repository_impl.dart';
-import 'package:folder_it/src/User/Presentation/cubit/auth_cubit.dart';
-import 'package:folder_it/src/core/Util/app_routes.dart';
+import 'package:folder_it/core/Util/app_bloc_observer.dart';
+import 'package:folder_it/core/Util/app_routes.dart';
+import 'package:folder_it/core/databases/cache/cache_helper.dart';
+import 'package:folder_it/features/User/presentation/cubit/user_cubit.dart';
 
-
-void main() {
+void main()async {
+  WidgetsFlutterBinding.ensureInitialized();
+  //setupServiceLocator();
+  await CacheHelper().init();
+  Bloc.observer=MyBlocObserver();
   runApp(const MyApp());
 }
 
@@ -16,37 +18,23 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiRepositoryProvider(
+    return MultiBlocProvider(
       providers: [
-        RepositoryProvider<AuthRepository>(
-          create: (context) => AuthRepositoryImpl() as AuthRepository,
-        ),
-        RepositoryProvider<SignInUseCase>(
-          create: (context) => SignInUseCase(
-            context.read<AuthRepository>(),
-          ),
+        BlocProvider<UserCubit>(
+          create: (context) => UserCubit(),
         ),
       ],
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider<AuthCubit>(
-            create: (context) => AuthCubit(
-              context.read<SignInUseCase>(),
-            ),
+      child: MaterialApp.router(
+        debugShowCheckedModeBanner: false,
+        title: 'Folder it now',
+        routerConfig: router,
+        theme: ThemeData(primaryColor: Colors.blue,
+          colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue).copyWith(surface: Colors.grey[200]).copyWith(secondary: Colors.amber),
+          textTheme: const TextTheme(
+            displayLarge: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+            bodyLarge: TextStyle(fontSize: 20),
           ),
-        ],
-        child: MaterialApp.router(
-          debugShowCheckedModeBanner: false,
-          title: 'Folder it now',
-          routerConfig: router,
-          theme: ThemeData(primaryColor: Colors.blue,
-            colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue).copyWith(background: Colors.grey[200]).copyWith(secondary: Colors.amber),
-            textTheme: const TextTheme(
-              displayLarge: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-              bodyLarge: TextStyle(fontSize: 20),
-            ),
-         ),
-        ),
+       ),
       ),
     );
   }
