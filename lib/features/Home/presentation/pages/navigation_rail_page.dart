@@ -6,7 +6,7 @@ import '../../domain/usecases/get_navigation_items_usecase.dart';
 import '../cubit/navigation_cubit.dart';
 import 'home_page.dart';
 import 'report_page.dart';
-import 'Groups.dart';
+import '../../../Groups/Groups.dart';
 import '../widgets/custom_navigation_rail.dart';
 import 'package:badges/badges.dart' as badges;
 
@@ -137,9 +137,9 @@ class NavigationRailPage extends StatelessWidget {
                     case NavigationState.home:
                       return const HomePage();
                     case NavigationState.bookmarks:
-                      return const BookmarksPage();
-                    case NavigationState.profile:
                       return const Groups();
+                    case NavigationState.profile:
+                      return const BookmarksPage();
                   }
                 },
               ),

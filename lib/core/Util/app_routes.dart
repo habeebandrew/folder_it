@@ -4,7 +4,7 @@ import 'package:folder_it/features/User/presentation/pages/signup_page.dart';
 import 'package:go_router/go_router.dart';
 
 final GoRouter router = GoRouter(
-  initialLocation: '/login',
+  initialLocation: '/home',
   routes: [
     GoRoute(
       path: '/home',

@@ -142,14 +142,17 @@ class LoginForm extends StatelessWidget {
                               const Text("Remember me"),
                             ],
                           ),
-                          TextButton(
-                            onPressed: () {},
-                            child: const Text(
-                              "Forgot password?",
-                              style: TextStyle(color: Colors.blue),
-                            ),
-                          ),
+
+
                         ],
+                      ),
+                      const SizedBox(height: 20,),
+                      TextButton(
+                        onPressed: () {},
+                        child: const Text(
+                          "Forgot password?",
+                          style: TextStyle(color: Colors.blue),
+                        ),
                       ),
                       const SizedBox(height: 20),
                       Center(
