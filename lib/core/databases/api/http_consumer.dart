@@ -12,14 +12,16 @@ class HttpConsumer extends ApiConsumer {
 //!POST
   @override
   Future post(String path,
-      { required Map<String, dynamic>data,
-        Map<String, String>?headers
+      { 
+        required Map<String, String>headers,
+        required Map<String, dynamic>data,
+        bool isFormData = false,
         }) async {
     try {
       final response = await http.post(
         Uri.parse('${EndPoints.baserUrl}$path'),
         headers: headers,
-        body: json.encode(data) ,
+        body: isFormData?data:json.encode(data) ,
       );
       
       return response.body;

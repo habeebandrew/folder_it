@@ -8,9 +8,9 @@ abstract class ApiConsumer {
   });
   Future<dynamic> post(
     String path, {
-   Map<String, String> headers ,
+    required Map<String, String> headers ,
     required Map<String, dynamic> data,
-    
+    bool isFormData = false,
   });
   Future<dynamic> patch(
     String path, {
