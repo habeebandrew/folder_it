@@ -3,10 +3,10 @@ import 'package:folder_it/core/errors/expentions.dart';
 
 class UserLocalDataSource {
   final CacheHelper cache;
-  final String key ='' ;
+  //final String key ='' ;
   UserLocalDataSource({required this.cache});
 
-  cacheUser({required var userToCache,required String key}) {
+  cacheUser({required String key,required var userToCache}) {
     if (userToCache != null) {
       cache.saveData(
         key: key,

@@ -7,9 +7,8 @@ import 'package:folder_it/features/User/presentation/cubit/user_cubit.dart';
 
 void main()async {
   WidgetsFlutterBinding.ensureInitialized();
-  //setupServiceLocator();
-  await CacheHelper().init();
-  Bloc.observer=MyBlocObserver();
+   await CacheHelper().init();
+   Bloc.observer=MyBlocObserver();
   runApp(const MyApp());
 }
 
