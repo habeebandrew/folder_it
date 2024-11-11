@@ -3,12 +3,20 @@ import 'package:folder_it/features/User/presentation/pages/login_page.dart';
 import 'package:folder_it/features/User/presentation/pages/signup_page.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/Groups/GroupCreationPage.dart';
+
 final GoRouter router = GoRouter(
   initialLocation: '/home',
   routes: [
     GoRoute(
+      path: '/GroupCreationPage',
+      builder: (context, state) => const GroupCreationPage(),
+    ),
+    GoRoute(
       path: '/home',
-      builder: (context, state) => const NavigationRailPage(notificationCount: 3,),
+      builder: (context, state) => const NavigationRailPage(
+        notificationCount: 3,
+      ),
     ),
     GoRoute(
       path: '/login',
@@ -22,12 +30,12 @@ final GoRouter router = GoRouter(
 );
 //? للتنقل
 /**
- * 
-  ElevatedButton(
-  onPressed: () {
+ *
+    ElevatedButton(
+    onPressed: () {
     context.go('/signup');
-  },
-  child: Text('Sign Up'),
-)
+    },
+    child: Text('Sign Up'),
+    )
 
  */

@@ -1,8 +1,8 @@
 // lib/presentation/pages/bookmarks_page.dart
 import 'package:flutter/material.dart';
 
-class BookmarksPage extends StatelessWidget {
-  const BookmarksPage({super.key});
+class ReportPage extends StatelessWidget {
+  const ReportPage({super.key});
 
   @override
   Widget build(BuildContext context) {

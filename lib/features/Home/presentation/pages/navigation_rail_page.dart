@@ -136,10 +136,10 @@ class NavigationRailPage extends StatelessWidget {
                   switch (state) {
                     case NavigationState.home:
                       return const HomePage();
-                    case NavigationState.bookmarks:
+                    case NavigationState.group:
                       return const Groups();
-                    case NavigationState.profile:
-                      return const BookmarksPage();
+                    case NavigationState.Report:
+                      return const ReportPage();
                   }
                 },
               ),
