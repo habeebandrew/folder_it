@@ -1,6 +1,7 @@
 // lib/presentation/pages/navigation_rail_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:folder_it/core/databases/cache/cache_helper.dart';
 
 import '../../domain/usecases/get_navigation_items_usecase.dart';
 import '../cubit/navigation_cubit.dart';
@@ -73,6 +74,11 @@ class NavigationRailPage extends StatelessWidget {
             ],
               onSelected: (value) {
                 if (value == 1) {
+                  String token=CacheHelper().getData(key: "token");
+                  int myid=CacheHelper().getData(key: "myid");
+                  print(myid);
+
+                  print(token);
                   // context.go('/messages');
                 } else if (value == 2) {
                   // context.go('/update');
