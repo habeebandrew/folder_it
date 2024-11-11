@@ -74,6 +74,11 @@ class NavigationRailPage extends StatelessWidget {
             ],
               onSelected: (value) {
                 if (value == 1) {
+                  String token=CacheHelper().getData(key: "token");
+                  int myid=CacheHelper().getData(key: "myid");
+                  print(myid);
+
+                  print(token);
                   // context.go('/messages');
                 } else if (value == 2) {
                   // context.go('/update');
