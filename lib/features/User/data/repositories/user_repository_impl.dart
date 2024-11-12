@@ -38,7 +38,7 @@ class UserRepositoryImpl implements UserRepository {
         );
         localDataSource.cacheUser(key:'myid' ,userToCache: remoteUser.id);
 
-        localDataSource.cacheUser(key:'token' ,userToCache: remoteUser.token);
+        localDataSource.cacheUser(key:'token' ,userToCache: remoteUser.token!);
         return Right(remoteUser);
       } on ServerException catch (e) {
         return Left(Failure(errMessage: e.errorModel.errorMessage));

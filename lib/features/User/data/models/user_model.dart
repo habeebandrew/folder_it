@@ -19,7 +19,7 @@ class UserModel  {
     String creationDate;
     bool recordStatus;
     dynamic userRoleGroups;
-    String token;
+    String?token;
 
     UserModel({
         required this.id,

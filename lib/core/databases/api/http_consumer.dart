@@ -33,10 +33,10 @@ class HttpConsumer extends ApiConsumer {
 //!GET
   @override
   Future get(String path,
-      {Object? data, Map<String, dynamic>? queryParameters}) async {
+      {required Map<String, String>headers}) async {
     try {
       final response = await http.get(
-        Uri.parse('${EndPoints.baserUrl}$path').replace(queryParameters: queryParameters),
+        Uri.parse('${EndPoints.baserUrl}$path'),
       );
       return response.body;
     } on Exception catch (e) {

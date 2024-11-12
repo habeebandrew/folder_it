@@ -2,6 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:folder_it/core/databases/cache/cache_helper.dart';
+import 'package:folder_it/features/Groups/presentation/cubit/group_cubit.dart';
+import 'package:folder_it/features/Groups/presentation/pages/invites_page.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../domain/usecases/get_navigation_items_usecase.dart';
 import '../cubit/navigation_cubit.dart';
@@ -18,107 +21,116 @@ class NavigationRailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final width = MediaQuery.of(context).size.width;
     final bool isSmallScreen = width < 600;
     final bool isLargeScreen = width > 800;
 
-    return BlocProvider(
-      create: (_) => NavigationCubit(GetNavigationItemsUseCase()),
-      child: Scaffold(appBar:  AppBar(
-        backgroundColor: Colors.black,
-        title: const Row(
-          children: [
-            Icon(Icons.folder, color: Colors.yellow),
-            SizedBox(width: 8),
-            Text("FOLDERIT", style: TextStyle(color: Colors.white)),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => NavigationCubit(GetNavigationItemsUseCase()),
+        ),
+        BlocProvider(
+          create: (context) => GroupCubit(),
+        ),
+        
+      ],
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.black,
+          title: const Row(
+            children: [
+              Icon(Icons.folder, color: Colors.yellow),
+              SizedBox(width: 8),
+              Text("FOLDERIT", style: TextStyle(color: Colors.white)),
+            ],
+          ),
+          actions: [
+            Stack(
+              children: [
+                badges.Badge(
+                  badgeContent: Text(
+                    '//',
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  showBadge: notificationCount > 0,
+                  position: badges.BadgePosition.topEnd(top: 0, end: 0),
+                  badgeStyle: const badges.BadgeStyle(
+                    badgeColor: Colors.red,
+                  ),
+                  child: PopupMenuButton<int>(
+                    icon: const Icon(Icons.notifications, color: Colors.yellow),
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        value: 1,
+                        child: ListTile(
+                          leading: Icon(Icons.message, color: Colors.blue),
+                          title: Text('view invites'),
+                        ),
+                      ),
+                      const PopupMenuItem(
+                        value: 2,
+                        child: ListTile(
+                          leading: Icon(Icons.update, color: Colors.green),
+                          title: Text('new Update '),
+                        ),
+                      ),
+                      const PopupMenuItem(
+                        value: 3,
+                        child: ListTile(
+                          leading: Icon(Icons.warning, color: Colors.red),
+                          title: Text('Warning'),
+                        ),
+                      ),
+                    ],
+                    onSelected: (value) {
+                      if (value == 1) {
+                        showDialog(
+                          context: context,
+                          builder: (context) => const InvitesPage(),
+                        );
+                        GroupCubit.get(context).viewMyInvites();
+                      } else if (value == 2) {
+                        // context.go('/update');
+                      } else if (value == 3) {
+                        // context.go('/warnings');
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
+            Tooltip(
+              message: 'Instructions',
+              child: TextButton(
+                onPressed: () {},
+                child:
+                    const Icon(Icons.question_mark_sharp, color: Colors.yellow),
+              ),
+            ),
+            const SizedBox(
+              width: 20,
+            ),
           ],
         ),
-        actions: [
-      Stack(
-        children:[
-          badges.Badge(
-                  badgeContent: Text(
-                  '$notificationCount',
-          style: const TextStyle(color: Colors.white),
-                  ),
-          showBadge: notificationCount > 0,
-          position: badges.BadgePosition.topEnd(top: 0, end: 0),
-          badgeStyle: const badges.BadgeStyle(
-            badgeColor: Colors.red,
-          ),
-          child: PopupMenuButton<int>(
-            icon: const Icon(Icons.notifications, color: Colors.yellow),
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 1,
-                child: ListTile(
-                  leading: Icon(Icons.message, color: Colors.blue),
-                  title: Text('New Message'),
-                ),
-              ),
-              const PopupMenuItem(
-                value: 2,
-                child: ListTile(
-                  leading: Icon(Icons.update, color: Colors.green),
-                  title: Text('new Update '),
-                ),
-              ),
-              const PopupMenuItem(
-                value: 3,
-                child: ListTile(
-                  leading: Icon(Icons.warning, color: Colors.red),
-                  title: Text('Warning'),
-                ),
-              ),
-            ],
-              onSelected: (value) {
-                if (value == 1) {
-                  String token=CacheHelper().getData(key: "token");
-                  int myid=CacheHelper().getData(key: "myid");
-                  print(myid);
-
-                  print(token);
-                  // context.go('/messages');
-                } else if (value == 2) {
-                  // context.go('/update');
-                } else if (value == 3) {
-                  // context.go('/warnings');
-                }
-              },
-            ),),],
-      ),
-
-          Tooltip(
-            message: 'Instructions',
-
-            child: TextButton(
-              onPressed: () {
-              },
-              child:const Icon(Icons.question_mark_sharp, color: Colors.yellow),
-            ),
-          ),
-          const SizedBox(width: 20,),
-        ],
-      ),
         bottomNavigationBar: isSmallScreen
             ? BlocBuilder<NavigationCubit, NavigationState>(
-          builder: (context, state) {
-            final cubit = context.read<NavigationCubit>();
-            return BottomNavigationBar(
-              currentIndex: NavigationState.values.indexOf(state),
-              onTap: (index) =>
-                  cubit.navigateTo(NavigationState.values[index]),
-              items: cubit.items
-                  .map((item) => BottomNavigationBarItem(
-                icon: item.icon,
-                activeIcon: item.activeIcon,
-                label: item.label,
-              ))
-                  .toList(),
-            );
-          },
-        )
+                builder: (context, state) {
+                  final cubit = context.read<NavigationCubit>();
+                  return BottomNavigationBar(
+                    currentIndex: NavigationState.values.indexOf(state),
+                    onTap: (index) =>
+                        cubit.navigateTo(NavigationState.values[index]),
+                    items: cubit.items
+                        .map((item) => BottomNavigationBarItem(
+                              icon: item.icon,
+                              activeIcon: item.activeIcon,
+                              label: item.label,
+                            ))
+                        .toList(),
+                  );
+                },
+              )
             : null,
         body: Row(
           children: <Widget>[

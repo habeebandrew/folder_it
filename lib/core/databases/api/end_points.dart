@@ -3,6 +3,10 @@ class EndPoints {
   static const String auth = "auth";
   static const String signUp = "register";
   static const String login = "login";
+  static const String userRoleGroups ="user-role-group";
+  static const String viewInvites = "view-my-invites?userId=";
+  
+  
 }
 
 class ApiKey {
@@ -14,5 +18,7 @@ class ApiKey {
   static String recordStatus = "recordStatus";
   static String userRoleGroups = "userRoleGroups";
   static String token = "token";
+
+  
 
 }

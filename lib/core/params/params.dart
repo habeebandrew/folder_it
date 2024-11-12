@@ -5,12 +5,8 @@ class TemplateParams {
   TemplateParams({required this.id});
 }
 
-class UserParams {
-  final String id;
-  UserParams({required this.id});
+class GroupParams {
+  final int  userId;
+  GroupParams({required this.userId});
 }
 
-class PostParams {
-  final String id;
-  PostParams({required this.id});
-}
