@@ -40,7 +40,7 @@ class NavigationRailPage extends StatelessWidget {
           backgroundColor: Colors.black,
           title: const Row(
             children: [
-              Icon(Icons.folder, color: Colors.yellow),
+              Icon(Icons.folder, color: Color(0xff2196f3)),
               SizedBox(width: 8),
               Text("FOLDERIT", style: TextStyle(color: Colors.white)),
             ],
@@ -49,9 +49,9 @@ class NavigationRailPage extends StatelessWidget {
             Stack(
               children: [
                 badges.Badge(
-                  badgeContent: Text(
+                  badgeContent: const Text(
                     '3',
-                    style: const TextStyle(color: Colors.white),
+                    style: TextStyle(color: Colors.white),
                   ),
                   showBadge: notificationCount > 0,
                   position: badges.BadgePosition.topEnd(top: 0, end: 0),

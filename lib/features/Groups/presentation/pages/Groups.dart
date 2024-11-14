@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 import '../../../../core/databases/cache/cache_helper.dart';
 
@@ -22,7 +23,6 @@ class _GroupsState extends State<Groups> {
   @override
   void initState() {
     super.initState();
-
     _groups = fetchGroups(myid); // يمكنك استبدال الرقم 1 برقم ID الديناميكي
   }
 
@@ -33,6 +33,7 @@ class _GroupsState extends State<Groups> {
 
     if (response.statusCode == 200) {
       List jsonResponse = json.decode(response.body);
+
       return jsonResponse.map((data) => Group.fromJson(data)).toList();
     } else {
       throw Exception('Failed to load groups');
@@ -65,26 +66,54 @@ class _GroupsState extends State<Groups> {
     int columns = screenWidth > 870
         ? 5
         : screenWidth > 600
-            ? 4
-            : screenWidth > 378
-                ? 3
-                : 2;
+        ? 4
+        : screenWidth > 378
+        ? 3
+        : 2;
+
     return Scaffold(
       appBar: AppBar(
-        title:
-            const Text('Groups', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Groups',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         actions: [
-          TextButton.icon(
-            onPressed: () {
-              context.go('/GroupCreationPage');
-            },
-            icon: const Icon(Icons.add, color: Colors.black),
-            label: const Text('create new group',
-                style: TextStyle(color: Colors.black)),
-            style: TextButton.styleFrom(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              textStyle: const TextStyle(fontSize: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            child: MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: Tooltip(
+                message: 'Create a new group',
+                textStyle: const TextStyle(color: Colors.white),
+                decoration: BoxDecoration(
+                  color: Colors.black87,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: TextButton.icon(
+                  onPressed: () {
+                    context.go('/GroupCreationPage');
+                  },
+                  icon: const Icon(Icons.add_box_outlined, color: Color(0xff2196f3)),
+
+
+                  label: const Text(
+                    'Create Group',
+                    style: TextStyle(
+                      color: Colors.black87,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+                    backgroundColor: Colors.grey[300],
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      side: BorderSide(color: Colors.grey[400]!),
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
         ],
@@ -138,67 +167,128 @@ class _GroupsState extends State<Groups> {
 
   Widget _buildCategoryFilterBar() {
     final categories = ['All', 'My Groups', 'Deleted'];
-    return Row(
-      children: categories.map((category) {
-        return Row(
-          children: [
-            const SizedBox(width: 15,),
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  selectedCategory = category;
-                });
-              },
-              child: Chip(
-                label: Text(
-                  category,
-                  style: TextStyle(
-                    color:
-                        selectedCategory == category ? Colors.white : Colors.black,
+
+    return Center(
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        elevation: 4,
+        color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: categories.map((category) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      selectedCategory = category;
+                    });
+                  },
+                  child: Chip(
+                    label: Text(
+                      category,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: selectedCategory == category
+                            ? Colors.white
+                            : Colors.blueAccent,
+                      ),
+                    ),
+                    backgroundColor: selectedCategory == category
+                        ? Colors.blueAccent
+                        : Colors.grey[200],
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   ),
                 ),
-                backgroundColor:
-                    selectedCategory == category ? Colors.blue : Colors.grey[200],
+              );
+            }).toList(),
+          ),
+        ),
+      ),
+    );
+  }
+  Widget _buildSortToggle() {
+    return Center(
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        elevation: 4,
+        color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.sort, color: Colors.blueAccent),
+              const SizedBox(width: 8),
+              const Text(
+                "Sort by:",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.blueAccent,
+                ),
               ),
-            ),
-          ],
-        );
-      }).toList(),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      spreadRadius: 1,
+                      blurRadius: 6,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: DropdownButton<bool>(
+                  value: _sortByNewest,
+                  icon: const Icon(Icons.arrow_drop_down, color: Colors.blueAccent),
+                  underline: Container(),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.black87,
+                  ),
+                  dropdownColor: Colors.white,
+                  items: const [
+                    DropdownMenuItem(
+                      value: true,
+                      child: Text("Newest"),
+                    ),
+                    DropdownMenuItem(
+                      value: false,
+                      child: Text("Oldest"),
+                    ),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      _sortByNewest = value!;
+                    });
+                  },
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
     );
   }
 
-  Widget _buildSortToggle() {
-    return Row(
-      children: [
-        const Text("Sort by: "),
-        DropdownButton<bool>(
-          value: _sortByNewest,
-          items: const [
-            DropdownMenuItem(value: true, child: Text("Newest")),
-            DropdownMenuItem(value: false, child: Text("Oldest")),
-          ],
-          onChanged: (value) {
-            setState(() {
-              _sortByNewest = value!;
-            });
-          },
-        ),
-      ],
-    );
-  }
 
   Widget _buildGroupBox(Group group) {
     return MouseRegion(
-      onEnter: (_) {
-        setState(() {
-          _hoverIndex = group.id;
-        });
-      },
-      onExit: (_) {
-        setState(() {
-          _hoverIndex = null;
-        });
-      },
+      onEnter: (_) => setState(() => _hoverIndex = group.id),
+      onExit: (_) => setState(() => _hoverIndex = null),
       child: LayoutBuilder(
         builder: (context, constraints) {
           return Stack(
@@ -215,15 +305,17 @@ class _GroupsState extends State<Groups> {
                   boxShadow: _hoverIndex == group.id
                       ? [
                     BoxShadow(
-                        color: Colors.blue.withOpacity(0.3),
-                        blurRadius: 10.0,
-                        offset: const Offset(0, 5))
+                      color: Colors.blue.withOpacity(0.3),
+                      blurRadius: 10.0,
+                      offset: const Offset(0, 5),
+                    )
                   ]
                       : [
                     const BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 5.0,
-                        offset: Offset(0, 2))
+                      color: Colors.black12,
+                      blurRadius: 5.0,
+                      offset: Offset(0, 2),
+                    )
                   ],
                 ),
                 child: Column(
@@ -231,7 +323,7 @@ class _GroupsState extends State<Groups> {
                   children: [
                     Flexible(
                       child: Image.asset(
-                        "assets/images/folder3.png",
+                        'assets/images/group.png', // رابط لصورة أيقونة المجموعة
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -239,35 +331,20 @@ class _GroupsState extends State<Groups> {
                     Text(
                       group.groupName,
                       style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold),
-                      overflow: TextOverflow.ellipsis,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
                       textAlign: TextAlign.center,
                     ),
-                  ],
-                ),
-              ),
-              Positioned(
-                top: 10,
-                right: 10,
-                child: PopupMenuButton<String>(
-                  onSelected: (value) {
-                    if (value == 'delete') {
-                      // منطق الحذف هنا
-                    } else if (value == 'invite') {
-                      // منطق الدعوة هنا
-                    }
-                  },
-                  itemBuilder: (BuildContext context) => [
-                    const PopupMenuItem<String>(
-                      value: 'delete',
-                      child: Text('delete'),
-                    ),
-                    const PopupMenuItem<String>(
-                      value: 'invite',
-                      child: Text('invite'),
+                    const SizedBox(height: 4),
+                    Text(
+                      'creationDate: ${DateFormat('yyyy-MM-dd').format(group.creationDate)}',  // يمكنك تعديل تنسيق التاريخ حسب الحاجة
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                      ),
                     ),
                   ],
-                  icon: const Icon(Icons.more_vert, color: Colors.blue),
                 ),
               ),
             ],
@@ -275,8 +352,8 @@ class _GroupsState extends State<Groups> {
         },
       ),
     );
-
   }
+
 }
 
 class Group {
