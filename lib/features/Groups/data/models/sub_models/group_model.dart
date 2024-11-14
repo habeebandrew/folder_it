@@ -1,3 +1,4 @@
+import 'package:folder_it/core/databases/api/end_points.dart';
 import 'package:folder_it/features/Groups/domain/entities/sub_entities/group_entity.dart';
 
 class GroupModel extends GroupEntity {
@@ -15,18 +16,18 @@ class GroupModel extends GroupEntity {
     });
 
     factory GroupModel.fromJson(Map<String, dynamic> json) => GroupModel(
-        groupId: json["id"],
-        groupName: json["groupName"],
-        creator: json["creator"],
-        creationDate: json["creationDate"],
-        recordStatus: json["recordStatus"],
+        groupId: json[ApiKey.id],
+        groupName: json[ApiKey.groupName],
+        creator: json[ApiKey.creator],
+        creationDate: json[ApiKey.creationDate],
+        recordStatus: json[ApiKey.recordStatus],
     );
 
     Map<String, dynamic> toJson() => {
-        "id": groupId,
-        "groupName": groupName,
-        "creator": creator,
-        "creationDate": creationDate,
-        "recordStatus": recordStatus,
+        ApiKey.id: groupId,
+        ApiKey.groupName: groupName,
+        ApiKey.creator: creator,
+        ApiKey.creationDate: creationDate,
+        ApiKey.recordStatus: recordStatus,
     };
 }

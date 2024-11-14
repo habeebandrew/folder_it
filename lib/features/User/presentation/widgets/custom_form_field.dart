@@ -6,10 +6,16 @@ Widget customFormFiled({
   required String label,
   String? Function(String?)? validator,
   bool obscureText=false,
+  IconData?prefixIcon
 })
 =>TextFormField(
   controller: controller,
-  decoration: InputDecoration(labelText: label),
+  decoration: InputDecoration(
+    labelText: label,
+    prefixIcon: Icon(prefixIcon),
+    enabledBorder: OutlineInputBorder(),
+  ),
+
   validator: validator,
   obscureText: obscureText,
 );

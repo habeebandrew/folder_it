@@ -18,6 +18,15 @@ class ApiKey {
   static String recordStatus = "recordStatus";
   static String userRoleGroups = "userRoleGroups";
   static String token = "token";
+  static String modifiedDate ="modifiedDate";
+  static String inviteStatus = "inviteStatus";
+  static String inviteDate = "inviteDate";
+  static String user ="user";
+  static String role = "role";
+  static String roleName = "roleName";
+  static String group = "group";
+  static String groupName = "groupName";
+  static String creator = "creator";
 
   
 

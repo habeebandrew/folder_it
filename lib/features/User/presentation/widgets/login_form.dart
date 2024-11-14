@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:folder_it/core/Util/responsive_view.dart';
 import 'package:folder_it/features/User/presentation/cubit/user_cubit.dart';
 import 'package:folder_it/features/User/presentation/widgets/custom_form_field.dart';
 import 'package:go_router/go_router.dart';
-
-
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -14,39 +13,66 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor:
+            Colors.black.withOpacity(0.9), 
+        elevation: 4, 
+        shadowColor: Colors.black54, 
         title: const Row(
           children: [
-            Icon(Icons.folder, color: Colors.yellow),
-            SizedBox(width: 8),
-            Text("FOLDERIT", style: TextStyle(color: Colors.white)),
+            Icon(Icons.folder,
+                color: Colors.yellow, size: 30), 
+            SizedBox(width: 10),
+            Text(
+              "FOLDERIT",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 22, 
+                fontWeight: FontWeight.bold,
+                letterSpacing:
+                    1.2, 
+              ),
+            ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () {
+              UserCubit.get(context).clearControllers();
               context.go('/signup');
             },
-            child: const Text("Sign up", style: TextStyle(color: Colors.white)),
+            child: const Text(
+              "Sign up",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ),
           TextButton(
             onPressed: () {
+              UserCubit.get(context).clearControllers();
               context.go('/login');
             },
-            child: const Text("Login", style: TextStyle(color: Colors.white)),
+            child: const Text(
+              "Login",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16, 
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ),
         ],
       ),
-      body:ResponsiveView(
-          mobile: (height, width) => LoginForm(width: width * 0.8),
-          tablet: (height, width) => LoginForm(width: width * 0.6),
-          desktop: (height, width) => LoginForm(width: width * 0.4),
-        ),
-      
+      body: ResponsiveView(
+        mobile: (height, width) => LoginForm(width: width * 0.8),
+        tablet: (height, width) => LoginForm(width: width * 0.6),
+        desktop: (height, width) => LoginForm(width: width * 0.4),
+      ),
     );
   }
 }
-
 
 class LoginForm extends StatelessWidget {
   final double width;
@@ -55,19 +81,15 @@ class LoginForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-   
     return BlocConsumer<UserCubit, UserState>(
       listener: (context, state) {
-        if(state is UserAuthFailureState){
-          ScaffoldMessenger.of(context)
-           .showSnackBar(
+        if (state is UserAuthFailureState) {
+          ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(
-                state.message
-                ),
-              backgroundColor: Colors.red,  
-              behavior: SnackBarBehavior.floating,  
-            )
+              content: Text(state.message),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+            ),
           );
         }
       },
@@ -76,109 +98,126 @@ class LoginForm extends StatelessWidget {
         return Center(
           child: Container(
             width: width,
-            padding: const EdgeInsets.all(20.0),
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: SingleChildScrollView(
-                child: Form(
-                  key: cubit.formKey,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Center(
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: Image.asset(
-                            'assets/images/basic.jpg',
-                            fit: BoxFit.cover,
-                          ),
+            padding:
+                const EdgeInsets.symmetric(vertical: 30.0, horizontal: 25.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20.0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  blurRadius: 15,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: SingleChildScrollView(
+              child: Form(
+                key: cubit.logInformKey,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: SvgPicture.asset(
+                          'assets/images/web_login_svg.svg',
+                          fit: BoxFit.contain,
                         ),
                       ),
-                      const SizedBox(height: 20),
-                      const Text(
+                    ),
+                    const SizedBox(height: 5),
+                    const Center(
+                      child: Text(
                         'Sign in',
-                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
                       ),
-                      const SizedBox(height: 20),
-                      customFormFiled(
-                        controller: cubit.userNameController,
-                        label: 'user name',
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your name';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      customFormFiled(
-                        controller: cubit.passwordController,
-                        label: 'Password',
-                        obscureText: true,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your password';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              StatefulBuilder(
-                                builder: (context, setState) => Checkbox(
-                                  value: cubit.rememberMe,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      cubit.rememberMe = value ?? false;
-                                    });
-                                  },
+                    ),
+                    const SizedBox(height: 25),
+                    customFormFiled(
+                      controller: cubit.userNameController,
+                      label: 'Username',
+                      validator: (value) {
+                        return cubit.validateUserName(value);
+                      },
+                      prefixIcon: Icons.person,
+                    ),
+                    const SizedBox(height: 15),
+                    customFormFiled(
+                      controller: cubit.passwordController,
+                      label: 'Password',
+                      obscureText: true,
+                      validator: (value) {
+                        return cubit.validatePassword(value);
+                      },
+                      prefixIcon: Icons.lock,
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            StatefulBuilder(
+                              builder: (context, setState) => Checkbox(
+                                value: cubit.rememberMe,
+                                onChanged: (value) {
+                                  setState(() {
+                                    cubit.rememberMe = value ?? false;
+                                  });
+                                },
+                              ),
+                            ),
+                            const Text("Remember me"),
+                          ],
+                        ),
+                        TextButton(
+                          onPressed: () {},
+                          child: const Text(
+                            "Forgot password?",
+                            style: TextStyle(color: Colors.blue),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 15),
+                    Center(
+                      child: state is UserAuthLoadingState
+                          ? const CircularProgressIndicator()
+                          : ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                elevation: 5,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 60, vertical: 16),
+                              ),
+                              onPressed: () async {
+                                await cubit.login(
+                                  context,
+                                  cubit.userNameController.text,
+                                  cubit.passwordController.text,
+                                );
+                              },
+                              child: const Text(
+                                'Sign In',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              const Text("Remember me"),
-                            ],
-                          ),
-
-
-                        ],
-                      ),
-                      const SizedBox(height: 20,),
-                      TextButton(
-                        onPressed: () {},
-                        child: const Text(
-                          "Forgot password?",
-                          style: TextStyle(color: Colors.blue),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Center(
-                        child: state is UserAuthLoadingState?const CircularProgressIndicator()
-                          :ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 50, vertical: 15),
-                          ),
-                          onPressed: ()async {
-                              await cubit.login(
-                                context,
-                                cubit.userNameController.text, 
-                                cubit.passwordController.text
-                              );
-                            
-                          },
-                          child: const Text(
-                            'SIGN IN',
-                            style: TextStyle(fontSize: 16, color: Colors.white),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                            ),
+                    ),
+                  ],
                 ),
               ),
             ),
