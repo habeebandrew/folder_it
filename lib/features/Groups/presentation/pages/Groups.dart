@@ -19,6 +19,7 @@ class _GroupsState extends State<Groups> {
   bool _sortByNewest = true;
   late Future<List<Group>> _groups;
   int myid=CacheHelper().getData(key: "myid");
+  double? maxCardHeight;
 
   @override
   void initState() {
@@ -291,69 +292,68 @@ class _GroupsState extends State<Groups> {
       onExit: (_) => setState(() => _hoverIndex = null),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          return Stack(
-            children: [
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                transform: _hoverIndex == group.id
-                    ? (Matrix4.identity()..scale(1.05))
-                    : Matrix4.identity(),
-                padding: const EdgeInsets.all(8.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8.0),
-                  boxShadow: _hoverIndex == group.id
-                      ? [
-                    BoxShadow(
-                      color: Colors.blue.withOpacity(0.3),
-                      blurRadius: 10.0,
-                      offset: const Offset(0, 5),
-                    )
-                  ]
-                      : [
-                    const BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 5.0,
-                      offset: Offset(0, 2),
-                    )
-                  ],
+          // تحديث maxCardHeight بأكبر ارتفاع بين البطاقات
+          if (maxCardHeight == null || constraints.maxHeight > maxCardHeight!) {
+            maxCardHeight = constraints.maxHeight;
+          }
+
+          return AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            width: constraints.maxWidth, // عرض ثابت بناءً على العرض المتاح
+            height: maxCardHeight, // تعيين أكبر ارتفاع
+            padding: const EdgeInsets.all(8.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8.0),
+              boxShadow: _hoverIndex == group.id
+                  ? [
+                BoxShadow(
+                  color: Colors.blue.withOpacity(0.3),
+                  blurRadius: 10.0,
+                  offset: const Offset(0, 5),
+                )
+              ]
+                  : [
+                const BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 5.0,
+                  offset: Offset(0, 2),
+                )
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Flexible(
+                  child: Image.asset(
+                    'assets/images/group.png', // رابط لصورة أيقونة المجموعة
+                    fit: BoxFit.cover,
+                  ),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Flexible(
-                      child: Image.asset(
-                        'assets/images/group.png', // رابط لصورة أيقونة المجموعة
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      group.groupName,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'creationDate: ${DateFormat('yyyy-MM-dd').format(group.creationDate)}',  // يمكنك تعديل تنسيق التاريخ حسب الحاجة
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                  ],
+                const SizedBox(height: 8),
+                Text(
+                  group.groupName,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-              ),
-            ],
+                const SizedBox(height: 4),
+                Text(
+                  '${DateFormat('yyyy-MM-dd').format(group.creationDate)}',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+              ],
+            ),
           );
         },
       ),
     );
   }
-
 }
 
 class Group {

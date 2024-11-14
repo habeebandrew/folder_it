@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-
+//todo:الزمو ب11حرف وجرب لشوف التنسيق من الحرق لل11 اذا بيتغير شطل الصورة وحجما
 class GroupCreationPage extends StatefulWidget {
   const GroupCreationPage({super.key});
 
