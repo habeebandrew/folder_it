@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+import '../../../../core/databases/cache/cache_helper.dart';
+
 class Groups extends StatefulWidget {
   const Groups({super.key});
 
@@ -15,11 +17,13 @@ class _GroupsState extends State<Groups> {
   int? _hoverIndex;
   bool _sortByNewest = true;
   late Future<List<Group>> _groups;
+  int myid=CacheHelper().getData(key: "myid");
 
   @override
   void initState() {
     super.initState();
-    _groups = fetchGroups(1005); // يمكنك استبدال الرقم 1 برقم ID الديناميكي
+
+    _groups = fetchGroups(myid); // يمكنك استبدال الرقم 1 برقم ID الديناميكي
   }
 
   Future<List<Group>> fetchGroups(int id) async {
@@ -42,7 +46,7 @@ class _GroupsState extends State<Groups> {
       }
       else if (selectedCategory == 'My Groups'){
 
-      //  return group.creator == id; //todo: cache
+       return group.creator == myid; //todo: cache
 
       }
       return group.recordStatus == true;
@@ -195,43 +199,83 @@ class _GroupsState extends State<Groups> {
           _hoverIndex = null;
         });
       },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        transform: _hoverIndex == group.id
-            ? (Matrix4.identity()..scale(1.05))
-            : Matrix4.identity(),
-        padding: const EdgeInsets.all(8.0),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(8.0),
-          boxShadow: _hoverIndex == group.id
-              ? [
-                  BoxShadow(
-                      color: Colors.blue.withOpacity(0.3),
-                      blurRadius: 10.0,
-                      offset: const Offset(0, 5))
-                ]
-              : [
-                  const BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 5.0,
-                      offset: Offset(0, 2))
-                ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image.asset("assets/images/folder3.png"),
-            // يمكنك وضع صورة هنا بدلًا من الأيقونة
-            const SizedBox(height: 8),
-            Text(
-              group.groupName,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return Stack(
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                transform: _hoverIndex == group.id
+                    ? (Matrix4.identity()..scale(1.05))
+                    : Matrix4.identity(),
+                padding: const EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8.0),
+                  boxShadow: _hoverIndex == group.id
+                      ? [
+                    BoxShadow(
+                        color: Colors.blue.withOpacity(0.3),
+                        blurRadius: 10.0,
+                        offset: const Offset(0, 5))
+                  ]
+                      : [
+                    const BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 5.0,
+                        offset: Offset(0, 2))
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Flexible(
+                      child: Image.asset(
+                        "assets/images/folder3.png",
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      group.groupName,
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                top: 10,
+                right: 10,
+                child: PopupMenuButton<String>(
+                  onSelected: (value) {
+                    if (value == 'delete') {
+                      // منطق الحذف هنا
+                    } else if (value == 'invite') {
+                      // منطق الدعوة هنا
+                    }
+                  },
+                  itemBuilder: (BuildContext context) => [
+                    const PopupMenuItem<String>(
+                      value: 'delete',
+                      child: Text('delete'),
+                    ),
+                    const PopupMenuItem<String>(
+                      value: 'invite',
+                      child: Text('invite'),
+                    ),
+                  ],
+                  icon: const Icon(Icons.more_vert, color: Colors.blue),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
+
   }
 }
 

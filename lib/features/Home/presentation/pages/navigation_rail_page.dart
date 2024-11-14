@@ -50,7 +50,7 @@ class NavigationRailPage extends StatelessWidget {
               children: [
                 badges.Badge(
                   badgeContent: Text(
-                    '//',
+                    '3',
                     style: const TextStyle(color: Colors.white),
                   ),
                   showBadge: notificationCount > 0,
