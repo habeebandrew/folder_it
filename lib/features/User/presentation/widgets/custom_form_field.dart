@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 Widget customFormFiled({
   required TextEditingController controller,
@@ -13,7 +12,7 @@ Widget customFormFiled({
   decoration: InputDecoration(
     labelText: label,
     prefixIcon: Icon(prefixIcon),
-    enabledBorder: OutlineInputBorder(),
+    enabledBorder: const OutlineInputBorder(),
   ),
 
   validator: validator,

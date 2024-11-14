@@ -27,7 +27,7 @@ Widget customInviteCard({
                   Expanded(
                     child: Text(
                       ' invitation to $groupName.',
-                      style: TextStyle(fontSize: 12)
+                      style: const TextStyle(fontSize: 12)
                     ),
                   ),
                   Row(
