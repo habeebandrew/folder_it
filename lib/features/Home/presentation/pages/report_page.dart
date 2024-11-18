@@ -8,7 +8,7 @@ class ReportPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Center(
       child: Text(
-        'Report Page',
+        'logout Page',
         style: TextStyle(fontSize: 24),
       ),
     );

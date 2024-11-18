@@ -6,9 +6,9 @@ class GetNavigationItemsUseCase {
   List<NavigationItem> call() {
     return [
       const NavigationItem(
-        label: 'Home',
-        icon: Icon(Icons.home_outlined),
-        activeIcon: Icon(Icons.home_rounded),
+        label: 'My Folders',
+        icon: Icon(Icons.folder_copy_outlined),
+        activeIcon: Icon(Icons.folder_copy_rounded),
       ),
 
       const NavigationItem(
@@ -17,9 +17,9 @@ class GetNavigationItemsUseCase {
         activeIcon: Icon(Icons.group),
       ),
       const NavigationItem(
-        label: 'Bookmarks',
-        icon: Icon(Icons.bookmark_border_outlined),
-        activeIcon: Icon(Icons.bookmark_rounded),
+        label: 'Log Out',
+        icon: Icon(Icons.logout_outlined),
+        activeIcon: Icon(Icons.logout_rounded),
       ),
     ];
   }

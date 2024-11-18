@@ -35,12 +35,19 @@ class NavigationRailPage extends StatelessWidget {
       ],
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.black,
+          backgroundColor: Theme.of(context).primaryColor,
           title: const Row(
             children: [
-              Icon(Icons.folder, color: Color(0xff2196f3)),
-              SizedBox(width: 8),
-              Text("FOLDERIT", style: TextStyle(color: Colors.white)),
+              Icon(Icons.folder, color: Colors.yellow, size: 30),
+              SizedBox(width: 10),
+              Text(
+                "FOLDERIT",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  letterSpacing: 1.2,
+                ),
+              ),
             ],
           ),
           actions: [
