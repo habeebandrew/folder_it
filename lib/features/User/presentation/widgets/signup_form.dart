@@ -113,7 +113,7 @@ class SignUpForm extends StatelessWidget {
             ),
             child: SingleChildScrollView(
               child: Form(
-                key: cubit.logInformKey,
+                key: cubit.signUpformKey,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -186,13 +186,7 @@ class SignUpForm extends StatelessWidget {
                             const Text("Remember me"),
                           ],
                         ),
-                        TextButton(
-                          onPressed: () {},
-                          child: const Text(
-                            "Forgot password?",
-                            style: TextStyle(color: Colors.blue),
-                          ),
-                        ),
+
                       ],
                     ),
                     const SizedBox(height: 15),

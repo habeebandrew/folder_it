@@ -1,6 +1,11 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
-//todo:الزمو ب11حرف وجرب لشوف التنسيق من الحرق لل11 اذا بيتغير شطل الصورة وحجما
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
+
+import '../../../../core/databases/cache/cache_helper.dart';
+
 class GroupCreationPage extends StatefulWidget {
   const GroupCreationPage({super.key});
 
@@ -11,14 +16,16 @@ class GroupCreationPage extends StatefulWidget {
 class _GroupCreationPageState extends State<GroupCreationPage> {
   final TextEditingController groupNameController = TextEditingController();
   bool isAgreed = false;
-  bool isNameEntered = false;
+  bool isNameValid = false;
+  bool isLoading = false; // حالة لتحميل البيانات
 
   @override
   void initState() {
     super.initState();
     groupNameController.addListener(() {
       setState(() {
-        isNameEntered = groupNameController.text.isNotEmpty;
+        isNameValid = groupNameController.text.isNotEmpty &&
+            groupNameController.text.length <= 11;
       });
     });
   }
@@ -29,14 +36,52 @@ class _GroupCreationPageState extends State<GroupCreationPage> {
     super.dispose();
   }
 
+  Future<void> createGroup() async {
+    setState(() {
+      isLoading = true; // بدأ التحميل
+    });
+    int myid=CacheHelper().getData(key: "myid");
+
+    const String apiUrl = 'http://localhost:8091/group/add';
+    final Map<String, dynamic> requestBody = {
+      'groupName': groupNameController.text,
+      'creator': myid, // يمكن تعديل اسم المنشئ بناءً على المتطلبات
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {'Content-Type': 'application/json','Accept':'application/json'},
+        body: jsonEncode(requestBody),
+      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Group "${groupNameController.text}" created successfully!')),
+        );
+        groupNameController.clear(); // إعادة تعيين حقل النص
+        setState(() {
+          isAgreed = false; // إعادة تعيين الاتفاقية
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to create group: ${response.body}')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error occurred: $e')),
+      );
+    } finally {
+      setState(() {
+        isLoading = false; // انتهاء التحميل
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Create Group",style: TextStyle(color: Colors.white),),
-        centerTitle: true,
-        // backgroundColor: Color(value),
-      ),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return Padding(
@@ -62,14 +107,34 @@ class _GroupCreationPageState extends State<GroupCreationPage> {
                   children: [
                     TextField(
                       controller: groupNameController,
-                      decoration: const InputDecoration(
+                      maxLength: 11,
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(11),
+                      ],
+                      decoration: InputDecoration(
                         labelText: 'Group Name',
-                        border: OutlineInputBorder(),
                         hintText: 'Enter group name',
+                        counterText: '',
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(color: Colors.black, width: 1.5),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(color: Colors.blue, width: 2),
+                        ),
                       ),
                     ),
+                    if (!isNameValid)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text(
+                          "Group name must be between 1 and 11 characters.",
+                          style: TextStyle(color: Colors.red[700], fontSize: 12),
+                        ),
+                      ),
                     const SizedBox(height: 20),
-                    Expanded(
+                    Flexible(
                       child: SingleChildScrollView(
                         child: Text(
                           "Usage Policy:\n\n"
@@ -86,7 +151,7 @@ class _GroupCreationPageState extends State<GroupCreationPage> {
                       children: [
                         Checkbox(
                           value: isAgreed,
-                          onChanged: isNameEntered
+                          onChanged: isNameValid
                               ? (value) {
                             setState(() {
                               isAgreed = value ?? false;
@@ -97,34 +162,28 @@ class _GroupCreationPageState extends State<GroupCreationPage> {
                         Expanded(
                           child: Text(
                             "I agree to the terms and conditions",
-                            style: TextStyle(color: isNameEntered ? Colors.grey[700] : Colors.grey),
+                            style: TextStyle(color: isNameValid ? Colors.grey[700] : Colors.grey),
                           ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 20),
                     ElevatedButton(
-                      onPressed: isAgreed && isNameEntered
-                          ? () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Group "${groupNameController.text}" created successfully!'),
-                          ),
-                        );
-                      }
+                      onPressed: isAgreed && isNameValid && !isLoading
+                          ? createGroup
                           : null,
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size(double.infinity, 50),
-                        backgroundColor: isAgreed && isNameEntered
-                            ? Colors.teal
-                            : Colors.grey,
+                        backgroundColor: isAgreed && isNameValid ? Color(0xff2196f3) : Colors.grey,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: const Text(
+                      child: isLoading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text(
                         'Create Group',
-                        style: TextStyle(fontSize: 18),
+                        style: TextStyle(fontSize: 18, color: Colors.white),
                       ),
                     ),
                   ],
