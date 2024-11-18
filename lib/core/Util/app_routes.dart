@@ -5,6 +5,7 @@ import 'package:folder_it/features/User/presentation/pages/login_page.dart';
 import 'package:folder_it/features/User/presentation/pages/signup_page.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/Group_Browser/presentation/pages/group_form.dart';
 import '../../features/Groups/presentation/pages/GroupCreationPage.dart';
 
 final GoRouter router = GoRouter(
@@ -35,6 +36,11 @@ final GoRouter router = GoRouter(
      GoRoute(
       path: '/invites',
       builder: (context, state) => const InvitesPage(),
+    ),
+
+    GoRoute(
+      path: '/groupform',
+      builder: (context, state) =>  const GroupForm(),
     ),
   ],
 );

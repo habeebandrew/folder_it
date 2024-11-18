@@ -18,26 +18,34 @@ class _GroupsState extends State<Groups> {
   int? _hoverIndex;
   bool _sortByNewest = true;
   late Future<List<Group>> _groups;
-  int myid=CacheHelper().getData(key: "myid");
+  int myid = CacheHelper().getData(key: "myid") ?? 1; // قيمة افتراضية طبعا منشيلا بس هلق كرمال نشوف التصميم
   double? maxCardHeight;
 
   @override
   void initState() {
     super.initState();
-    _groups = fetchGroups(myid); // يمكنك استبدال الرقم 1 برقم ID الديناميكي
+    _groups = fetchGroups(myid);
   }
 
   Future<List<Group>> fetchGroups(int id) async {
-    final response = await http.get(
-      Uri.parse("http://127.0.0.1:8091/group/my-groups?creatorId=1"),
-    );
+    try {
+      final response = await http
+          .get(Uri.parse("http://127.0.0.1:8091/group/my-groups?creatorId=$id"))
+          .timeout(const Duration(seconds: 10)); // الحد الأقصى للوقت
 
-    if (response.statusCode == 200) {
-      List jsonResponse = json.decode(response.body);
+      if (response.statusCode == 200) {
+        List jsonResponse = json.decode(response.body);
 
-      return jsonResponse.map((data) => Group.fromJson(data)).toList();
-    } else {
-      throw Exception('Failed to load groups');
+        if (jsonResponse.isEmpty) {
+          throw Exception('No groups available');
+        }
+
+        return jsonResponse.map((data) => Group.fromJson(data)).toList();
+      } else {
+        throw Exception('Failed to load groups');
+      }
+    } on http.ClientException {
+      throw Exception('No Internet connection');
     }
   }
 
@@ -45,11 +53,8 @@ class _GroupsState extends State<Groups> {
     List<Group> filteredGroups = groups.where((group) {
       if (selectedCategory == 'Deleted') {
         return group.recordStatus == false;
-      }
-      else if (selectedCategory == 'My Groups'){
-
-        return group.recordStatus != false; //todo: cache
-
+      } else if (selectedCategory == 'My Groups') {
+        return group.recordStatus != false;
       }
       return group.recordStatus == true;
     }).toList();
@@ -81,41 +86,35 @@ class _GroupsState extends State<Groups> {
         actions: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: Tooltip(
-                message: 'Create a new group',
-                textStyle: const TextStyle(color: Colors.white),
-                decoration: BoxDecoration(
-                  color: Colors.black87,
-                  borderRadius: BorderRadius.circular(8),
+            child:Tooltip(
+              message: 'Create New Group', // النص الذي يظهر عند تمرير الماوس
+              child: TextButton.icon(
+                onPressed: () {
+                  context.go('/GroupCreationPage'); // الانتقال إلى صفحة إنشاء المجموعة
+                },
+                icon: Icon(
+                  Icons.add_box_outlined,
+                  color: Theme.of(context).primaryColor,
                 ),
-                child: TextButton.icon(
-                  onPressed: () {
-                    context.go('/GroupCreationPage');
-                  },
-                  icon: const Icon(Icons.add_box_outlined, color: Color(0xff2196f3)),
-
-
-                  label: const Text(
-                    'Create Group',
-                    style: TextStyle(
-                      color: Colors.black87,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
+                label: const Text(
+                  'Create Group',
+                  style: TextStyle(
+                    color: Colors.black87,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
                   ),
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
-                    backgroundColor: Colors.grey[300],
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      side: BorderSide(color: Colors.grey[400]!),
-                    ),
+                ),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+                  backgroundColor: Colors.grey[300],
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                    side: BorderSide(color: Colors.grey[400]!),
                   ),
                 ),
               ),
             ),
+
           ),
         ],
       ),
@@ -142,9 +141,18 @@ class _GroupsState extends State<Groups> {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else {
+                    return Center(
+                      child: Text(
+                        snapshot.error.toString(),
+                        style: const TextStyle(color: Colors.red),
+                        textAlign: TextAlign.center,
+                      ),
+                    );
+                  } else if (snapshot.hasData) {
                     final groups = applyFilters(snapshot.data!);
+                    if (groups.isEmpty) {
+                      return const Center(child: Text('No groups available'));
+                    }
                     return GridView.builder(
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: columns,
@@ -156,6 +164,8 @@ class _GroupsState extends State<Groups> {
                         return _buildGroupBox(groups[index]);
                       },
                     );
+                  } else {
+                    return const Center(child: Text('Unexpected error occurred'));
                   }
                 },
               ),
@@ -197,11 +207,11 @@ class _GroupsState extends State<Groups> {
                         fontWeight: FontWeight.w500,
                         color: selectedCategory == category
                             ? Colors.white
-                            : Colors.blueAccent,
+                            :  Theme.of(context).primaryColor,
                       ),
                     ),
                     backgroundColor: selectedCategory == category
-                        ? Colors.blueAccent
+                        ?  Theme.of(context).primaryColor
                         : Colors.grey[200],
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   ),
@@ -226,14 +236,14 @@ class _GroupsState extends State<Groups> {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.sort, color: Colors.blueAccent),
+               Icon(Icons.sort, color:  Theme.of(context).primaryColor,),
               const SizedBox(width: 8),
-              const Text(
+               Text(
                 "Sort by:",
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
-                  color: Colors.blueAccent,
+                  color: Theme.of(context).primaryColor,
                 ),
               ),
               const SizedBox(width: 8),
@@ -254,7 +264,7 @@ class _GroupsState extends State<Groups> {
                 ),
                 child: DropdownButton<bool>(
                   value: _sortByNewest,
-                  icon: const Icon(Icons.arrow_drop_down, color: Colors.blueAccent),
+                  icon:  Icon(Icons.arrow_drop_down, color: Theme.of(context).primaryColor,),
                   underline: Container(),
                   style: const TextStyle(
                     fontSize: 16,
