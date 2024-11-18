@@ -29,7 +29,7 @@ class _GroupsState extends State<Groups> {
 
   Future<List<Group>> fetchGroups(int id) async {
     final response = await http.get(
-      Uri.parse("http://127.0.0.1:8091/group/my-groups?creatorId=$id"),
+      Uri.parse("http://127.0.0.1:8091/group/my-groups?creatorId=1"),
     );
 
     if (response.statusCode == 200) {
