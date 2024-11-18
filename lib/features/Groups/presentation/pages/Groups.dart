@@ -332,7 +332,7 @@ class _GroupsState extends State<Groups> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  group.groupName,
+                  group.groupName.isNotEmpty ? group.groupName : "لا اسم للغروب",
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
@@ -374,7 +374,7 @@ class Group {
   factory Group.fromJson(Map<String, dynamic> json) {
     return Group(
       id: json['id'],
-      groupName: json['groupName'],
+      groupName: json['groupName'] ?? "لا اسم للغروب", // إذا كانت null تعيين النص الافتراضي
       creator: json['creator'],
       creationDate: DateTime.parse(json['creationDate']),
       recordStatus: json['recordStatus'],

@@ -9,10 +9,10 @@ import 'package:folder_it/features/User/presentation/cubit/user_cubit.dart';
 
 import 'features/Groups/presentation/cubit/GroupsCubit.dart';
 
-void main()async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-   await CacheHelper().init();
-   Bloc.observer=MyBlocObserver();
+  await CacheHelper().init();
+  Bloc.observer = MyBlocObserver();
   runApp(const MyApp());
 }
 
@@ -40,13 +40,18 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Folder it now',
         routerConfig: router,
-        theme: ThemeData(primaryColor: Colors.blue,
-          colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue).copyWith(surface: Colors.grey[200]).copyWith(secondary: Colors.amber),
+        theme: ThemeData(
+          primaryColor: const Color(0Xff0b3153),
+          colorScheme:
+              ColorScheme.fromSwatch(primarySwatch: Colors.blue).copyWith(
+            primary: const Color(0Xff0b3153),
+            secondary: const Color(0Xff0b3153),
+          ),
           textTheme: const TextTheme(
             displayLarge: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
             bodyLarge: TextStyle(fontSize: 20),
           ),
-       ),
+        ),
       ),
     );
   }

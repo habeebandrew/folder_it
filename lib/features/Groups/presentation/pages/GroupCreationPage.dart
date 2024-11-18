@@ -42,17 +42,19 @@ class _GroupCreationPageState extends State<GroupCreationPage> {
     });
     int myid=CacheHelper().getData(key: "myid");
 
-    const String apiUrl = 'http://localhost:8091/group/add';
-    final Map<String, dynamic> requestBody = {
-      'groupName': groupNameController.text,
-      'creator': myid, // يمكن تعديل اسم المنشئ بناءً على المتطلبات
-    };
+    const String apiUrl = 'http://127.0.0.1:8091/group/add';
+
 
     try {
       final response = await http.post(
         Uri.parse(apiUrl),
-        headers: {'Content-Type': 'application/json','Accept':'application/json'},
-        body: jsonEncode(requestBody),
+        headers: {        'Content-Type': 'application/x-www-form-urlencoded',
+      'Accept':'application/json'},
+        body:{
+          'groupName': groupNameController.text,
+          'creator': myid.toString(), // تحويل myid إلى String
+
+        },
       );
 
       if (response.statusCode == 200) {

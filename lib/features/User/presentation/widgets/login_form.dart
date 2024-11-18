@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:folder_it/core/Util/responsive_view.dart';
 import 'package:folder_it/features/User/presentation/cubit/user_cubit.dart';
 import 'package:folder_it/features/User/presentation/widgets/custom_form_field.dart';
@@ -13,23 +12,17 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor:
-            Colors.black.withOpacity(0.9), 
-        elevation: 4, 
-        shadowColor: Colors.black54, 
+        backgroundColor: Theme.of(context).primaryColor,
         title: const Row(
           children: [
-            Icon(Icons.folder,
-                color: Colors.yellow, size: 30), 
+            Icon(Icons.folder, color: Colors.yellow, size: 30),
             SizedBox(width: 10),
             Text(
               "FOLDERIT",
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 22, 
-                fontWeight: FontWeight.bold,
-                letterSpacing:
-                    1.2, 
+                fontSize: 20,
+                letterSpacing: 1.2,
               ),
             ),
           ],
@@ -58,7 +51,7 @@ class LoginScreen extends StatelessWidget {
               "Login",
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 16, 
+                fontSize: 16,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -120,25 +113,29 @@ class LoginForm extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Center(
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: SvgPicture.asset(
-                          'assets/images/web_login_svg.svg',
-                          fit: BoxFit.contain,
-                        ),
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          return SizedBox(
+                            width: constraints.maxWidth *
+                                0.5, // عرض الصورة 80% من مساحة الحاوية
+                            child: Image.asset(
+                              'assets/images/auth/LOGIN_copy.png',
+                              fit: BoxFit.contain,
+                            ),
+                          );
+                        },
                       ),
                     ),
-                    const SizedBox(height: 5),
-                    const Center(
-                      child: Text(
-                        'Sign in',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ),
+                    // const Center(
+                    //   child: Text(
+                    //     'Sign in',
+                    //     style: TextStyle(
+                    //       fontSize: 28,
+                    //       fontWeight: FontWeight.bold,
+                    //       color: Colors.black87,
+                    //     ),
+                    //   ),
+                    // ),
                     const SizedBox(height: 25),
                     customFormFiled(
                       controller: cubit.userNameController,
@@ -177,14 +174,17 @@ class LoginForm extends StatelessWidget {
                             const Text("Remember me"),
                           ],
                         ),
-                        TextButton(
-                          onPressed: () {},
-                          child: const Text(
-                            "Forgot password?",
-                            style: TextStyle(color: Colors.blue),
-                          ),
-                        ),
                       ],
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    TextButton(
+                      onPressed: () {},
+                      child: const Text(
+                        "Forgot password?",
+                        style: TextStyle(color: Colors.blue),
+                      ),
                     ),
                     const SizedBox(height: 15),
                     Center(
@@ -192,7 +192,7 @@ class LoginForm extends StatelessWidget {
                           ? const CircularProgressIndicator()
                           : ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blue,
+                                backgroundColor: Theme.of(context).primaryColor,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
@@ -217,6 +217,9 @@ class LoginForm extends StatelessWidget {
                               ),
                             ),
                     ),
+                    const SizedBox(
+                      height: 10,
+                    )
                   ],
                 ),
               ),
