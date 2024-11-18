@@ -12,7 +12,7 @@ final GoRouter router = GoRouter(
   routes: [
     GoRoute(
       path: '/GroupCreationPage',
-      builder: (context, state) => const GroupCreationPage(),
+      builder: (context, state) =>  GroupCreationPage(),
     ),
     GoRoute(
       path: '/home',

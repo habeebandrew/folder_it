@@ -48,7 +48,7 @@ class _GroupsState extends State<Groups> {
       }
       else if (selectedCategory == 'My Groups'){
 
-       return group.recordStatus != false; //todo: cache
+        return group.recordStatus != false; //todo: cache
 
       }
       return group.recordStatus == true;

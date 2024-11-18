@@ -153,7 +153,7 @@ class NavigationRailPage extends StatelessWidget {
                     case NavigationState.home:
                       return const HomePage();
                     case NavigationState.group:
-                      return const Groups();
+                      return  Groups();
                     case NavigationState.Report:
                       return const ReportPage();
                   }
