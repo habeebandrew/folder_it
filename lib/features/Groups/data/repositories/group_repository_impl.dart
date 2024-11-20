@@ -39,6 +39,21 @@ class GroupRepositoryImpl implements GroupRepository {
     } 
   
   }
+  
+  @override
+  Future<Either<Failure, bool>> acceptOrRejectInvites({required int userId, required int inviteId, required int groupId, required int inviteStatus})async {
+   if (await networkInfo.isConnected!) {
+      try {
+        final acceptOrReject = await remoteDataSource.acceptOrRejectInvite(userId: userId,inviteId: inviteId,groupId: groupId,inviteStatus: inviteStatus);
+        return Right(acceptOrReject);
+      } on ServerException catch (e) {
+        return Left(Failure(errMessage: e.errorModel.errorMessage));
+      }
+    } else {
+      return Left(Failure(errMessage: 'no internet'));
+      
+    } 
+  }
 
 
  

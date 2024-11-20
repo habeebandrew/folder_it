@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:folder_it/core/Util/app_bloc_observer.dart';
 import 'package:folder_it/core/Util/app_routes.dart';
+import 'package:folder_it/core/Util/colors.dart';
 import 'package:folder_it/core/databases/cache/cache_helper.dart';
-import 'package:folder_it/features/Groups/presentation/cubit/GroupCreationCubit.dart';
 import 'package:folder_it/features/Groups/presentation/cubit/group_cubit.dart';
 import 'package:folder_it/features/User/presentation/cubit/user_cubit.dart';
 
-import 'features/Groups/presentation/cubit/GroupsCubit.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,23 +18,7 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-  static const int _primaryValue = 0Xff0b3153;
 
-  static const MaterialColor customSwatch = MaterialColor(
-    _primaryValue,
-    <int, Color>{
-      50: Color(0xFFE2E7EB),
-      100: Color(0xFFB6C3CD),
-      200: Color(0xFF86A0AE),
-      300: Color(0xFF567C8E),
-      400: Color(0xFF2E5F76),
-      500: Color(_primaryValue),
-      600: Color(0xFF09314E),
-      700: Color(0xFF06283F),
-      800: Color(0xFF041F31),
-      900: Color(0xFF021520),
-    },
-  );
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -59,8 +43,8 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primaryColor: const Color(0Xff0b3153),
           colorScheme: ColorScheme.fromSwatch(primarySwatch: customSwatch).copyWith(
-            primary: const Color(_primaryValue),
-            secondary: const Color(_primaryValue),
+            primary: const Color(primaryValue),
+            secondary:  const Color(primaryValue),
           ),
           textTheme: const TextTheme(
             displayLarge: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),

@@ -8,49 +8,49 @@ class InvitesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<GroupCubit, GroupState>(
-      listener: (context, state) {},
-      builder: (context, state) {
-        return AlertDialog(
-          title: const Text(
-            'my invites ',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: 
-            state is GroupGetInvitesSuccess
-            ?ListView.builder(
-                itemCount: state.invites.length,
-                itemBuilder: (context, index) {
-                  var invites = state.invites[index];
-                  if(state.invites.isEmpty){
-                    return const Center(
-                      child: Text(
-                        'you have no invites'
+    return BlocProvider.value(
+        value: GroupCubit()..viewMyInvites(),
+        child: BlocConsumer<GroupCubit, GroupState>(
+          listener: (context, state) {},
+          builder: (context, state) {
+            return AlertDialog(
+              title: const Text(
+                'my invites ',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: state is GroupGetInvitesSuccess
+                    ? state.invites.isEmpty
+                    ? const Center(
+                          child: Text('you have no invites')
                       )
-                    ) ;
-                  }else{
-                  return customInviteCard(
-                    index: index, 
-                    groupName: invites.group.groupName, 
-                    inviteId: invites.inviteId
-                  );
-                }
-              }
-            )
-            : state is GroupFailureState
-            ? Text(state.message)
-            : const Center(child: CircularProgressIndicator()),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('close'),
-            ),
-          ],
-        );
-      },
-    );
+                    :ListView.builder(
+                        itemCount: state.invites.length,
+                        itemBuilder: (context, index) {
+                          var invites = state.invites[index];
+                         
+                            return customInviteCard(
+                                context: context,
+                                index: index,
+                                groupId:invites.group.groupId,
+                                groupName: invites.group.groupName,
+                                inviteId: invites.inviteId
+                            );
+                          
+                        })
+                    : state is GroupFailureState
+                        ? Text(state.message)
+                        : const Center(child: CircularProgressIndicator()),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('close'),
+                ),
+              ],
+            );
+          },
+        ));
   }
 }

@@ -28,9 +28,7 @@ class NavigationRailPage extends StatelessWidget {
         BlocProvider(
           create: (_) => NavigationCubit(GetNavigationItemsUseCase()),
         ),
-        BlocProvider(
-          create: (context) => GroupCubit(),
-        ),
+        
         
       ],
       child: Scaffold(
@@ -91,10 +89,15 @@ class NavigationRailPage extends StatelessWidget {
                     onSelected: (value) {
                       if (value == 1) {
                         showDialog(
+                          
                           context: context,
-                          builder: (context) => const InvitesPage(),
+                          builder: (context) { 
+                            //GroupCubit.get(context).viewMyInvites();
+                            return const InvitesPage();
+                            
+                          }
                         );
-                        GroupCubit.get(context).viewMyInvites();
+                        
                       } else if (value == 2) {
                         // context.go('/update');
                       } else if (value == 3) {
