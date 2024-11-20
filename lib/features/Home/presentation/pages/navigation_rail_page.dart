@@ -6,7 +6,7 @@ import 'package:folder_it/features/Groups/presentation/pages/invites_page.dart';
 
 import '../../domain/usecases/get_navigation_items_usecase.dart';
 import '../cubit/navigation_cubit.dart';
-import 'home_page.dart';
+import 'my_files_page.dart';
 import 'report_page.dart';
 import '../../../Groups/presentation/pages/View_Groups.dart';
 import '../widgets/custom_navigation_rail.dart';
@@ -161,9 +161,9 @@ class NavigationRailPage extends StatelessWidget {
                 builder: (context, state) {
                   switch (state) {
                     case NavigationState.home:
-                      return const HomePage();
+                      return const MyFilePage();
                     case NavigationState.group:
-                      return  Groups();
+                      return  const Groups();
                     case NavigationState.Report:
                       return const ReportPage();
                   }
