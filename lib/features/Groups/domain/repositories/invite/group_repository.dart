@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:folder_it/core/errors/failure.dart';
-import 'package:folder_it/features/Groups/domain/entities/invite/invite_entity.dart';
+import 'package:folder_it/features/Groups/domain/entities/invite_entity.dart';
 
 
 
