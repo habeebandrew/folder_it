@@ -176,7 +176,7 @@ class _GroupCreationPageState extends State<GroupCreationPage> {
                           : null,
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size(double.infinity, 50),
-                        backgroundColor: isAgreed && isNameValid ? Color(0xff2196f3) : Colors.grey,
+                        backgroundColor: isAgreed && isNameValid ? Theme.of(context).primaryColor : Colors.grey,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),

@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import '../group_pages/browse_page.dart';
 import '../group_pages/members_page.dart';
 import '../group_pages/settings_page.dart';
-import '../group_pages/tasks_page.dart';
 
 class GroupForm extends StatefulWidget {
   const GroupForm({super.key});
-
 
   @override
   State<GroupForm> createState() => _GroupFormState();
@@ -14,6 +12,7 @@ class GroupForm extends StatefulWidget {
 
 class _GroupFormState extends State<GroupForm> {
   Widget _selectedPage = const BrowsePage();
+  String _selectedLabel = "Browse"; // لتعقب الزر المحدد حاليًا
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +27,7 @@ class _GroupFormState extends State<GroupForm> {
               // القائمة الجانبية
               Container(
                 width: isMobile ? 80 : constraints.maxWidth * 0.25, // عرض ديناميكي
-                color: Colors.blueGrey[900],
+                color: Theme.of(context).primaryColor,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
@@ -36,17 +35,17 @@ class _GroupFormState extends State<GroupForm> {
                     // الصورة والاسم
                     Column(
                       children: [
-                        const CircleAvatar(
+                         CircleAvatar(
                           radius: 40,
-                          backgroundColor: Colors.blue,
-                          child: Icon(Icons.person, size: 40, color: Colors.white),
+                          backgroundColor:  Theme.of(context).primaryColor,
+                          child: Image.asset("assets/images/group/group_pic2.png")
                         ),
                         if (!isMobile) ...[
                           const SizedBox(height: 10),
                           Text(
-                            "اسم المستخدم",
+                            "group name",
                             style: const TextStyle(
-                              color: Colors.white,
+                              color: Colors.white ,
                               fontSize: 16,
                             ),
                             textAlign: TextAlign.center,
@@ -60,29 +59,24 @@ class _GroupFormState extends State<GroupForm> {
                       child: ListView(
                         children: [
                           _buildMenuButton(
-                            label: "تصفح",
+                            label: "Browse",
                             icon: Icons.home,
                             isMobile: isMobile,
-                            onTap: () => _changePage(const BrowsePage()),
+                            onTap: () => _changePage(const BrowsePage(), "Browse"),
                           ),
                           _buildMenuButton(
-                            label: "الأعضاء",
+                            label: "Members",
                             icon: Icons.people,
                             isMobile: isMobile,
-                            onTap: () => _changePage(const MembersPage()),
+                            onTap: () => _changePage(const MembersPage(), "Members"),
                           ),
                           _buildMenuButton(
-                            label: "الإعدادات",
+                            label: "Setting",
                             icon: Icons.settings,
                             isMobile: isMobile,
-                            onTap: () => _changePage(const SettingsPage()),
+                            onTap: () => _changePage(const SettingsPage(), "Setting"),
                           ),
-                          _buildMenuButton(
-                            label: "المهمات",
-                            icon: Icons.task,
-                            isMobile: isMobile,
-                            onTap: () => _changePage(const TasksPage()),
-                          ),
+
                         ],
                       ),
                     ),
@@ -112,36 +106,58 @@ class _GroupFormState extends State<GroupForm> {
     required bool isMobile,
     required VoidCallback onTap,
   }) {
+    final bool isSelected = _selectedLabel == label; // تحقق مما إذا كان الزر هو المحدد حاليًا
     return InkWell(
       onTap: onTap,
-      child: Padding(
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 12), // إضافة مسافة حول الزر
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.white : Colors.transparent, // لون الخلفية بناءً على الحالة
+          borderRadius: BorderRadius.circular(12), // حواف دائرية
+          border: Border.all(
+            color: isSelected ? Colors.blueGrey[900]! : Colors.white, // لون الإطار
+            width: 1.5,
+          ),
+        ),
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         child: Row(
-          mainAxisAlignment: isMobile ? MainAxisAlignment.center : MainAxisAlignment.start,
+          mainAxisAlignment: isMobile ? MainAxisAlignment.center : MainAxisAlignment.spaceBetween,
           children: [
-            Icon(icon, color: Colors.white, size: 24),
-            if (!isMobile) ...[
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  label,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
+            // الأيقونة والنص الأساسيين
+            Row(
+              children: [
+                Icon(icon, color: isSelected ? Colors.blueGrey[900] : Colors.white, size: 24),
+                if (!isMobile) ...[
+                  const SizedBox(width: 10),
+                  Text(
+                    label,
+                    style: TextStyle(
+                      color: isSelected ? Colors.blueGrey[900] : Colors.white,
+                      fontSize: 16,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  overflow: TextOverflow.ellipsis,
-                ),
+                ],
+              ],
+            ),
+            // الأيقونة على اليمين
+            if (!isMobile)
+              Icon(
+                Icons.arrow_forward_ios, // أيقونة على اليمين
+                size: 16,
+                color: isSelected ? Colors.blueGrey[900] : Colors.white,
               ),
-            ],
           ],
         ),
       ),
     );
   }
 
-  void _changePage(Widget page) {
+
+  void _changePage(Widget page, String label) {
     setState(() {
       _selectedPage = page;
+      _selectedLabel = label; // تحديث الزر المحدد حاليًا
     });
   }
 }

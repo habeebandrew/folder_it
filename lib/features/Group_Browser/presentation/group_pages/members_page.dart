@@ -8,7 +8,7 @@ class MembersPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Text(
-        "الأعضاء",
+        "MembersPage",
         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
       ),
     );

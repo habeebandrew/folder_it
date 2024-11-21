@@ -8,7 +8,7 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Text(
-        "الإعدادات",
+        "SettingsPage",
         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
       ),
     );

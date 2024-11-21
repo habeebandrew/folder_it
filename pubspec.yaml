@@ -49,6 +49,7 @@ flutter:
     - assets/icons/
     - assets/images/
     - assets/images/auth/LOGIN_copy.png
+    - assets/images/group/
 
   # example:
   # fonts:
