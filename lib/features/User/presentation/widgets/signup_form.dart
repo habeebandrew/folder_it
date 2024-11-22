@@ -13,17 +13,17 @@ class SignupScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).primaryColor,
-        title: const Row(
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        title:  Row(
           children: [
-            Icon(Icons.folder, color: Colors.yellow, size: 30),
-            SizedBox(width: 10),
+            const Icon(Icons.folder, color: Colors.yellow, size: 30),
+            const SizedBox(width: 10),
             Text(
               "FOLDERIT",
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 20,
-                letterSpacing: 1.2,
+                fontSize: Theme.of(context).textTheme.bodyLarge!.fontSize,
+                
               ),
             ),
           ],
@@ -34,11 +34,11 @@ class SignupScreen extends StatelessWidget {
               UserCubit.get(context).clearControllers();
               context.go('/signup');
             },
-            child: const Text(
+            child:  Text(
               "Sign up",
               style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
+                color: Theme.of(context).textTheme.bodySmall!.color,
+                fontSize: Theme.of(context).textTheme.bodySmall!.fontSize,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -48,11 +48,11 @@ class SignupScreen extends StatelessWidget {
               UserCubit.get(context).clearControllers();
               context.go('/login');
             },
-            child: const Text(
+            child: Text(
               "Login",
               style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
+                color: Theme.of(context).textTheme.bodySmall!.color,
+                fontSize: Theme.of(context).textTheme.bodySmall!.fontSize,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -128,17 +128,6 @@ class SignUpForm extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 5),
-                    const Center(
-                      child: Text(
-                        'Sign up',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 25),
                     customFormFiled(
                       controller: cubit.userNameController,
                       label: 'Username',
@@ -166,42 +155,29 @@ class SignUpForm extends StatelessWidget {
                       },
                       prefixIcon: Icons.lock,
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 15),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Row(
-                          children: [
-                            StatefulBuilder(
-                              builder: (context, setState) => Checkbox(
-                                value: cubit.rememberMe,
-                                onChanged: (value) {
-                                  setState(() {
-                                    cubit.rememberMe = value ?? false;
-                                  });
-                                },
-                              ),
-                            ),
-                            const Text("Remember me"),
-                          ],
+                        StatefulBuilder(
+                          builder: (context, setState) => Checkbox(
+                            value: cubit.rememberMe,
+                            onChanged: (value) {
+                              setState(() {
+                                cubit.rememberMe = value ?? false;
+                              });
+                            },
+                          ),
                         ),
-
+                        Text("Remember me",style: Theme.of(context).textTheme.displayMedium),
                       ],
                     ),
-                    const SizedBox(height: 15),
+                    //const SizedBox(height: 5),
                     Center(
                       child: state is UserAuthLoadingState
                           ? const CircularProgressIndicator()
                           : ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Theme.of(context).primaryColor,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                elevation: 5,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 60, vertical: 16),
-                              ),
+                              style: Theme.of(context).elevatedButtonTheme.style,
                               onPressed: () async {
                                 await cubit.signUp(
                                   context,
@@ -210,16 +186,13 @@ class SignUpForm extends StatelessWidget {
                                   cubit.passwordController.text,
                                 );
                               },
-                              child: const Text(
+                              child:  Text(
                                 'Sign Up',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                style:Theme.of(context).textTheme.bodyMedium
+                                )
                               ),
                             ),
-                    ),
+                    
                   ],
                 ),
               ),

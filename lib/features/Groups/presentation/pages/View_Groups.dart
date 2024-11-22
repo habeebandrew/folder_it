@@ -18,7 +18,7 @@ class _GroupsState extends State<Groups> {
   int? _hoverIndex;
   bool _sortByNewest = true;
   late Future<List<Group>> _groups;
-  int myid = CacheHelper().getData(key: "myid") ?? 1; // قيمة افتراضية
+  int myid = CacheHelper().getData(key: "myid") ?? 1; // قيمة افتراضية طبعا منشيلا بس هلق كرمال نشوف التصميم
   double? maxCardHeight;
 
   @override
@@ -79,14 +79,15 @@ class _GroupsState extends State<Groups> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        title: Text(
           'Groups',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: Theme.of(context).textTheme.displayLarge,
         ),
         actions: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: Tooltip(
+            child:Tooltip(
               message: 'Create New Group',
               child: TextButton.icon(
                 onPressed: () {
@@ -96,13 +97,9 @@ class _GroupsState extends State<Groups> {
                   Icons.add_box_outlined,
                   color: Theme.of(context).primaryColor,
                 ),
-                label: const Text(
+                label:  Text(
                   'Create Group',
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(context).textTheme.displayMedium
                 ),
                 style: TextButton.styleFrom(
                   padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
@@ -114,6 +111,7 @@ class _GroupsState extends State<Groups> {
                 ),
               ),
             ),
+
           ),
         ],
       ),
@@ -206,11 +204,11 @@ class _GroupsState extends State<Groups> {
                         fontWeight: FontWeight.w500,
                         color: selectedCategory == category
                             ? Colors.white
-                            : Theme.of(context).primaryColor,
+                            :  Theme.of(context).primaryColor,
                       ),
                     ),
                     backgroundColor: selectedCategory == category
-                        ? Theme.of(context).primaryColor
+                        ?  Theme.of(context).primaryColor
                         : Colors.grey[200],
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   ),
@@ -341,15 +339,12 @@ class _GroupsState extends State<Groups> {
                   const SizedBox(height: 8),
                   Text(
                     group.groupName.isNotEmpty ? group.groupName : "لا اسم للغروب",
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
+                    style: Theme.of(context).textTheme.displayMedium,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${DateFormat('yyyy-MM-dd').format(group.creationDate)}',
+                    DateFormat('yyyy-MM-dd').format(group.creationDate),
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.grey.shade600,
@@ -470,7 +465,7 @@ class Group {
   factory Group.fromJson(Map<String, dynamic> json) {
     return Group(
       id: json['id'],
-      groupName: json['groupName'] ?? "لا اسم للغروب",
+      groupName: json['groupName'] ?? "لا اسم للغروب", // إذا كانت null تعيين النص الافتراضي
       creator: json['creator'],
       creationDate: DateTime.parse(json['creationDate']),
       recordStatus: json['recordStatus'],

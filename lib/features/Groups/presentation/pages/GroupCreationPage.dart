@@ -299,7 +299,7 @@ class _GroupCreationPageState extends State<GroupCreationPage> {
                 width: constraints.maxWidth > 600 ? 600 : constraints.maxWidth * 0.9,
                 padding: const EdgeInsets.all(16.0),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
@@ -323,14 +323,7 @@ class _GroupCreationPageState extends State<GroupCreationPage> {
                         labelText: 'Group Name',
                         hintText: 'Enter group name',
                         counterText: '',
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(color: Colors.black, width: 1.5),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(color: Colors.blue, width: 2),
-                        ),
+
                       ),
                     ),
                     if (!isNameValid)
@@ -349,7 +342,7 @@ class _GroupCreationPageState extends State<GroupCreationPage> {
                               "By creating a group, you agree to the terms and conditions stated in the usage policy. "
                               "Please ensure that your group complies with our community standards and usage guidelines. "
                               "Inappropriate or illegal content is strictly prohibited.",
-                          style: TextStyle(color: Colors.grey[700]),
+                          style: TextStyle(color: Colors.grey[500]),
                           textAlign: TextAlign.justify,
                         ),
                       ),
@@ -370,7 +363,7 @@ class _GroupCreationPageState extends State<GroupCreationPage> {
                         Expanded(
                           child: Text(
                             "I agree to the terms and conditions",
-                            style: TextStyle(color: isNameValid ? Colors.grey[700] : Colors.grey),
+                            style: TextStyle(color: isNameValid ? Colors.grey[600] : Colors.grey),
                           ),
                         ),
                       ],
@@ -380,22 +373,26 @@ class _GroupCreationPageState extends State<GroupCreationPage> {
                       onPressed: isAgreed && isNameValid && !isLoading
                           ? createGroup
                           : null,
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 50),
-                        backgroundColor: isAgreed && isNameValid
-                            ? Colors.green // اللون الأخضر عند الموافقة
-                            : Colors.grey, // اللون الافتراضي عند عدم الموافقة
+                      style:
+                      isAgreed && isNameValid
+                      ?Theme.of(context).elevatedButtonTheme.style
+                      :ElevatedButton.styleFrom(
+                        //minimumSize: const Size(double.infinity, 50),
+                        backgroundColor:  Colors.grey,
+                        foregroundColor:Colors.grey ,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
                       child: isLoading
                           ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text(
+                          :  Text(
                         'Create Group',
-                        style: TextStyle(fontSize: 18, color: Colors.white),
+                        style: TextStyle(
+                          fontSize: Theme.of(context).textTheme.bodyMedium!.fontSize
+                        )
+                        ),
                       ),
-                    ),
 
                   ],
                 ),
