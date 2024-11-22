@@ -6,7 +6,7 @@ class GetNavigationItemsUseCase {
   List<NavigationItem> call() {
     return [
       const NavigationItem(
-        label: 'My Folders',
+        label: 'My Files',
         icon: Icon(Icons.folder_copy_outlined),
         activeIcon: Icon(Icons.folder_copy_rounded),
       ),

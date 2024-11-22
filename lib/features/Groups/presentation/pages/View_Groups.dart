@@ -18,7 +18,7 @@ class _GroupsState extends State<Groups> {
   int? _hoverIndex;
   bool _sortByNewest = true;
   late Future<List<Group>> _groups;
-  int myid = CacheHelper().getData(key: "myid") ?? 1; // قيمة افتراضية طبعا منشيلا بس هلق كرمال نشوف التصميم
+  int myid = CacheHelper().getData(key: "myid") ?? 1; // قيمة افتراضية
   double? maxCardHeight;
 
   @override
@@ -86,11 +86,11 @@ class _GroupsState extends State<Groups> {
         actions: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child:Tooltip(
-              message: 'Create New Group', // النص الذي يظهر عند تمرير الماوس
+            child: Tooltip(
+              message: 'Create New Group',
               child: TextButton.icon(
                 onPressed: () {
-                  context.go('/GroupCreationPage'); // الانتقال إلى صفحة إنشاء المجموعة
+                  context.go('/GroupCreationPage');
                 },
                 icon: Icon(
                   Icons.add_box_outlined,
@@ -114,7 +114,6 @@ class _GroupsState extends State<Groups> {
                 ),
               ),
             ),
-
           ),
         ],
       ),
@@ -207,11 +206,11 @@ class _GroupsState extends State<Groups> {
                         fontWeight: FontWeight.w500,
                         color: selectedCategory == category
                             ? Colors.white
-                            :  Theme.of(context).primaryColor,
+                            : Theme.of(context).primaryColor,
                       ),
                     ),
                     backgroundColor: selectedCategory == category
-                        ?  Theme.of(context).primaryColor
+                        ? Theme.of(context).primaryColor
                         : Colors.grey[200],
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   ),
@@ -223,6 +222,7 @@ class _GroupsState extends State<Groups> {
       ),
     );
   }
+
   Widget _buildSortToggle() {
     return Center(
       child: Card(
@@ -236,9 +236,9 @@ class _GroupsState extends State<Groups> {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-               Icon(Icons.sort, color:  Theme.of(context).primaryColor,),
+              Icon(Icons.sort, color: Theme.of(context).primaryColor),
               const SizedBox(width: 8),
-               Text(
+              Text(
                 "Sort by:",
                 style: TextStyle(
                   fontSize: 16,
@@ -264,7 +264,7 @@ class _GroupsState extends State<Groups> {
                 ),
                 child: DropdownButton<bool>(
                   value: _sortByNewest,
-                  icon:  Icon(Icons.arrow_drop_down, color: Theme.of(context).primaryColor,),
+                  icon: Icon(Icons.arrow_drop_down, color: Theme.of(context).primaryColor),
                   underline: Container(),
                   style: const TextStyle(
                     fontSize: 16,
@@ -295,48 +295,43 @@ class _GroupsState extends State<Groups> {
     );
   }
 
-
   Widget _buildGroupBox(Group group) {
+    bool isHovered = _hoverIndex == group.id;
+
     return MouseRegion(
       onEnter: (_) => setState(() => _hoverIndex = group.id),
       onExit: (_) => setState(() => _hoverIndex = null),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          // تحديث maxCardHeight بأكبر ارتفاع بين البطاقات
-          if (maxCardHeight == null || constraints.maxHeight > maxCardHeight!) {
-            maxCardHeight = constraints.maxHeight;
-          }
-
-          return AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            width: constraints.maxWidth, // عرض ثابت بناءً على العرض المتاح
-            height: maxCardHeight, // تعيين أكبر ارتفاع
-            padding: const EdgeInsets.all(8.0),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8.0),
-              boxShadow: _hoverIndex == group.id
-                  ? [
-                BoxShadow(
-                  color: Colors.blue.withOpacity(0.3),
-                  blurRadius: 10.0,
-                  offset: const Offset(0, 5),
-                )
-              ]
-                  : [
-                const BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 5.0,
-                  offset: Offset(0, 2),
-                )
-              ],
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+        padding: const EdgeInsets.all(8.0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8.0),
+          boxShadow: isHovered
+              ? [
+            BoxShadow(
+              color:  Theme.of(context).primaryColor.withOpacity(0.3),
+              blurRadius: 15.0,
+              offset: const Offset(0, 8),
             ),
-            child: Column(
+          ]
+              : [
+            const BoxShadow(
+              color: Colors.black12,
+              blurRadius: 5.0,
+              offset: Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Flexible(
                   child: Image.asset(
-                    'assets/images/group.png', // رابط لصورة أيقونة المجموعة
+                    'assets/images/group/group_pic2.png',
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -359,10 +354,106 @@ class _GroupsState extends State<Groups> {
                 ),
               ],
             ),
-          );
-        },
+            Positioned(
+              top: 8,
+              right: 8,
+              child: PopupMenuButton<String>(
+                icon: const Icon(Icons.more_vert, color: Colors.grey),
+                onSelected: (value) {
+                  if (value == 'delete') {
+                    _showDeleteConfirmation(group.id);
+                  }
+                },
+                itemBuilder: (BuildContext context) => [
+                  const PopupMenuItem(
+                    value: 'delete',
+                    child: Row(
+                      children: [
+                        Icon(Icons.delete, color: Colors.red),
+                        SizedBox(width: 8),
+                        Text('Delete'),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  void _showDeleteConfirmation(int groupId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Deletion'),
+          content: const Text(
+            'Are you sure you want to delete this group? This action cannot be undone.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: Colors.grey),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _deleteGroup(groupId);
+              },
+              child: const Text(
+                'Delete',
+                style: TextStyle(color: Colors.white),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _deleteGroup(int groupId) async {
+    final url = Uri.parse('http://127.0.0.1:8091/group/delete?groupId=$groupId');
+
+    try {
+      final response = await http.put(url);
+
+      if (response.statusCode == 200) {
+        setState(() {
+          _groups = fetchGroups(myid);
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Group deleted successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to delete group: ${response.statusCode}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 }
 
@@ -384,7 +475,7 @@ class Group {
   factory Group.fromJson(Map<String, dynamic> json) {
     return Group(
       id: json['id'],
-      groupName: json['groupName'] ?? "لا اسم للغروب", // إذا كانت null تعيين النص الافتراضي
+      groupName: json['groupName'] ?? "لا اسم للغروب",
       creator: json['creator'],
       creationDate: DateTime.parse(json['creationDate']),
       recordStatus: json['recordStatus'],
