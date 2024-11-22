@@ -311,9 +311,10 @@ class _GroupsState extends State<Groups> {
           boxShadow: isHovered
               ? [
             BoxShadow(
-              color:  Theme.of(context).primaryColor.withOpacity(0.3),
-              blurRadius: 15.0,
-              offset: const Offset(0, 8),
+              color: Theme.of(context).primaryColor.withOpacity(0.5),
+              blurRadius: 20.0,
+              spreadRadius: 5.0,
+              offset: const Offset(0, 10),
             ),
           ]
               : [
@@ -326,58 +327,52 @@ class _GroupsState extends State<Groups> {
         ),
         child: Stack(
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Flexible(
-                  child: Image.asset(
-                    'assets/images/group/group_pic2.png',
-                    fit: BoxFit.cover,
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Flexible(
+                    child: Image.asset(
+                      'assets/images/group/group_pic2.png',
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  group.groupName.isNotEmpty ? group.groupName : "لا اسم للغروب",
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                  const SizedBox(height: 8),
+                  Text(
+                    group.groupName.isNotEmpty ? group.groupName : "لا اسم للغروب",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '${DateFormat('yyyy-MM-dd').format(group.creationDate)}',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-              ],
-            ),
-            Positioned(
-              top: 8,
-              right: 8,
-              child: PopupMenuButton<String>(
-                icon: const Icon(Icons.more_vert, color: Colors.grey),
-                onSelected: (value) {
-                  if (value == 'delete') {
-                    _showDeleteConfirmation(group.id);
-                  }
-                },
-                itemBuilder: (BuildContext context) => [
-                  const PopupMenuItem(
-                    value: 'delete',
-                    child: Row(
-                      children: [
-                        Icon(Icons.delete, color: Colors.red),
-                        SizedBox(width: 8),
-                        Text('Delete'),
-                      ],
+                  const SizedBox(height: 4),
+                  Text(
+                    '${DateFormat('yyyy-MM-dd').format(group.creationDate)}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey.shade600,
                     ),
                   ),
                 ],
               ),
             ),
+            if (selectedCategory == 'My Groups')
+              Positioned(
+                top: 8,
+                right: 8,
+                child: Tooltip(
+                  message: 'delete this group', // النص الذي سيظهر عند تمرير الفأرة
+                  child: IconButton(
+                    icon: const Icon(Icons.delete_outline, color: Colors.blueGrey),
+                    onPressed: () {
+                      _showDeleteConfirmation(group.id);
+                    },
+                  ),
+                ),
+              )
+
           ],
         ),
       ),

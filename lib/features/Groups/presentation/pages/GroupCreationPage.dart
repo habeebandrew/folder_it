@@ -202,6 +202,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 
 import '../../../../core/databases/cache/cache_helper.dart';
@@ -265,6 +266,11 @@ class _GroupCreationPageState extends State<GroupCreationPage> {
         setState(() {
           isAgreed = false; // إعادة تعيين الاتفاقية
         });
+        Future.delayed(Duration(seconds: 2), () {
+          context.go('/home'); // الانتقال إلى مسار معين
+          print('تم تنفيذ العملية بعد ثانية واحدة');
+        });
+
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to create group: ${response.body}')),
