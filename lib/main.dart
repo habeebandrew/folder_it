@@ -7,6 +7,7 @@ import 'package:folder_it/core/databases/cache/cache_helper.dart';
 import 'package:folder_it/features/Groups/presentation/cubit/group_cubit.dart';
 import 'package:folder_it/features/Home/domain/usecases/get_navigation_items_usecase.dart';
 import 'package:folder_it/features/Home/presentation/cubit/navigation_cubit.dart';
+import 'package:folder_it/features/Home/presentation/cubit/theme_cubit.dart';
 import 'package:folder_it/features/User/presentation/cubit/user_cubit.dart';
 
 void main() async {
@@ -23,8 +24,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        
         BlocProvider(
-            create: (_) => NavigationCubit(GetNavigationItemsUseCase())),
+          create: (context) => ThemeCubit(),
+        ),
         BlocProvider<UserCubit>(
           create: (context) => UserCubit(),
         ),
@@ -32,8 +35,8 @@ class MyApp extends StatelessWidget {
           create: (context) => GroupCubit(),
         ),
       ],
-      child: BlocBuilder<NavigationCubit, NavigationState>(
-        builder: (context, state) {
+      child: BlocBuilder<ThemeCubit, bool>(
+        builder: (context, isDarkTheme) {
           return MaterialApp.router(
             debugShowCheckedModeBanner: false,
             title: 'Folder it now',
@@ -212,7 +215,7 @@ class MyApp extends StatelessWidget {
                 ),
                 snackBarTheme: const SnackBarThemeData(
                     contentTextStyle: TextStyle(color: Colors.white))),
-            themeMode: NavigationCubit.get(context).toggle
+            themeMode: isDarkTheme
                 ? ThemeMode.dark
                 : ThemeMode.light,
           );

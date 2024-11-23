@@ -10,18 +10,9 @@ class NavigationCubit extends Cubit<NavigationState> {
 
   NavigationCubit(this.getNavigationItemsUseCase) : super(NavigationState.home);
 
-  static NavigationCubit get(context)=>BlocProvider.of(context);
 
   void navigateTo(NavigationState state) => emit(state);
 
   List<NavigationItem> get items => getNavigationItemsUseCase();
   
-  bool toggle = false;
-
-  bool themeToggle(){
-  
-     emit(state);
-     return toggle =! toggle;
-      
-  }
 }
