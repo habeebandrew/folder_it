@@ -47,7 +47,7 @@ class NavigationRailPage extends StatelessWidget {
                     onPressed: () {
                       ThemeCubit.get(context).toggleTheme();
                     },
-                    icon: const Icon(Icons.dark_mode));
+                    icon: const Icon(Icons.dark_mode,color: Colors.yellow,));
               },
             ),
             Stack(
