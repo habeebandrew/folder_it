@@ -12,6 +12,7 @@ Widget customInviteCard(
     Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Card(
+        color: Theme.of(context).cardColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8.0),
         ),

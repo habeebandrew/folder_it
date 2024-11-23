@@ -22,31 +22,30 @@ class InvitesPage extends StatelessWidget {
                 width: double.maxFinite,
                 child: state is GroupGetInvitesSuccess
                     ? state.invites.isEmpty
-                    ? const Center(
-                          child: Text('you have no invites')
-                      )
-                    :ListView.builder(
-                        itemCount: state.invites.length,
-                        itemBuilder: (context, index) {
-                          var invites = state.invites[index];
-                         
-                            return customInviteCard(
-                                context: context,
-                                index: index,
-                                groupId:invites.group.groupId,
-                                groupName: invites.group.groupName,
-                                inviteId: invites.inviteId
-                            );
-                          
-                        })
+                        ? const Center(child: Text('you have no invites'))
+                        : ListView.builder(
+                            itemCount: state.invites.length,
+                            itemBuilder: (context, index) {
+                              var invites = state.invites[index];
+
+                              return customInviteCard(
+                                  context: context,
+                                  index: index,
+                                  groupId: invites.group.groupId,
+                                  groupName: invites.group.groupName,
+                                  inviteId: invites.inviteId);
+                            })
                     : state is GroupFailureState
                         ? Text(state.message)
                         : const Center(child: CircularProgressIndicator()),
               ),
               actions: [
                 TextButton(
+                  style: TextButton.styleFrom(
+                      backgroundColor: Theme.of(context).primaryColor),
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('close'),
+                  child: Text('close',
+                      style: Theme.of(context).textTheme.bodySmall),
                 ),
               ],
             );
