@@ -416,7 +416,7 @@ class _GroupsState extends State<Groups> {
     final url = Uri.parse('http://127.0.0.1:8091/group/delete?groupId=$groupId');
 
     try {
-      final response = await http.put(url);
+      final response = await http.post(url);//TODO:تحويلها ل post
 
       if (response.statusCode == 200) {
         setState(() {
