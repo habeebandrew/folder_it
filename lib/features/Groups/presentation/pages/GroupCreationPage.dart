@@ -289,7 +289,32 @@ class _GroupCreationPageState extends State<GroupCreationPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Scaffold(appBar: AppBar(
+      //backgroundColor: Theme.of(context).primaryColor,
+      title: Row(
+        children: [
+          const Icon(Icons.folder, color: Colors.yellow, size: 30),
+          const SizedBox(width: 10),
+          Text(
+            "FOLDERIT",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: Theme.of(context).textTheme.bodyLarge!.fontSize,
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        Tooltip(
+          message: 'Instructions',
+          child: TextButton(
+            onPressed: () {},
+            child:
+            const Icon(Icons.question_mark_sharp, color: Colors.yellow),
+          ),
+        ),
+      ],
+    ),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return Padding(

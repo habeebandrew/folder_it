@@ -14,52 +14,65 @@ class Groups extends StatefulWidget {
 }
 
 class _GroupsState extends State<Groups> {
-  String selectedCategory = 'All';
-  int? _hoverIndex;
-  bool _sortByNewest = true;
-  late Future<List<Group>> _groups;
-  int myid = CacheHelper().getData(key: "myid") ?? 1; // قيمة افتراضية طبعا منشيلا بس هلق كرمال نشوف التصميم
-  double? maxCardHeight;
+  String selectedCategory = 'Other';
+  int? hoverIndex;
+  bool sortByNewest = true;
+  late Future<List<Group>> groups;
+  int myId = CacheHelper().getData(key: "myid"); // قيمة افتراضية
 
   @override
   void initState() {
     super.initState();
-    _groups = fetchGroups(myid);
+    groups = _loadDataForCategory();
   }
 
-  Future<List<Group>> fetchGroups(int id) async {
+  Future<List<Group>> _loadDataForCategory() async {
+    if (selectedCategory == 'Other') {
+      return fetchOtherGroups();
+    } else if (selectedCategory == 'My Groups') {
+      return fetchMyGroups();
+    } else if (selectedCategory == 'Deleted') {
+      return fetchDeletedGroups();
+    }
+    return [];
+  }
+
+  Future<List<Group>> fetchOtherGroups() async {
+    final url = "http://127.0.0.1:8091/group/fetch-all-my-groups?userId=$myId";
+    return _fetchGroups(url, (group) => group.recordStatus);
+  }
+
+  Future<List<Group>> fetchMyGroups() async {
+    final url = "http://127.0.0.1:8091/group/my-groups?creatorId=$myId";
+    return _fetchGroups(url, (group) => group.recordStatus);
+  }
+
+  Future<List<Group>> fetchDeletedGroups() async {
+    final url = "http://127.0.0.1:8091/group/my-groups?creatorId=$myId";
+    return _fetchGroups(url, (group) => !group.recordStatus);
+  }
+
+  Future<List<Group>> _fetchGroups(
+      String url, bool Function(Group) filterCondition) async {
     try {
-      final response = await http
-          .get(Uri.parse("http://127.0.0.1:8091/group/my-groups?creatorId=$id"))
-          .timeout(const Duration(seconds: 10)); // الحد الأقصى للوقت
-
+      final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
-        List jsonResponse = json.decode(response.body);
-
-        if (jsonResponse.isEmpty) {
-          throw Exception('No groups available');
-        }
-
-        return jsonResponse.map((data) => Group.fromJson(data)).toList();
+        final List jsonResponse = json.decode(response.body);
+        final groups =
+        jsonResponse.map((data) => Group.fromJson(data)).toList();
+        return groups.where(filterCondition).toList();
       } else {
         throw Exception('Failed to load groups');
       }
-    } on http.ClientException {
-      throw Exception('No Internet connection');
+    } catch (e) {
+      throw Exception('Error: $e');
     }
   }
 
   List<Group> applyFilters(List<Group> groups) {
-    List<Group> filteredGroups = groups.where((group) {
-      if (selectedCategory == 'Deleted') {
-        return group.recordStatus == false;
-      } else if (selectedCategory == 'My Groups') {
-        return group.recordStatus != false;
-      }
-      return group.recordStatus == true;
-    }).toList();
+    List<Group> filteredGroups = groups;
 
-    filteredGroups.sort((a, b) => _sortByNewest
+    filteredGroups.sort((a, b) => sortByNewest
         ? b.creationDate.compareTo(a.creationDate)
         : a.creationDate.compareTo(b.creationDate));
 
@@ -87,7 +100,7 @@ class _GroupsState extends State<Groups> {
         actions: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child:Tooltip(
+            child: Tooltip(
               message: 'Create New Group',
               child: TextButton.icon(
                 onPressed: () {
@@ -97,12 +110,11 @@ class _GroupsState extends State<Groups> {
                   Icons.add_box_outlined,
                   color: Theme.of(context).primaryColor,
                 ),
-                label:  Text(
-                  'Create Group',
-                  style: Theme.of(context).textTheme.displayMedium
-                ),
+                label: Text('Create Group',
+                    style: Theme.of(context).textTheme.displayMedium),
                 style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12.0, vertical: 6.0),
                   backgroundColor: Colors.grey[300],
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
@@ -111,7 +123,6 @@ class _GroupsState extends State<Groups> {
                 ),
               ),
             ),
-
           ),
         ],
       ),
@@ -124,16 +135,16 @@ class _GroupsState extends State<Groups> {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  _buildCategoryFilterBar(),
+                  buildCategoryFilterBar(),
                   const SizedBox(width: 10),
-                  _buildSortToggle(),
+                  buildSortToggle(),
                 ],
               ),
             ),
             const SizedBox(height: 20),
             Expanded(
               child: FutureBuilder<List<Group>>(
-                future: _groups,
+                future: groups,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -173,8 +184,8 @@ class _GroupsState extends State<Groups> {
     );
   }
 
-  Widget _buildCategoryFilterBar() {
-    final categories = ['All', 'My Groups', 'Deleted'];
+  Widget buildCategoryFilterBar() {
+    final categories = ['Other', 'My Groups', 'Deleted'];
 
     return Center(
       child: Card(
@@ -194,6 +205,7 @@ class _GroupsState extends State<Groups> {
                   onTap: () {
                     setState(() {
                       selectedCategory = category;
+                      groups = _loadDataForCategory();
                     });
                   },
                   child: Chip(
@@ -204,13 +216,14 @@ class _GroupsState extends State<Groups> {
                         fontWeight: FontWeight.w500,
                         color: selectedCategory == category
                             ? Colors.white
-                            :  Theme.of(context).primaryColor,
+                            : Theme.of(context).primaryColor,
                       ),
                     ),
                     backgroundColor: selectedCategory == category
-                        ?  Theme.of(context).primaryColor
+                        ? Theme.of(context).primaryColor
                         : Colors.grey[200],
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 4),
                   ),
                 ),
               );
@@ -221,7 +234,7 @@ class _GroupsState extends State<Groups> {
     );
   }
 
-  Widget _buildSortToggle() {
+  Widget buildSortToggle() {
     return Center(
       child: Card(
         shape: RoundedRectangleBorder(
@@ -245,47 +258,32 @@ class _GroupsState extends State<Groups> {
                 ),
               ),
               const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      spreadRadius: 1,
-                      blurRadius: 6,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                  border: Border.all(color: Colors.grey.shade300),
+              DropdownButton<bool>(
+                value: sortByNewest,
+                icon: Icon(Icons.arrow_drop_down,
+                    color: Theme.of(context).primaryColor),
+                underline: Container(),
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Colors.black87,
                 ),
-                child: DropdownButton<bool>(
-                  value: _sortByNewest,
-                  icon: Icon(Icons.arrow_drop_down, color: Theme.of(context).primaryColor),
-                  underline: Container(),
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.black87,
+                dropdownColor: Colors.white,
+                items: const [
+                  DropdownMenuItem(
+                    value: true,
+                    child: Text("Newest"),
                   ),
-                  dropdownColor: Colors.white,
-                  items: const [
-                    DropdownMenuItem(
-                      value: true,
-                      child: Text("Newest"),
-                    ),
-                    DropdownMenuItem(
-                      value: false,
-                      child: Text("Oldest"),
-                    ),
-                  ],
-                  onChanged: (value) {
-                    setState(() {
-                      _sortByNewest = value!;
-                    });
-                  },
-                ),
-              )
+                  DropdownMenuItem(
+                    value: false,
+                    child: Text("Oldest"),
+                  ),
+                ],
+                onChanged: (value) {
+                  setState(() {
+                    sortByNewest = value!;
+                  });
+                },
+              ),
             ],
           ),
         ),
@@ -293,12 +291,13 @@ class _GroupsState extends State<Groups> {
     );
   }
 
+
   Widget _buildGroupBox(Group group) {
-    bool isHovered = _hoverIndex == group.id;
+    bool isHovered = hoverIndex == group.id;
 
     return MouseRegion(
-      onEnter: (_) => setState(() => _hoverIndex = group.id),
-      onExit: (_) => setState(() => _hoverIndex = null),
+      onEnter: (_) => setState(() => hoverIndex = group.id),
+      onExit: (_) => setState(() => hoverIndex = null),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeOut,
@@ -414,13 +413,14 @@ class _GroupsState extends State<Groups> {
 
   Future<void> _deleteGroup(int groupId) async {
     final url = Uri.parse('http://127.0.0.1:8091/group/delete?groupId=$groupId');
+    final url1 = "http://127.0.0.1:8091/group/my-groups?creatorId=$myId";
 
     try {
       final response = await http.post(url);//TODO:تحويلها ل post
 
       if (response.statusCode == 200) {
         setState(() {
-          _groups = fetchGroups(myid);
+          groups = _fetchGroups(url1, (group) => group.recordStatus);
         });
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -465,7 +465,7 @@ class Group {
   factory Group.fromJson(Map<String, dynamic> json) {
     return Group(
       id: json['id'],
-      groupName: json['groupName'] ?? "لا اسم للغروب", // إذا كانت null تعيين النص الافتراضي
+      groupName: json['groupName'],
       creator: json['creator'],
       creationDate: DateTime.parse(json['creationDate']),
       recordStatus: json['recordStatus'],
