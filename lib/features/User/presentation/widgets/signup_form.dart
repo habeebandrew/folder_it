@@ -188,7 +188,7 @@ class SignUpForm extends StatelessWidget {
                               },
                               child:  Text(
                                 'Sign Up',
-                                style:Theme.of(context).textTheme.bodyMedium
+                                style:Theme.of(context).textTheme.bodyMedium!.apply(color:Colors.white)
                                 )
                               ),
                             ),

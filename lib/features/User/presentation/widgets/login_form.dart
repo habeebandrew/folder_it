@@ -193,7 +193,7 @@ class LoginForm extends StatelessWidget {
                               },
                               child: Text(
                                 'Sign In',
-                                style: Theme.of(context).textTheme.bodyMedium
+                                style: Theme.of(context).textTheme.bodyMedium!.apply(color:Colors.white)
                               ),
                             ),
                     ),
