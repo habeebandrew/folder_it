@@ -13,6 +13,7 @@ class InvitesPage extends StatelessWidget {
         child: BlocConsumer<GroupCubit, GroupState>(
           listener: (context, state) {},
           builder: (context, state) {
+            
             return AlertDialog(
               title: const Text(
                 'my invites ',
@@ -27,14 +28,15 @@ class InvitesPage extends StatelessWidget {
                             itemCount: state.invites.length,
                             itemBuilder: (context, index) {
                               var invites = state.invites[index];
-
                               return customInviteCard(
                                   context: context,
                                   index: index,
                                   groupId: invites.group.groupId,
                                   groupName: invites.group.groupName,
-                                  inviteId: invites.inviteId);
-                            })
+                                  inviteId: invites.inviteId
+                              );
+                            }
+                        )
                     : state is GroupFailureState
                         ? Text(state.message)
                         : const Center(child: CircularProgressIndicator()),
