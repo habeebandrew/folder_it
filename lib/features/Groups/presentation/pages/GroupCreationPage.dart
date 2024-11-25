@@ -266,12 +266,11 @@ class _GroupCreationPageState extends State<GroupCreationPage> {
         setState(() {
           isAgreed = false; // إعادة تعيين الاتفاقية
         });
-        Future.delayed(Duration(seconds: 2), () {
-          context.go('/home'); // الانتقال إلى مسار معين
-          print('تم تنفيذ العملية بعد ثانية واحدة');
+        Future.delayed(const Duration(milliseconds: 500), () {
+          context.go('/home');
         });
-
-      } else {
+      }
+      else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to create group: ${response.body}')),
         );
@@ -344,7 +343,7 @@ class _GroupCreationPageState extends State<GroupCreationPage> {
                       inputFormatters: [
                         LengthLimitingTextInputFormatter(8),
                       ],
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Group Name',
                         hintText: 'Enter group name',
                         counterText: '',
