@@ -152,7 +152,7 @@ class NavigationRailPage extends StatelessWidget {
                   );
                 },
               ),
-            //const VerticalDivider(thickness: 1, width: 1),
+            const VerticalDivider(thickness: 1, width: 1,color: Colors.grey,),
             Expanded(
               child: BlocBuilder<NavigationCubit, NavigationState>(
                 builder: (context, state) {

@@ -13,7 +13,7 @@ class DroppedFileWidget extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
@@ -32,7 +32,7 @@ class DroppedFileWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (file != null) buildFileDetail(file),
+        if (file != null) buildFileDetail(file,context),
         const SizedBox(height: 20),
         if (file!.mime.contains('pdf') || file!.mime.contains('text'))
           buildFileActions(context),
@@ -47,7 +47,7 @@ class DroppedFileWidget extends StatelessWidget {
       children: [
         const Text(
           'File Actions:',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: TextStyle(fontSize: 16),
         ),
         const SizedBox(height: 8),
         ElevatedButton.icon(
@@ -61,7 +61,7 @@ class DroppedFileWidget extends StatelessWidget {
 
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 12),
-            backgroundColor: Colors.blueAccent,
+            backgroundColor: Theme.of(context).primaryColor,
             
           ),
         ),
@@ -100,9 +100,10 @@ class DroppedFileWidget extends StatelessWidget {
     );
   }
 
-  Widget buildFileDetail(File_Data_Model? file) {
+  Widget buildFileDetail(File_Data_Model? file,BuildContext context) {
     return Card(
       elevation: 4,
+      //color: Theme.of(context).cardColor,
       margin: const EdgeInsets.symmetric(vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(

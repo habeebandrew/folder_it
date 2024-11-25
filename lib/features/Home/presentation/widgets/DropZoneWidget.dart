@@ -45,7 +45,7 @@ class _DropZoneWidgetState extends State<DropZoneWidget> {
                     UploadedFiles(events);
                   },
                   icon: const Icon(Icons.search,color: Colors.white,),
-                  label: Text('Choose Files',style: Theme.of(context).textTheme.bodyMedium,),
+                  label: Text('Choose Files',style: Theme.of(context).textTheme.bodyMedium!.apply(color: Colors.white),),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     backgroundColor: highlight ? const Color(0xFF2E5F76) : const Color(0Xff0b3153),
