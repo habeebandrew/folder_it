@@ -1,3 +1,4 @@
+import 'package:folder_it/features/Groups/presentation/pages/invite_member_page.dart';
 import 'package:folder_it/features/Groups/presentation/pages/invites_page.dart';
 import 'package:folder_it/features/Groups/presentation/pages/group_details.dart';
 import 'package:folder_it/features/Home/presentation/pages/navigation_rail_page.dart';
@@ -41,6 +42,10 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/groupform',
       builder: (context, state) =>  const GroupForm(),
+    ),
+    GoRoute(
+      path: '/inviteMemeber',
+      builder: (context, state) =>  const InviteMemberPage(),
     ),
   ],
 );

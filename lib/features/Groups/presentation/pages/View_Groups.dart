@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:folder_it/features/Group_Browser/presentation/pages/group_form.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -298,76 +299,81 @@ class _GroupsState extends State<Groups> {
     return MouseRegion(
       onEnter: (_) => setState(() => hoverIndex = group.id),
       onExit: (_) => setState(() => hoverIndex = null),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-        padding: const EdgeInsets.all(8.0),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(8.0),
-          boxShadow: isHovered
-              ? [
-            BoxShadow(
-              color: Theme.of(context).primaryColor.withOpacity(0.5),
-              blurRadius: 20.0,
-              spreadRadius: 5.0,
-              offset: const Offset(0, 10),
-            ),
-          ]
-              : [
-            const BoxShadow(
-              color: Colors.black12,
-              blurRadius: 5.0,
-              offset: Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Stack(
-          children: [
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Flexible(
-                    child: Image.asset(
-                      'assets/images/group/group_pic2.png',
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    group.groupName.isNotEmpty ? group.groupName : "لا اسم للغروب",
-                    style: Theme.of(context).textTheme.displayMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    DateFormat('yyyy-MM-dd').format(group.creationDate),
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                ],
+      child: InkWell(
+        onTap: (){
+          context.go('/groupform');
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+          padding: const EdgeInsets.all(8.0),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8.0),
+            boxShadow: isHovered
+                ? [
+              BoxShadow(
+                color: Theme.of(context).primaryColor.withOpacity(0.5),
+                blurRadius: 20.0,
+                spreadRadius: 5.0,
+                offset: const Offset(0, 10),
               ),
-            ),
-            if (selectedCategory == 'My Groups')
-              Positioned(
-                top: 8,
-                right: 8,
-                child: Tooltip(
-                  message: 'delete this group', // النص الذي سيظهر عند تمرير الفأرة
-                  child: IconButton(
-                    icon: const Icon(Icons.delete_outline, color: Colors.blueGrey),
-                    onPressed: () {
-                      _showDeleteConfirmation(group.id);
-                    },
-                  ),
+            ]
+                : [
+              const BoxShadow(
+                color: Colors.black12,
+                blurRadius: 5.0,
+                offset: Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Stack(
+            children: [
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Flexible(
+                      child: Image.asset(
+                        'assets/images/group/group_pic2.png',
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      group.groupName.isNotEmpty ? group.groupName : "لا اسم للغروب",
+                      style: Theme.of(context).textTheme.displayMedium,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      DateFormat('yyyy-MM-dd').format(group.creationDate),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
                 ),
-              )
-
-          ],
+              ),
+              if (selectedCategory == 'My Groups')
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: Tooltip(
+                    message: 'delete this group', // النص الذي سيظهر عند تمرير الفأرة
+                    child: IconButton(
+                      icon: const Icon(Icons.delete_outline, color: Colors.blueGrey),
+                      onPressed: () {
+                        _showDeleteConfirmation(group.id);
+                      },
+                    ),
+                  ),
+                )
+        
+            ],
+          ),
         ),
       ),
     );
