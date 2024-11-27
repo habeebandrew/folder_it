@@ -41,7 +41,7 @@ final GoRouter router = GoRouter(
 
     GoRoute(
       path: '/groupform',
-      builder: (context, state) =>  const GroupForm(),
+      builder: (context, state) =>   GroupForm(groupId: 0,key: null,),
     ),
     GoRoute(
       path: '/inviteMemeber',

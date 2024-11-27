@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:folder_it/features/Groups/presentation/pages/invite_member_page.dart';
-import 'package:go_router/go_router.dart';
 
 class MembersPage extends StatelessWidget {
   const MembersPage({super.key});
@@ -10,19 +9,19 @@ class MembersPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(appBar: AppBar(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-  
+
       actions: [
         Tooltip(
           message: 'invite new memeber',
           child: TextButton.icon(
                 onPressed: () {
                   showDialog(
-                    context: context, 
+                    context: context,
                     builder: (context){
                       return const InviteMemberPage();
                     }
                   );
-                 
+
                 },
                 icon: Icon(
                   Icons.add_box_outlined,

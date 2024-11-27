@@ -4,7 +4,9 @@ import '../group_pages/members_page.dart';
 import '../group_pages/settings_page.dart';
 
 class GroupForm extends StatefulWidget {
-  const GroupForm({super.key});
+  final int groupId;
+
+  const GroupForm({super.key, required this.groupId});
 
   @override
   State<GroupForm> createState() => _GroupFormState();
@@ -35,17 +37,17 @@ class _GroupFormState extends State<GroupForm> {
                     // الصورة والاسم
                     Column(
                       children: [
-                         CircleAvatar(
+                        CircleAvatar(
                           radius: 40,
-                          backgroundColor:  Theme.of(context).primaryColor,
-                          child: Image.asset("assets/images/group/group_pic2.png")
+                          backgroundColor: Theme.of(context).primaryColor,
+                          child: Image.asset("assets/images/group/group_pic2.png"),
                         ),
                         if (!isMobile) ...[
                           const SizedBox(height: 10),
                           Text(
                             "group name",
                             style: const TextStyle(
-                              color: Colors.white ,
+                              color: Colors.white,
                               fontSize: 16,
                             ),
                             textAlign: TextAlign.center,
@@ -68,7 +70,14 @@ class _GroupFormState extends State<GroupForm> {
                             label: "Members",
                             icon: Icons.people,
                             isMobile: isMobile,
-                            onTap: () => _changePage(const MembersPage(), "Members"),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => MembersPage(),
+                                ),
+                              );
+                            },
                           ),
                           _buildMenuButton(
                             label: "Setting",
@@ -76,7 +85,6 @@ class _GroupFormState extends State<GroupForm> {
                             isMobile: isMobile,
                             onTap: () => _changePage(const SettingsPage(), "Setting"),
                           ),
-
                         ],
                       ),
                     ),
@@ -152,7 +160,6 @@ class _GroupFormState extends State<GroupForm> {
       ),
     );
   }
-
 
   void _changePage(Widget page, String label) {
     setState(() {
