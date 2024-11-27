@@ -208,7 +208,7 @@ class _BrowsePageState extends State<BrowsePage> {
                                   padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                                   child: Row(
                                     children: [
-                                      Icon(Icons.insert_drive_file, color: Colors.white),
+                                      const Icon(Icons.insert_drive_file, color: Colors.white),
                                       const SizedBox(width: 8),
                                       Text(document['subject'],
                                           style: const TextStyle(color: Colors.white)),
@@ -230,17 +230,17 @@ class _BrowsePageState extends State<BrowsePage> {
                     child: selectedElement == null
                         ? currentResponse!["folders"].isEmpty &&
                         currentResponse!["documents"].isEmpty
-                        ? Center(
+                        ? const Center(
                       child: Text(
                         "This folder is empty",
-                        style: const TextStyle(
+                        style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                     )
-                        : Center(
+                        : const Center(
                       child: Text(
                         "Select a folder or file to view details",
-                        style: const TextStyle(
+                        style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                     )
