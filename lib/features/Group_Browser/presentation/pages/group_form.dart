@@ -13,7 +13,7 @@ class GroupForm extends StatefulWidget {
 }
 
 class _GroupFormState extends State<GroupForm> {
-  Widget _selectedPage = const BrowsePage();
+  Widget _selectedPage =  BrowsePage();
   String _selectedLabel = "Browse"; // لتعقب الزر المحدد حاليًا
 
   @override
@@ -62,9 +62,9 @@ class _GroupFormState extends State<GroupForm> {
                         children: [
                           _buildMenuButton(
                             label: "Browse",
-                            icon: Icons.home,
+                            icon: Icons.open_in_browser,
                             isMobile: isMobile,
-                            onTap: () => _changePage(const BrowsePage(), "Browse"),
+                            onTap: () => _changePage( BrowsePage(), "Browse"),
                           ),
                           _buildMenuButton(
                             label: "Members",
@@ -117,7 +117,7 @@ class _GroupFormState extends State<GroupForm> {
           color: isSelected ? Colors.white : Colors.transparent, // لون الخلفية بناءً على الحالة
           borderRadius: BorderRadius.circular(12), // حواف دائرية
           border: Border.all(
-            color: isSelected ? Colors.blueGrey[900]! : Colors.white, // لون الإطار
+            color: isSelected ? Colors.transparent : Colors.white, // لون الإطار
             width: 1.5,
           ),
         ),
