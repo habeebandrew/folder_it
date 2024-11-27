@@ -43,11 +43,13 @@ class NavigationRailPage extends StatelessWidget {
           actions: [
             BlocBuilder<ThemeCubit, bool>(
               builder: (context, state) {
-                return IconButton(
-                    onPressed: () {
-                      ThemeCubit.get(context).toggleTheme();
-                    },
-                    icon: const Icon(Icons.dark_mode,color: Colors.yellow,));
+                return Tooltip(message: "dark mode",//todo:هون تكون متحول حسب وضع الثيم اذا دارك او لايت
+                  child: IconButton(
+                      onPressed: () {
+                        ThemeCubit.get(context).toggleTheme();
+                      },
+                      icon: const Icon(Icons.dark_mode,color: Colors.yellow,)),
+                );
               },
             ),
             Stack(

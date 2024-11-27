@@ -13,41 +13,55 @@ class InvitesPage extends StatelessWidget {
         child: BlocConsumer<GroupCubit, GroupState>(
           listener: (context, state) {},
           builder: (context, state) {
-            
             return AlertDialog(
               title: const Text(
-                'my invites ',
+                'my invites',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               content: SizedBox(
-                width: double.maxFinite,
-                child: state is GroupGetInvitesSuccess
-                    ? state.invites.isEmpty
-                        ? const Center(child: Text('you have no invites'))
-                        : ListView.builder(
-                            itemCount: state.invites.length,
-                            itemBuilder: (context, index) {
-                              var invites = state.invites[index];
-                              return customInviteCard(
+                width: MediaQuery.of(context).size.width *
+                    0.5, // 70% من عرض الشاشة
+                height: MediaQuery.of(context).size.height *
+                    0.3, // 50% من ارتفاع الشاشة
+                child: SingleChildScrollView(
+                  child: state is GroupGetInvitesSuccess
+                      ? state.invites.isEmpty
+                          ? const Center(child: Text('you have no invites'))
+                          : ListView.builder(
+                              physics: const NeverScrollableScrollPhysics(),
+                              // منع التمرير الداخلي
+                              shrinkWrap: true,
+                              // لتقليص حجم ListView إلى المحتوى فقط
+                              itemCount: state.invites.length,
+                              itemBuilder: (context, index) {
+                                var invites = state.invites[index];
+                                return customInviteCard(
                                   context: context,
                                   index: index,
                                   groupId: invites.group.groupId,
                                   groupName: invites.group.groupName,
-                                  inviteId: invites.inviteId
-                              );
-                            }
-                        )
-                    : state is GroupFailureState
-                        ? Text(state.message)
-                        : const Center(child: CircularProgressIndicator()),
+                                  inviteId: invites.inviteId,
+                                );
+                              },
+                            )
+                      : state is GroupFailureState
+                          ? Text(state.message)
+                          : const Center(child: CircularProgressIndicator()),
+                ),
               ),
               actions: [
-                TextButton(
-                  style: TextButton.styleFrom(
-                      backgroundColor: Theme.of(context).primaryColor),
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text('close',
-                      style: Theme.of(context).textTheme.bodySmall),
+                SizedBox(
+                  width: 100,
+                  height: 30,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                        backgroundColor: Theme.of(context).primaryColor),
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text(
+                      'close',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ),
                 ),
               ],
             );

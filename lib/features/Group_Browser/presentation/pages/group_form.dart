@@ -70,14 +70,8 @@ class _GroupFormState extends State<GroupForm> {
                             label: "Members",
                             icon: Icons.people,
                             isMobile: isMobile,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => MembersPage(),
-                                ),
-                              );
-                            },
+                            onTap: () => _changePage(const MembersPage(), "Members"),
+
                           ),
                           _buildMenuButton(
                             label: "Setting",

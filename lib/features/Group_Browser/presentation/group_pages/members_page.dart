@@ -13,32 +13,35 @@ class MembersPage extends StatelessWidget {
       actions: [
         Tooltip(
           message: 'invite new memeber',
-          child: TextButton.icon(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context){
-                      return const InviteMemberPage();
-                    }
-                  );
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextButton.icon(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context){
+                        return const InviteMemberPage();
+                      }
+                    );
 
-                },
-                icon: Icon(
-                  Icons.add_box_outlined,
-                  color: Theme.of(context).primaryColor,
-                ),
-                label: Text('Invite memeber',
-                    style: Theme.of(context).textTheme.displayMedium),
-                style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 12.0, vertical: 6.0),
-                  backgroundColor: Colors.grey[300],
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    side: BorderSide(color: Colors.grey[400]!),
+                  },
+                  icon: Icon(
+                    Icons.add_box_outlined,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  label: Text('Invite memeber',
+                      style: Theme.of(context).textTheme.displayMedium),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12.0, vertical: 6.0),
+                    backgroundColor: Colors.grey[300],
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      side: BorderSide(color: Colors.grey[400]!),
+                    ),
                   ),
                 ),
-              ),
+          ),
         ),
       ],
     ),
