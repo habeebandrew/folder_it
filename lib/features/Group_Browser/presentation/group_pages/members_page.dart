@@ -133,7 +133,7 @@ class _MembersPageState extends State<MembersPage> {
                     onSelected: (value) {
                       if (value == 'remove') {
                         _showDeleteConfirmation(
-                            member.id, widget.groupId);
+                            member.userId, widget.groupId);
                       }
                     },
                     itemBuilder: (BuildContext context) {

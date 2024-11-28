@@ -41,8 +41,19 @@ final GoRouter router = GoRouter(
 
     GoRoute(
       path: '/groupform',
-      builder: (context, state) =>   GroupForm(groupId: 0,key: null,),
+      builder: (context, state) {
+        // Access query parameters using state.uri.queryParameters
+        final groupId = int.tryParse(state.uri.queryParameters['groupId'] ?? '0') ?? 0;
+        final isOtherFilter = state.uri.queryParameters['isOtherFilter'] == 'true';
+
+        return GroupForm(
+          groupId: groupId,
+          isOtherFilter: isOtherFilter,
+        );
+      },
     ),
+
+
     GoRoute(
       path: '/inviteMemeber',
       builder: (context, state) =>  const InviteMemberPage(),

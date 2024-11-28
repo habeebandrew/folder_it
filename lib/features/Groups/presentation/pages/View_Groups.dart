@@ -302,6 +302,19 @@ class _GroupsState extends State<Groups> {
       child: GestureDetector(
         onTap: () {
           if (selectedCategory == 'My Groups') {
+            // context.go('/groupform?groupId=123&isOtherFilter=true',);
+
+            // GoRoute(
+            //   path: '/groupform',
+            //   builder: (context, state) {
+            //     return GroupForm(
+            //       groupId: group.id,
+            //       isOtherFilter: false,
+            //     );
+            //   },
+            // );
+            //تجربة
+            // context.go('/groupform?groupId=${group.id}');
 
             Navigator.push(
               context,
@@ -311,7 +324,9 @@ class _GroupsState extends State<Groups> {
             );
           }
           else if(selectedCategory == 'Other'){
-            Navigator.push(
+            // context.go('/groupform?groupId=${group.id}?isOtherFilter=true');
+
+              Navigator.push(
                 context,
                 MaterialPageRoute(
                 builder: (context) => GroupForm(
