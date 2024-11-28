@@ -144,7 +144,6 @@ class _BrowsePageState extends State<BrowsePage> {
     return Scaffold(
       body: Column(
         children: [
-          // شريط علوي يحتوي على زر الرجوع والعنوان
           Container(
             color: Theme.of(context).primaryColor,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
