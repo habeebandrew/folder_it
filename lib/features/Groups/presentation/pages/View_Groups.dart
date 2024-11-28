@@ -296,118 +296,120 @@ class _GroupsState extends State<Groups> {
   Widget _buildGroupBox(Group group) {
     bool isHovered = hoverIndex == group.id;
 
-    return MouseRegion(
-      onEnter: (_) => setState(() => hoverIndex = group.id),
-      onExit: (_) => setState(() => hoverIndex = null),
-      child: GestureDetector(
-        onTap: () {
-          if (selectedCategory == 'My Groups') {
-            // context.go('/groupform?groupId=123&isOtherFilter=true',);
+    return Tooltip(message: "click for see group's info",
+      child: MouseRegion(
+        onEnter: (_) => setState(() => hoverIndex = group.id),
+        onExit: (_) => setState(() => hoverIndex = null),
+        child: GestureDetector(
+          onTap: () {
+            if (selectedCategory == 'My Groups') {
+              // context.go('/groupform?groupId=123&isOtherFilter=true',);
 
-            // GoRoute(
-            //   path: '/groupform',
-            //   builder: (context, state) {
-            //     return GroupForm(
-            //       groupId: group.id,
-            //       isOtherFilter: false,
-            //     );
-            //   },
-            // );
-            //تجربة
-            // context.go('/groupform?groupId=${group.id}');
-
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => GroupForm(groupId: group.id),
-              ),
-            );
-          }
-          else if(selectedCategory == 'Other'){
-            // context.go('/groupform?groupId=${group.id}?isOtherFilter=true');
+              // GoRoute(
+              //   path: '/groupform',
+              //   builder: (context, state) {
+              //     return GroupForm(
+              //       groupId: group.id,
+              //       isOtherFilter: false,
+              //     );
+              //   },
+              // );
+              //تجربة
+              // context.go('/groupform?groupId=${group.id}');
 
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                builder: (context) => GroupForm(
-              groupId: group.id,
-              isOtherFilter: true,
-            ),
-          ),);
-          }
-          else if (selectedCategory == 'Deleted') {
-          _showDeletedGroupAlert();
-          }
-        },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-          padding: const EdgeInsets.all(8.0),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(8.0),
-            boxShadow: isHovered
-                ? [
-              BoxShadow(
-                color: Theme.of(context).primaryColor.withOpacity(0.5),
-                blurRadius: 20.0,
-                spreadRadius: 5.0,
-                offset: const Offset(0, 10),
-              ),
-            ]
-                : [
-              const BoxShadow(
-                color: Colors.black12,
-                blurRadius: 5.0,
-                offset: Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Stack(
-            children: [
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Flexible(
-                      child: Image.asset(
-                        'assets/images/group/group_pic2.png',
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      group.groupName.isNotEmpty ? group.groupName : "لا اسم للغروب",
-                      style: Theme.of(context).textTheme.displayMedium,
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      DateFormat('yyyy-MM-dd').format(group.creationDate),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                  ],
+                  builder: (context) => GroupForm(groupId: group.id),
                 ),
+              );
+            }
+            else if(selectedCategory == 'Other'){
+              // context.go('/groupform?groupId=${group.id}?isOtherFilter=true');
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                  builder: (context) => GroupForm(
+                groupId: group.id,
+                isOtherFilter: true,
               ),
-              if (selectedCategory == 'My Groups')
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: Tooltip(
-                    message: 'delete this group',
-                    child: IconButton(
-                      icon: const Icon(Icons.delete_outline, color: Colors.blueGrey),
-                      onPressed: () {
-                        _showDeleteConfirmation(group.id);
-                      },
-                    ),
+            ),);
+            }
+            else if (selectedCategory == 'Deleted') {
+            _showDeletedGroupAlert();
+            }
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+            padding: const EdgeInsets.all(8.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8.0),
+              boxShadow: isHovered
+                  ? [
+                BoxShadow(
+                  color: Theme.of(context).primaryColor.withOpacity(0.5),
+                  blurRadius: 20.0,
+                  spreadRadius: 5.0,
+                  offset: const Offset(0, 10),
+                ),
+              ]
+                  : [
+                const BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 5.0,
+                  offset: Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Stack(
+              children: [
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Flexible(
+                        child: Image.asset(
+                          'assets/images/group/group_pic2.png',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        group.groupName.isNotEmpty ? group.groupName : "لا اسم للغروب",
+                        style: Theme.of(context).textTheme.displayMedium,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        DateFormat('yyyy-MM-dd').format(group.creationDate),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                    ],
                   ),
-                )
-            ],
+                ),
+                if (selectedCategory == 'My Groups')
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: Tooltip(
+                      message: 'delete this group',
+                      child: IconButton(
+                        icon: const Icon(Icons.delete_outline, color: Colors.blueGrey),
+                        onPressed: () {
+                          _showDeleteConfirmation(group.id);
+                        },
+                      ),
+                    ),
+                  )
+              ],
+            ),
           ),
         ),
       ),
