@@ -5,12 +5,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:folder_it/core/connection/network_info.dart';
 import 'package:folder_it/core/databases/api/http_consumer.dart';
 import 'package:folder_it/core/databases/cache/cache_helper.dart';
-import 'package:folder_it/core/errors/failure.dart';
 import 'package:folder_it/features/Groups/data/datasources/group_local_data_source.dart';
 import 'package:folder_it/features/Groups/data/datasources/group_remote_data_source.dart';
 import 'package:folder_it/features/Groups/data/repositories/group_repository_impl.dart';
 import 'package:folder_it/features/Groups/domain/entities/invite_entity.dart';
 import 'package:folder_it/features/Groups/domain/usecases/accept_or_reject_invite.dart';
+import 'package:folder_it/features/Groups/domain/usecases/invite_member.dart';
 import 'package:folder_it/features/Groups/domain/usecases/view_invites_usecase.dart';
 
 
@@ -25,6 +25,8 @@ class GroupCubit extends Cubit<GroupState> {
 
    
     static GroupCubit get(context)=>BlocProvider.of(context);
+
+    TextEditingController userNameController = TextEditingController();
 
     viewMyInvites()async{
       emit(GroupLoadingState());
@@ -65,6 +67,28 @@ class GroupCubit extends Cubit<GroupState> {
            viewMyInvites();
             
           
+        }
+      );
+    }
+
+    inviteMember({
+    required String userName,
+    required int groupId,
+    required BuildContext context})async{
+       emit(GroupLoadingState());
+       final failureOrInviteMember=await InviteMember(
+        repository: GroupRepositoryImpl(
+          remoteDataSource:GroupRemoteDataSource(api: HttpConsumer()) ,
+          localDataSource: GroupLocalDataSource(cache:CacheHelper() ),
+          networkInfo:NetworkInfoImpl(connectivity: Connectivity()),
+        )
+       ).call(userName: userName,groupId: groupId);
+       failureOrInviteMember.fold(
+        (failure)=>emit(GroupFailureState(message: failure.errMessage)), 
+        (inviteMembers){
+          userNameController.clear();
+          emit(GroupSuccessState());
+
         }
       );
     }

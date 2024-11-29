@@ -6,6 +6,7 @@ class EndPoints {
   static const String userRoleGroups ="user-role-group";
   static const String viewInvites = "view-my-invites?userId=";
   static const String acceptOrRejectInvite = "accept-or-reject-invite";
+  static const String inviteMember = "add-invite";
   
   
 }

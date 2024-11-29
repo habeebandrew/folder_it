@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:folder_it/features/Groups/data/datasources/group_local_data_source.dart';
 import 'package:folder_it/features/Groups/data/datasources/group_remote_data_source.dart';
+import 'package:folder_it/features/Groups/data/models/invite_model.dart';
 import 'package:folder_it/features/Groups/domain/entities/invite_entity.dart';
 import 'package:folder_it/features/Groups/domain/repositories/group_repository.dart';
 import 'package:folder_it/core/connection/network_info.dart';
@@ -46,6 +47,26 @@ class GroupRepositoryImpl implements GroupRepository {
       try {
         final acceptOrReject = await remoteDataSource.acceptOrRejectInvite(userId: userId,inviteId: inviteId,groupId: groupId,inviteStatus: inviteStatus);
         return Right(acceptOrReject);
+      } on ServerException catch (e) {
+        return Left(Failure(errMessage: e.errorModel.errorMessage));
+      }
+    } else {
+      return Left(Failure(errMessage: 'no internet'));
+      
+    } 
+  }
+
+  @override
+  Future<Either<Failure, InviteModel>> inviteMember({required String userName, required int groupId}) async {
+     if (await networkInfo.isConnected!) {
+      try {
+        final inviteMember = await remoteDataSource.inviteMember(userName: userName,groupId: groupId);
+        if(inviteMember !=null){
+        return Right(inviteMember);
+        }else{
+          return Left(Failure(errMessage: 'user not found'));
+        }
+
       } on ServerException catch (e) {
         return Left(Failure(errMessage: e.errorModel.errorMessage));
       }

@@ -56,7 +56,7 @@ final GoRouter router = GoRouter(
 
     GoRoute(
       path: '/inviteMemeber',
-      builder: (context, state) =>  const InviteMemberPage(),
+      builder: (context, state) =>  const InviteMemberPage(groupId: 0,),
     ),
   ],
 );

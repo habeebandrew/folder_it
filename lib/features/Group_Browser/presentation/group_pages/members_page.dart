@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:folder_it/features/Groups/presentation/pages/invite_member_page.dart';
 import 'package:http/http.dart' as http;
 
 import '../member_model/member_model.dart';
@@ -54,12 +55,12 @@ class _MembersPageState extends State<MembersPage> {
               padding: const EdgeInsets.all(8.0),
               child: TextButton.icon(
                 onPressed: () {
-                  // showDialog(
-                  //   context: context,
-                  //   builder: (context) {
-                  //     return const InviteMemberPage();
-                  //   },
-                  // );
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return InviteMemberPage(groupId:widget.groupId);
+                    },
+                  );
                 },
                 icon: Icon(
                   Icons.add_box_outlined,

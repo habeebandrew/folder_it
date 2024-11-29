@@ -2,12 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:folder_it/core/Util/app_bloc_observer.dart';
 import 'package:folder_it/core/Util/app_routes.dart';
-import 'package:folder_it/core/Util/colors.dart';
 import 'package:folder_it/core/Util/theme.dart';
 import 'package:folder_it/core/databases/cache/cache_helper.dart';
 import 'package:folder_it/features/Groups/presentation/cubit/group_cubit.dart';
-import 'package:folder_it/features/Home/domain/usecases/get_navigation_items_usecase.dart';
-import 'package:folder_it/features/Home/presentation/cubit/navigation_cubit.dart';
 import 'package:folder_it/features/Home/presentation/cubit/theme_cubit.dart';
 import 'package:folder_it/features/User/presentation/cubit/user_cubit.dart';
 

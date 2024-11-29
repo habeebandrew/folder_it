@@ -1,8 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:folder_it/features/Groups/data/models/invite_model.dart';
 import 'package:folder_it/core/databases/api/api_consumer.dart';
 import 'package:folder_it/core/databases/api/end_points.dart';
-import 'package:folder_it/features/Groups/domain/usecases/accept_or_reject_invite.dart';
+
 
 
 class GroupRemoteDataSource {
@@ -26,6 +28,7 @@ class GroupRemoteDataSource {
     // debugPrint(jsonString);
     return inviteModelFromJson(response);
   }
+  
   Future<bool> acceptOrRejectInvite(
     {required int userId, required int inviteId , 
     required int groupId,required int inviteStatus})async{
@@ -56,5 +59,33 @@ class GroupRemoteDataSource {
     
   }
 
+  Future<InviteModel?> inviteMember(
+    {required String userName,
+     required int groupId})async{
+     
+    final response = await api.post(
+      "${EndPoints.userRoleGroups}/${EndPoints.inviteMember}",
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'application/json',
+      },
+      data: {
+        ApiKey.username:userName,
+        ApiKey.groupId:groupId.toString()
+      },
+      isFormData: true
+    );
+    print(response.toString());
+    // var jsonString = userModelToJson(response);
+    // debugPrint(jsonString);
+    if(response.isNotEmpty){
+    return InviteModel.fromJson(json.decode(response));
+    }else{
+      return null;
+    }
+    
+
+    
+  }
   
 }
