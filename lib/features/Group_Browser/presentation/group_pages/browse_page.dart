@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 
 class BrowsePage extends StatefulWidget {
   BrowsePage({super.key});
-
   @override
   State<BrowsePage> createState() => _BrowsePageState();
 }
@@ -145,7 +144,7 @@ class _BrowsePageState extends State<BrowsePage> {
       body: Column(
         children: [
           Container(
-            color: Theme.of(context).primaryColor,
+            color: Theme.of(context).appBarTheme.backgroundColor,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(
               children: [
@@ -174,7 +173,7 @@ class _BrowsePageState extends State<BrowsePage> {
                 Container(
                   width: 250,
                   padding: const EdgeInsets.all(16),
-                  color: Theme.of(context).primaryColor,
+                  color: Theme.of(context).appBarTheme.backgroundColor,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

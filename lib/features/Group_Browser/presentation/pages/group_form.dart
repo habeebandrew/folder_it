@@ -19,7 +19,7 @@ class _GroupFormState extends State<GroupForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Scaffold(backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
       body: LayoutBuilder(
         builder: (context, constraints) {
           bool isMobile = constraints.maxWidth < 600;
@@ -28,7 +28,7 @@ class _GroupFormState extends State<GroupForm> {
             children: [
               Container(
                 width: isMobile ? 80 : constraints.maxWidth * 0.25,
-                color: Theme.of(context).primaryColor,
+                color:Theme.of(context).appBarTheme.backgroundColor,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
