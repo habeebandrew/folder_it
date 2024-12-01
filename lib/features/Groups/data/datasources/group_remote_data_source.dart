@@ -4,32 +4,46 @@ import 'package:folder_it/features/Groups/data/models/invite_model.dart';
 import 'package:folder_it/core/databases/api/api_consumer.dart';
 import 'package:folder_it/core/databases/api/end_points.dart';
 
+import '../../../../core/databases/cache/cache_helper.dart';
 
 
+import 'package:http/http.dart' as http;
 class GroupRemoteDataSource {
   final ApiConsumer api;
 
   GroupRemoteDataSource({required this.api});
 
-  Future<List<InviteModel>> viewMyInvites(
-    {required int userId,required String token})async{
-    print(userId);  
-    print(token);
-    final response = await api.get(
-      "${EndPoints.userRoleGroups}/${EndPoints.viewInvites}$userId",
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      
-    );
-    print(response);
-    // var jsonString = userModelToJson(response);
-    // debugPrint(jsonString);
-    return inviteModelFromJson(response);
+  Future<List<InviteModel>> viewMyInvites({required int userId, required String token}) async {
+    print(userId);
+
+    String mytoken = CacheHelper().getData(key: 'token');
+    final url = Uri.parse('http://localhost:8091/user-role-group/view-my-invites?userId=$userId');
+
+    print(mytoken);
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $mytoken',
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Accept': 'application/json',
+        },
+      );
+
+      print(response);
+
+      if (response.statusCode == 200) {
+        return inviteModelFromJson(response.body);
+      } else {
+        throw Exception('Failed to load invites');
+      }
+    } catch (e) {
+      print('Error: $e');
+      return [];
+    }
   }
-  
+
   Future<bool> acceptOrRejectInvite(
     {required int userId, required int inviteId , 
     required int groupId,required int inviteStatus , required String token})async{
