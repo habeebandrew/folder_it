@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:folder_it/features/Groups/data/models/invite_model.dart';
 import 'package:folder_it/core/databases/api/api_consumer.dart';
 import 'package:folder_it/core/databases/api/end_points.dart';
@@ -13,17 +12,19 @@ class GroupRemoteDataSource {
   GroupRemoteDataSource({required this.api});
 
   Future<List<InviteModel>> viewMyInvites(
-    {required int userId})async{
-     
+    {required int userId,required String token})async{
+    print(userId);  
+    print(token);
     final response = await api.get(
       "${EndPoints.userRoleGroups}/${EndPoints.viewInvites}$userId",
       headers: {
-        'Content-Type':  'application/json',
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
         'Accept': 'application/json',
       },
       
     );
-    //debugPrint(response);
+    print(response);
     // var jsonString = userModelToJson(response);
     // debugPrint(jsonString);
     return inviteModelFromJson(response);
@@ -31,13 +32,13 @@ class GroupRemoteDataSource {
   
   Future<bool> acceptOrRejectInvite(
     {required int userId, required int inviteId , 
-    required int groupId,required int inviteStatus})async{
+    required int groupId,required int inviteStatus , required String token})async{
      print(userId);
     final response = await api.post(
       "${EndPoints.userRoleGroups}/${EndPoints.acceptOrRejectInvite}",
       headers: {
         
-        
+        'Authorization': 'Bearer $token'
         //'Accept': 'application/json',
       },
       data: {
@@ -61,11 +62,12 @@ class GroupRemoteDataSource {
 
   Future<InviteModel?> inviteMember(
     {required String userName,
-     required int groupId})async{
+     required int groupId,required String token})async{
      
     final response = await api.post(
       "${EndPoints.userRoleGroups}/${EndPoints.inviteMember}",
       headers: {
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/x-www-form-urlencoded',
         'Accept': 'application/json',
       },

@@ -21,6 +21,7 @@ class _GroupsState extends State<Groups> {
   bool sortByNewest = true;
   late Future<List<Group>> groups;
   int myId = CacheHelper().getData(key: "myid")??1;
+  String mytoken = CacheHelper().getData(key: 'token');
 
   @override
   void initState() {
@@ -57,7 +58,12 @@ class _GroupsState extends State<Groups> {
   Future<List<Group>> _fetchGroups(
       String url, bool Function(Group) filterCondition) async {
     try {
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Authorization':"Bearer $mytoken"
+        }
+      );
       if (response.statusCode == 200) {
         final List jsonResponse = json.decode(response.body);
         final groups =

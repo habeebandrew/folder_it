@@ -219,7 +219,7 @@ class _GroupCreationPageState extends State<GroupCreationPage> {
   bool isAgreed = false;
   bool isNameValid = false;
   bool isLoading = false; // حالة لتحميل البيانات
-
+  String mytoken =CacheHelper().getData(key: 'token');
   @override
   void initState() {
     super.initState();
@@ -249,8 +249,11 @@ class _GroupCreationPageState extends State<GroupCreationPage> {
     try {
       final response = await http.post(
         Uri.parse(apiUrl),
-        headers: {        'Content-Type': 'application/x-www-form-urlencoded',
-          'Accept':'application/json'},
+        headers: {       
+          'Authorization':'Bearer $mytoken', 
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Accept':'application/json'
+        },
         body:{
           'groupName': groupNameController.text,
           'creator': myid.toString(), // تحويل myid إلى String

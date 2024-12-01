@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:folder_it/core/databases/cache/cache_helper.dart';
 import 'package:folder_it/features/Groups/presentation/pages/invite_member_page.dart';
 import 'package:http/http.dart' as http;
 
@@ -20,6 +21,7 @@ class MembersPage extends StatefulWidget {
 
 class _MembersPageState extends State<MembersPage> {
   late Future<List<Member>> _membersFuture;
+  String mytoken= CacheHelper().getData(key: 'token');
 
   @override
   void initState() {
@@ -31,7 +33,12 @@ class _MembersPageState extends State<MembersPage> {
     final url =
     Uri.parse('http://localhost:8091/group/get-members-of-group?groupId=$groupId');
     try {
-      final response = await http.get(url);
+      final response = await http.get(
+       url,
+       headers: {
+        'Authorization':'Bearer $mytoken'
+       }
+      );
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
         return data.map((member) => Member.fromJson(member)).toList();
