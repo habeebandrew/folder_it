@@ -4,7 +4,15 @@ import 'package:folder_it/features/Home/data/models/file_DataModel.dart';
 
 class DroppedFileWidget extends StatelessWidget {
   final File_Data_Model? file;
-  const DroppedFileWidget({super.key, required this.file});
+  final VoidCallback? onSendFile;
+  final VoidCallback? onCancelFile;
+
+  const DroppedFileWidget({
+    super.key, 
+    required this.file, 
+    required this.onSendFile, 
+    required this.onCancelFile,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -23,62 +31,49 @@ class DroppedFileWidget extends StatelessWidget {
             ),
           ],
         ),
-        child: file == null ? buildEmptyFile('No Selected File') : buildFile(context),
+        child: file == null
+            ? buildEmptyFile('No Selected File')
+            : buildFileWithActions(context),
       ),
     );
   }
 
-  Widget buildFile(BuildContext context) {
+  Widget buildFileWithActions(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (file != null) buildFileDetail(file,context),
+        buildFileDetail(file, context),
         const SizedBox(height: 20),
-        if (file!.mime.contains('pdf') || file!.mime.contains('text'))
-          buildFileActions(context),
-        if (file!.mime.contains('image')) buildImagePreview(context),
-      ],
-    );
-  }
-
-  Widget buildFileActions(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const Text(
-          'File Actions:',
-          style: TextStyle(fontSize: 16),
-        ),
-        const SizedBox(height: 8),
-        ElevatedButton.icon(
-          onPressed: () async {
-            html.window.open(
-              'viewer.html?file=${Uri.encodeComponent(file!.url)}','_blank',
-            );
-          },
-          icon: const Icon(Icons.open_in_new, color: Colors.white),
-          label: const Text('Open File',style: TextStyle(color: Colors.white),),
-
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            backgroundColor: Theme.of(context).primaryColor,
-            
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            ElevatedButton.icon(
+              onPressed: onSendFile,
+              icon: const Icon(Icons.cloud_upload, color: Colors.white),
+              label: const Text(
+                'Send File',
+                style: TextStyle(color: Colors.white),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+              ),
+            ),
+            ElevatedButton.icon(
+              onPressed: onCancelFile,
+              icon: const Icon(Icons.cancel, color: Colors.white),
+              label: const Text(
+                'Cancel',
+                style: TextStyle(color: Colors.white),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+              ),
+            ),
+          ],
         ),
       ],
-    );
-  }
-
-  Widget buildImagePreview(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
-      child: Image.network(
-        file!.url,
-        width: double.infinity,
-        height: 200,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, _) => buildEmptyFile('No Preview Available'),
-      ),
     );
   }
 
@@ -100,10 +95,9 @@ class DroppedFileWidget extends StatelessWidget {
     );
   }
 
-  Widget buildFileDetail(File_Data_Model? file,BuildContext context) {
+  Widget buildFileDetail(File_Data_Model? file, BuildContext context) {
     return Card(
       elevation: 4,
-      //color: Theme.of(context).cardColor,
       margin: const EdgeInsets.symmetric(vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(

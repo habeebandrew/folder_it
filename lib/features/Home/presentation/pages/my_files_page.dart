@@ -1,8 +1,8 @@
 // lib/presentation/pages/home_page.dart
 import 'package:flutter/material.dart';
 import 'package:folder_it/features/Home/data/models/file_DataModel.dart';
-import 'package:folder_it/features/Home/presentation/widgets/DropZoneWidget.dart';
-import 'package:folder_it/features/Home/presentation/widgets/DroppedFileWidget.dart';
+import 'package:folder_it/core/Util/general_widgets/DropZoneWidget.dart';
+import 'package:folder_it/core/Util/general_widgets/DroppedFileWidget.dart';
 
 class MyFilePage extends StatefulWidget {
   const MyFilePage({super.key});
@@ -12,7 +12,7 @@ class MyFilePage extends StatefulWidget {
 }
 
 class _MyFilePageState extends State<MyFilePage> {
-  List<File_Data_Model> files = [];
+  File_Data_Model?file;
   @override
   Widget build(BuildContext context) {
     
@@ -26,15 +26,12 @@ class _MyFilePageState extends State<MyFilePage> {
               SizedBox(
                 height: 300,
                 child: DropZoneWidget(
-                  onDroppedFiles: (droppedFiles) => setState(() => files.addAll(droppedFiles)),
+                  onDroppedFiles: (droppedFiles) => setState(() => droppedFiles)),
                 ),
-              ),
+              
               const SizedBox(height: 20),
-              ListView.builder(
-                shrinkWrap: true,
-                itemCount: files.length,
-                itemBuilder:(context, index) => DroppedFileWidget(file: files[index]),
-              )
+             // DroppedFileWidget(file: file),
+              
             ],
           ),
         ),

@@ -4,7 +4,7 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:folder_it/features/Home/data/models/file_DataModel.dart';
 
 class DropZoneWidget extends StatefulWidget {
-  final ValueChanged<List<File_Data_Model>> onDroppedFiles;
+  final ValueChanged<File_Data_Model> onDroppedFiles;
 
   const DropZoneWidget({super.key, required this.onDroppedFiles});
 
@@ -22,9 +22,8 @@ class _DropZoneWidgetState extends State<DropZoneWidget> {
       child: Stack(
         children: [
           DropzoneView(
-            
             onCreated: (controller) => this.controller = controller,
-            onDropFiles:  (value)=>UploadedFiles(value!) ,
+            onDropFile:UploadedFiles,
             onHover: () => setState(() => highlight = true),
             onLeave: () => setState(() => highlight = false),
           ),
@@ -40,9 +39,9 @@ class _DropZoneWidgetState extends State<DropZoneWidget> {
                 const SizedBox(height: 16),
                 ElevatedButton.icon(
                   onPressed: () async {
-                    final events = await controller.pickFiles(multiple: true);
+                    final events = await controller.pickFiles();
                     if (events.isEmpty) return;
-                    UploadedFiles(events);
+                    UploadedFiles(events.first);
                   },
                   icon: const Icon(Icons.search,color: Colors.white,),
                   label: Text('Choose Files',style: Theme.of(context).textTheme.bodyMedium!.apply(color: Colors.white),),
@@ -60,10 +59,10 @@ class _DropZoneWidgetState extends State<DropZoneWidget> {
     );
   }
 
-  Future UploadedFiles(List<dynamic> events) async {
-    List<File_Data_Model> droppedFiles = [];
+  Future UploadedFiles(dynamic event) async {
+    File_Data_Model droppedFile;
 
-    for (var event in events) {
+    
       final name = event.name;
       final mime = await controller.getFileMIME(event);
       final byte = await controller.getFileSize(event);
@@ -74,10 +73,10 @@ class _DropZoneWidgetState extends State<DropZoneWidget> {
       print('Size: ${byte / (1024 * 1024)} MB');
       print('URL: $url');
 
-      droppedFiles.add(File_Data_Model(name: name, mime: mime, bytes: byte, url: url));
-    }
-
-    widget.onDroppedFiles(droppedFiles);
+    droppedFile=File_Data_Model(
+      name: name, mime: mime, bytes: byte, url: url
+    );  
+    widget.onDroppedFiles(droppedFile);
     setState(() {
       highlight = false;
     });

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:folder_it/features/Group_Browser/presentation/group_pages/upload_files_page.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
@@ -114,6 +116,9 @@ class _BrowsePageState extends State<BrowsePage> {
                           message: 'Add new file',
                           child: TextButton.icon(
                             onPressed: () {
+                              Navigator.push(context, MaterialPageRoute(
+                                builder: (context)=>UploadFilesPage(groupId: widget.groupId, folderId: widget.folderId),
+                              ));
                             },
                             icon: Icon(
                               Icons.add_box_outlined,
