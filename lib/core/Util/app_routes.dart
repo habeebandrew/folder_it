@@ -46,7 +46,7 @@ final GoRouter router = GoRouter(
         final groupId = int.tryParse(state.uri.queryParameters['groupId'] ?? '0') ?? 0;
         final isOtherFilter = state.uri.queryParameters['isOtherFilter'] == 'true';
 
-        return GroupForm(
+        return GroupForm( folderId: 0,//Todo:becarful here!!!
           groupId: groupId,
           isOtherFilter: isOtherFilter,
         );

@@ -20,6 +20,7 @@ class _GroupsState extends State<Groups> {
   int? hoverIndex;
   bool sortByNewest = true;
   late Future<List<Group>> groups;
+
   int myId = CacheHelper().getData(key: "myid")??1;
   String mytoken = CacheHelper().getData(key: 'token');
 
@@ -205,6 +206,8 @@ class _GroupsState extends State<Groups> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: Row(
+
+
             mainAxisSize: MainAxisSize.min,
             children: categories.map((category) {
               return Padding(
@@ -301,50 +304,24 @@ class _GroupsState extends State<Groups> {
 
   Widget _buildGroupBox(Group group) {
     bool isHovered = hoverIndex == group.id;
+    int folderId =  group.folders.first.id ;
 
-    return Tooltip(message: "click for see group's info",
+    return Tooltip(
+      message: "Click to see group's info",
       child: MouseRegion(
         onEnter: (_) => setState(() => hoverIndex = group.id),
         onExit: (_) => setState(() => hoverIndex = null),
         child: GestureDetector(
           onTap: () {
-            if (selectedCategory == 'My Groups') {
-              // context.go('/groupform?groupId=123&isOtherFilter=true',);
-
-              // GoRoute(
-              //   path: '/groupform',
-              //   builder: (context, state) {
-              //     return GroupForm(
-              //       groupId: group.id,
-              //       isOtherFilter: false,
-              //     );
-              //   },
-              // );
-              //تجربة
-              // context.go('/groupform?groupId=${group.id}');
-
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => GroupForm(groupId: group.id),
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => GroupForm(
+                  groupId: group.id,
+                  folderId: folderId, // Passing folderId
                 ),
-              );
-            }
-            else if(selectedCategory == 'Other'){
-              // context.go('/groupform?groupId=${group.id}?isOtherFilter=true');
-
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                  builder: (context) => GroupForm(
-                groupId: group.id,
-                isOtherFilter: true,
               ),
-            ),);
-            }
-            else if (selectedCategory == 'Deleted') {
-            _showDeletedGroupAlert();
-            }
+            );
           },
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 300),
@@ -385,7 +362,9 @@ class _GroupsState extends State<Groups> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        group.groupName.isNotEmpty ? group.groupName : "لا اسم للغروب",
+                        group.groupName.isNotEmpty
+                            ? group.groupName
+                            : "لا اسم للغروب",
                         style: Theme.of(context).textTheme.displayMedium,
                         textAlign: TextAlign.center,
                       ),
@@ -405,9 +384,10 @@ class _GroupsState extends State<Groups> {
                     top: 8,
                     right: 8,
                     child: Tooltip(
-                      message: 'delete this group',
+                      message: 'Delete this group',
                       child: IconButton(
-                        icon: const Icon(Icons.delete_outline, color: Colors.blueGrey),
+                        icon: const Icon(Icons.delete_outline,
+                            color: Colors.blueGrey),
                         onPressed: () {
                           _showDeleteConfirmation(group.id);
                         },
@@ -421,6 +401,7 @@ class _GroupsState extends State<Groups> {
       ),
     );
   }
+
 
 
   void _showDeleteConfirmation(int groupId) {
@@ -516,12 +497,42 @@ class _GroupsState extends State<Groups> {
   }
 }
 
+class Folder {
+  final int id;
+  final int? parentId;
+  final String folderName;
+  final int creator;
+  final bool restricted;
+  final DateTime creationDate;
+
+  Folder({
+    required this.id,
+    this.parentId,
+    required this.folderName,
+    required this.creator,
+    required this.restricted,
+    required this.creationDate,
+  });
+
+  factory Folder.fromJson(Map<String, dynamic> json) {
+    return Folder(
+      id: json['id'],
+      parentId: json['parentId'],
+      folderName: json['folderName'],
+      creator: json['creator'],
+      restricted: json['restricted'],
+      creationDate: DateTime.parse(json['creationDate']),
+    );
+  }
+}
+
 class Group {
   final int id;
   final String groupName;
   final int creator;
   final DateTime creationDate;
   final bool recordStatus;
+  final List<Folder> folders;
 
   Group({
     required this.id,
@@ -529,6 +540,7 @@ class Group {
     required this.creator,
     required this.creationDate,
     required this.recordStatus,
+    required this.folders,
   });
 
   factory Group.fromJson(Map<String, dynamic> json) {
@@ -538,6 +550,9 @@ class Group {
       creator: json['creator'],
       creationDate: DateTime.parse(json['creationDate']),
       recordStatus: json['recordStatus'],
+      folders: (json['folders'] as List)
+          .map((folderJson) => Folder.fromJson(folderJson))
+          .toList(),
     );
   }
 }

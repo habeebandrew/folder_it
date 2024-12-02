@@ -1,25 +1,57 @@
 import 'package:flutter/material.dart';
+import '../../../../core/databases/cache/cache_helper.dart';
 import '../group_pages/browse_page.dart';
 import '../group_pages/members_page.dart';
 import '../group_pages/settings_page.dart';
 
 class GroupForm extends StatefulWidget {
   final int groupId;
+  final int folderId; // Add folderId here
   final bool isOtherFilter;
 
-  const GroupForm({super.key, required this.groupId, this.isOtherFilter = false});
+  const GroupForm({
+    Key? key,
+    required this.groupId,
+    required this.folderId,
+    this.isOtherFilter = false,
+  }) : super(key: key);
 
   @override
   State<GroupForm> createState() => _GroupFormState();
 }
 
 class _GroupFormState extends State<GroupForm> {
-  Widget _selectedPage =  BrowsePage();
-  String _selectedLabel = "Browse";
+  late String _selectedLabel;
+  late int userId;
+  late Widget _selectedPage;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedLabel = "Browse";
+    userId = CacheHelper().getData(key: "myid") ?? 1;
+
+    // Pass folderId to BrowsePage
+    _selectedPage = BrowsePage(
+      groupId: widget.groupId,
+      folderId: widget.folderId,
+      userId: userId,
+      key: const ValueKey("Browse"),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
+      backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
       body: LayoutBuilder(
         builder: (context, constraints) {
           bool isMobile = constraints.maxWidth < 600;
@@ -28,12 +60,11 @@ class _GroupFormState extends State<GroupForm> {
             children: [
               Container(
                 width: isMobile ? 80 : constraints.maxWidth * 0.25,
-                color:Theme.of(context).appBarTheme.backgroundColor,
+                color: Theme.of(context).appBarTheme.backgroundColor,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     const SizedBox(height: 20),
-
                     Column(
                       children: [
                         CircleAvatar(
@@ -51,11 +82,19 @@ class _GroupFormState extends State<GroupForm> {
                             ),
                             textAlign: TextAlign.center,
                           ),
+                          if (widget.folderId != null)
+                            Text(
+                              "Folder ID: ${widget.folderId}",
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
                         ],
                       ],
                     ),
                     const SizedBox(height: 20),
-
                     Expanded(
                       child: ListView(
                         children: [
@@ -63,7 +102,14 @@ class _GroupFormState extends State<GroupForm> {
                             label: "Browse",
                             icon: Icons.open_in_browser,
                             isMobile: isMobile,
-                            onTap: () => _changePage( BrowsePage(), "Browse"),
+                            onTap: () => _changePage(
+                              BrowsePage(
+                                groupId: widget.groupId,
+                                folderId: widget.folderId, // Pass folderId here
+                                userId: userId,
+                              ),
+                              "Browse",
+                            ),
                           ),
                           _buildMenuButton(
                             label: "Members",
