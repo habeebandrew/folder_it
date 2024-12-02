@@ -10,14 +10,12 @@ import 'package:folder_it/features/Groups/data/models/sub_models/role_model.dart
 import 'package:folder_it/features/Groups/domain/entities/invite_entity.dart';
 import 'package:folder_it/features/User/data/models/user_model.dart';
 
-List<InviteModel> inviteModelFromJson(String str) {
-    final jsonData = json.decode(str);
-    return List<InviteModel>.from(jsonData.map((x) => InviteModel.fromJson(x)));
-}
+List<InviteModel> inviteModelFromJson(String str) => List<InviteModel>.from(json.decode(str).map((x) => InviteModel.fromJson(x)));
+
 String inviteModelToJson(List<InviteModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class InviteModel extends InviteEntity {
-   
+
     String creationDate;
     dynamic modifiedDate;
     int inviteStatus;
@@ -25,7 +23,7 @@ class InviteModel extends InviteEntity {
     bool recordStatus;
     UserModel user;
     RoleModel role;
-  
+
 
     InviteModel({
         required super.inviteId,
