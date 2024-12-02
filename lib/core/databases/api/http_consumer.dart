@@ -37,6 +37,7 @@ class HttpConsumer extends ApiConsumer {
     try {
       final response = await http.get(
         Uri.parse('${EndPoints.baserUrl}$path'),
+        headers: headers,
       );
       return response.body;
     } on Exception catch (e) {

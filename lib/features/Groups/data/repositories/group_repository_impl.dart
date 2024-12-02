@@ -27,13 +27,13 @@ class GroupRepositoryImpl implements GroupRepository {
    //String token =CacheHelper().getData(key:'token');
   @override
   Future<Either<Failure, List<InviteEntity>>> viewMyInvites({required int userId})async {
-     String token = CacheHelper().getData(key:'token');
+     
      if (await networkInfo.isConnected!) {
       
       try {
         //userId = CacheHelper().getData(key:'myid');
         //String token =  CacheHelper().getData(key:'token');
-        final remoteInvites = await remoteDataSource.viewMyInvites(userId:userId,token: token);
+        final remoteInvites = await remoteDataSource.viewMyInvites(userId:userId,token: localDataSource.getToken());
         
         return Right(remoteInvites);
       } on ServerException catch (e) {
@@ -48,10 +48,12 @@ class GroupRepositoryImpl implements GroupRepository {
   
   @override
   Future<Either<Failure, bool>> acceptOrRejectInvites({required int userId, required int inviteId, required int groupId, required int inviteStatus})async {
-    String token =  CacheHelper().getData(key:'token');
    if (await networkInfo.isConnected!) {
       try {
-        final acceptOrReject = await remoteDataSource.acceptOrRejectInvite(userId: userId,inviteId: inviteId,groupId: groupId,inviteStatus: inviteStatus,token: token);
+        final acceptOrReject = await remoteDataSource.acceptOrRejectInvite(
+          userId: userId,inviteId: inviteId,groupId: groupId,
+          inviteStatus: inviteStatus,token: localDataSource.getToken()
+        );
         return Right(acceptOrReject);
       } on ServerException catch (e) {
         return Left(Failure(errMessage: e.errorModel.errorMessage));
@@ -64,11 +66,10 @@ class GroupRepositoryImpl implements GroupRepository {
 
   @override
   Future<Either<Failure, InviteModel>> inviteMember({required String userName, required int groupId}) async {
-    String token =  CacheHelper().getData(key:'token');
      if (await networkInfo.isConnected!) {
       try {
         //String token = localDataSource.getGroupCache(key: 'token');
-        final inviteMember = await remoteDataSource.inviteMember(userName: userName,groupId: groupId, token: token);
+        final inviteMember = await remoteDataSource.inviteMember(userName: userName,groupId: groupId, token: localDataSource.getToken());
         if(inviteMember !=null){
         return Right(inviteMember);
         }else{

@@ -16,12 +16,12 @@ class GroupLocalDataSource {
       throw CacheException(errorMessage: "No Internet Connection");
     }
   }
-  getGroupCache({required String key}) {
-    cache.getData(
-        key: key,
-      );
-    } 
-  }
+  String getToken() {
+    return cache.getData(
+        key: 'token',
+     );
+  } 
+}
 
   // Future<UserModel> getLastUser() {
   //   final jsonString = cache.getDataString(key: key);

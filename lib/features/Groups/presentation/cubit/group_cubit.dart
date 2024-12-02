@@ -30,7 +30,6 @@ class GroupCubit extends Cubit<GroupState> {
 
     viewMyInvites()async{
       emit(GroupLoadingState());
-      int userId=CacheHelper().getData(key: 'myid');
       final failureOrInvites = await ViewInvitesUsecase(
       repository: GroupRepositoryImpl(
           remoteDataSource:GroupRemoteDataSource(api: HttpConsumer()) ,
@@ -38,7 +37,7 @@ class GroupCubit extends Cubit<GroupState> {
           networkInfo:NetworkInfoImpl(connectivity: Connectivity()),
 
       )
-    ).call(userId:userId);
+    ).call(userId:CacheHelper().getData(key: 'myid'));
       failureOrInvites.fold(
           (failure) => emit(GroupFailureState(message: failure.errMessage)),
           (invites) { 
