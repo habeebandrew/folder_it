@@ -86,7 +86,12 @@ class _MyFilePageState extends State<UploadFilesPage> {
   @override
   Widget build(BuildContext context) {
     
-    return Scaffold(
+    return Scaffold(appBar: AppBar(   leading: IconButton(
+      icon: const Icon(Icons.arrow_back),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    ),),
       body:  SingleChildScrollView(
         child: Container(
           alignment: Alignment.center,

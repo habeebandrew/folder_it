@@ -13,7 +13,7 @@ class GroupForm extends StatefulWidget {
     Key? key,
     required this.groupId,
     required this.folderId,
-    this.isOtherFilter = false,
+    required this.isOtherFilter,
   }) : super(key: key);
 
   @override

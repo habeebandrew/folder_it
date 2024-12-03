@@ -13,7 +13,7 @@ class MembersPage extends StatefulWidget {
 
 
 
-  const MembersPage({super.key, required this.groupId, this.isOtherFilter = false});
+  const MembersPage({super.key, required this.groupId,required this.isOtherFilter});
 
   @override
   State<MembersPage> createState() => _MembersPageState();
@@ -136,13 +136,23 @@ class _MembersPageState extends State<MembersPage> {
                     ],
                   )
                       : widget.isOtherFilter
-                      ? null
+                      ?PopupMenuButton<String>(
+                    onSelected: (value) {
+
+                    },
+                    itemBuilder: (BuildContext context) {
+                      return [
+                        const PopupMenuItem<String>(
+                          value: '',
+                          child: Text('Member info'),
+                        ),
+                      ];
+                    },
+                    icon: const Icon(Icons.info,color: Colors.blueGrey,),
+                  )
                       : PopupMenuButton<String>(
                     onSelected: (value) {
-                      if (value == 'remove') {
-                        _showDeleteConfirmation(
-                            member.userId, widget.groupId);
-                      }
+
                     },
                     itemBuilder: (BuildContext context) {
                       return [
@@ -198,7 +208,13 @@ class _MembersPageState extends State<MembersPage> {
     final url = Uri.parse(
         'http://localhost:8091/group/delete-member-from-group?userId=$userId&groupId=$groupId');
     try {
-      final response = await http.post(url);
+      String mytoken = CacheHelper().getData(key: 'token');
+
+      final response = await http.post(url,headers:{
+
+      'Authorization':"Bearer $mytoken"}
+
+      );
       if (response.statusCode == 200) {
         setState(() {
           _membersFuture = fetchMembers(groupId);

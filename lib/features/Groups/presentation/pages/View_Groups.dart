@@ -313,15 +313,30 @@ class _GroupsState extends State<Groups> {
         onExit: (_) => setState(() => hoverIndex = null),
         child: GestureDetector(
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => GroupForm(
-                  groupId: group.id,
-                  folderId: folderId, // Passing folderId
+            if (selectedCategory == 'Other') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => GroupForm(
+                    isOtherFilter: true  ,//he is owner
+                    groupId: group.id,
+                    folderId: folderId, // Passing folderId
+                  ),
                 ),
-              ),
-            );
+              );
+            } else{
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => GroupForm(
+                    isOtherFilter: false  ,
+                    groupId: group.id,
+                    folderId: folderId, // Passing folderId
+                  ),
+                ),
+              );
+            }
+
           },
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 300),
