@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'dart:convert';
 
 import '../../../../core/databases/cache/cache_helper.dart';
@@ -67,11 +68,9 @@ class _PermissionsState extends State<Permissions> {
       print('Error occurred: $e');
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       body: FutureBuilder<List<DocumentModel>>(
         future: _documents,
         builder: (context, snapshot) {
@@ -88,6 +87,9 @@ class _PermissionsState extends State<Permissions> {
             itemCount: documents.length,
             itemBuilder: (context, index) {
               final document = documents[index];
+              // تنسيق التاريخ باستخدام intl
+              final formattedDate = DateFormat('yyyy-MM-dd – HH:mm').format(DateTime.parse(document.creationDate));
+
               return Card(
                 margin: const EdgeInsets.all(10),
                 child: Padding(
@@ -99,16 +101,20 @@ class _PermissionsState extends State<Permissions> {
                         'ID: ${document.id}',
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Creation Date: ${document.creationDate}',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
+
                       const SizedBox(height: 8),
                       Text('Document Subject: ${document.document.subject}'),
                       const SizedBox(height: 8),
                       Text('Note: ${document.document.note}'),
                       const SizedBox(height: 8),
+                      TextButton.icon(onPressed: (){},label:
+                       Text(
+                          ' Date: ${formattedDate}',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),icon:Icon(Icons.date_range_outlined),
+                      ),
+                      const SizedBox(height: 8),
+
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
 

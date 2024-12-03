@@ -238,9 +238,13 @@ class _BrowsePageState extends State<BrowsePage> {
                                   Text(
                                       'Details: ${selectedElement['note'] ?? 'No details available'}'),
                                   const SizedBox(height: 8),
+                                  TextButton.icon(onPressed: (){},label:
                                   Text(
                                     'Created on: ${DateFormat('yyyy-MM-dd – hh:mm a').format(DateTime.parse(selectedElement['creationDate']))}',
+                                    style: const TextStyle(fontWeight: FontWeight.bold),
+                                  ),icon:Icon(Icons.date_range_outlined),
                                   ),
+
                                   const SizedBox(height: 16),
                                   if (selectedElement['locked'] != null)
                                     Row(
