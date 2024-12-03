@@ -152,7 +152,8 @@ class _MembersPageState extends State<MembersPage> {
                   )
                       : PopupMenuButton<String>(
                     onSelected: (value) {
-
+                      _showDeleteConfirmation(
+                          member.userId, widget.groupId);
                     },
                     itemBuilder: (BuildContext context) {
                       return [
@@ -205,16 +206,17 @@ class _MembersPageState extends State<MembersPage> {
   }
 
   Future<void> deleteMember(int userId, int groupId) async {
+
     final url = Uri.parse(
         'http://localhost:8091/group/delete-member-from-group?userId=$userId&groupId=$groupId');
     try {
       String mytoken = CacheHelper().getData(key: 'token');
-
       final response = await http.post(url,headers:{
 
       'Authorization':"Bearer $mytoken"}
 
       );
+
       if (response.statusCode == 200) {
         setState(() {
           _membersFuture = fetchMembers(groupId);

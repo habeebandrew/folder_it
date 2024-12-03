@@ -27,9 +27,7 @@ class _BrowsePageState extends State<BrowsePage> {
 
     final String? token = CacheHelper().getData(key: 'token');
     print(token);
-    print(parentId);
 
-    print(widget.userId);
 
     if (token == null) {
       throw Exception('Token is missing!');

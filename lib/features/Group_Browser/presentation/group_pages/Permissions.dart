@@ -31,8 +31,6 @@ class _PermissionsState extends State<Permissions> {
       'Authorization': "Bearer $mytoken",
     });
 
-    print(response.statusCode);
-    print(response.body);
 
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
