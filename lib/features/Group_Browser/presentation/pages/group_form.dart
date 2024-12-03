@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import '../../../../core/databases/cache/cache_helper.dart';
+import '../group_pages/Permissions.dart';
 import '../group_pages/browse_page.dart';
 import '../group_pages/members_page.dart';
 import '../group_pages/settings_page.dart';
 
 class GroupForm extends StatefulWidget {
   final int groupId;
-  final int folderId; // Add folderId here
+  final int folderId;
   final bool isOtherFilter;
 
   const GroupForm({
@@ -31,7 +32,6 @@ class _GroupFormState extends State<GroupForm> {
     _selectedLabel = "Browse";
     userId = CacheHelper().getData(key: "myid") ?? 1;
 
-    // Pass folderId to BrowsePage
     _selectedPage = BrowsePage(
       groupId: widget.groupId,
       folderId: widget.folderId,
@@ -105,7 +105,7 @@ class _GroupFormState extends State<GroupForm> {
                             onTap: () => _changePage(
                               BrowsePage(
                                 groupId: widget.groupId,
-                                folderId: widget.folderId, // Pass folderId here
+                                folderId: widget.folderId,
                                 userId: userId,
                               ),
                               "Browse",
@@ -129,6 +129,18 @@ class _GroupFormState extends State<GroupForm> {
                             isMobile: isMobile,
                             onTap: () => _changePage(const SettingsPage(), "Setting"),
                           ),
+                          widget.isOtherFilter!=true ?
+                          _buildMenuButton(
+                            label: "Permissions",
+                            icon: Icons.check_box_outlined,
+                            isMobile: isMobile,
+                            onTap: () => _changePage( Permissions(
+
+                              groupId: widget.groupId,
+                            ), "Permissions"),
+                          ): 
+                              Text('')
+                           
                         ],
                       ),
                     ),
