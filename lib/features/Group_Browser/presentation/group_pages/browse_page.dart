@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:folder_it/features/Group_Browser/presentation/group_pages/upload_files_page.dart';
-import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
@@ -26,7 +25,6 @@ class _BrowsePageState extends State<BrowsePage> {
   Future<Map<String, dynamic>> fetchFolderContent({required int parentId}) async {
 
     final String? token = CacheHelper().getData(key: 'token');
-    print(token);
 
 
     if (token == null) {
@@ -37,8 +35,7 @@ class _BrowsePageState extends State<BrowsePage> {
     final response = await http.get(url, headers: {
       'Authorization': 'Bearer $token',
     });
-    print("object");
-    if (response.statusCode == 200) {print("object");
+    if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {
       throw Exception('Failed to load folder content: ${response.statusCode}');

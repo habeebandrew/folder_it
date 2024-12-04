@@ -73,8 +73,11 @@ class _MyFilePageState extends State<UploadFilesPage> {
     var res =await response.stream.bytesToString();
     
     if (response.statusCode == 200) {
-      print(res);
-      print('File uploaded successfully');
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('File uploaded successfully'),backgroundColor: Colors.green,),
+        );
+      Navigator.pop(context);
+
     } else {
       print(res);
       print('Failed to upload file: ${response.statusCode}');
