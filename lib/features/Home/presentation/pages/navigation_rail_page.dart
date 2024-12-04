@@ -4,9 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:folder_it/features/Groups/presentation/pages/invites_page.dart';
 import 'package:folder_it/features/Home/domain/usecases/get_navigation_items_usecase.dart';
 import 'package:folder_it/features/Home/presentation/cubit/theme_cubit.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../core/databases/cache/cache_helper.dart';
 import '../cubit/navigation_cubit.dart';
 import 'my_files_page.dart';
-import 'report_page.dart';
+import 'package:http/http.dart' as http;
 import '../../../Groups/presentation/pages/View_Groups.dart';
 import '../widgets/custom_navigation_rail.dart';
 import 'package:badges/badges.dart' as badges;
@@ -171,7 +173,24 @@ class NavigationRailPage extends StatelessWidget {
                     case NavigationState.group:
                       return const Groups();
                     case NavigationState.Report:
-                      return const ReportPage();
+                      return
+
+                        // const logoutPage();
+                        AlertDialog(
+                          title: const Text('تأكيد تسجيل الخروج'),
+                          content: const Text('هل أنت متأكد أنك تريد تسجيل الخروج؟'),
+                          actions: [
+
+                            ElevatedButton(
+                              onPressed: () {
+                                _logout(context); // تنفيذ عملية تسجيل الخروج
+                              },
+                              child: const Text('تأكيد'),
+                            ),
+                          ],
+                        );
+
+
                   }
                 },
               ),
@@ -180,5 +199,34 @@ class NavigationRailPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _logout(BuildContext context) async {
+    const url = 'http://localhost:8091/auth/logout';
+    try {
+      String mytoken = CacheHelper().getData(key: 'token');
+
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $mytoken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('تم تسجيل الخروج بنجاح!')),
+        );
+        context.go("/login");
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('فشل في تسجيل الخروج!')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('حدث خطأ أثناء تسجيل الخروج!')),
+      );
+    }
   }
 }
