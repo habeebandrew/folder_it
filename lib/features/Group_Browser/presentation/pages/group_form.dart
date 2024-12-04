@@ -3,6 +3,7 @@ import '../../../../core/databases/cache/cache_helper.dart';
 import '../group_pages/Permissions.dart';
 import '../group_pages/browse_page.dart';
 import '../group_pages/members_page.dart';
+import '../group_pages/my_task_on_group.dart';
 import '../group_pages/settings_page.dart';
 
 class GroupForm extends StatefulWidget {
@@ -128,6 +129,12 @@ class _GroupFormState extends State<GroupForm> {
                             icon: Icons.settings,
                             isMobile: isMobile,
                             onTap: () => _changePage(const SettingsPage(), "Setting"),
+                          ),
+                          _buildMenuButton(
+                            label: "My Tasks",
+                            icon: Icons.task_alt_outlined,
+                            isMobile: isMobile,
+                            onTap: () => _changePage( mytaskongroup(), "mytaskongroup"),
                           ),
                           widget.isOtherFilter!=true ?
                           _buildMenuButton(
