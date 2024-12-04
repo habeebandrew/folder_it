@@ -10,7 +10,7 @@ class BrowsePage extends StatefulWidget {
   final int userId;
   final int folderId;
 
-  BrowsePage({super.key, required this.groupId, required this.userId,required this.folderId});
+  BrowsePage({super.key, required this.groupId, required this.userId, required this.folderId});
 
   @override
   State<BrowsePage> createState() => _BrowsePageState();
@@ -18,14 +18,13 @@ class BrowsePage extends StatefulWidget {
 
 class _BrowsePageState extends State<BrowsePage> {
   Map<String, dynamic>? currentResponse;
-  dynamic selectedElement;
+  dynamic expandedElement; // العنصر المفتوح
   List<Map<String, dynamic>> history = [];
 
   Future<Map<String, dynamic>> fetchFolderContent({required int parentId}) async {
+    if (currentResponse != null) return currentResponse!; // استخدام البيانات المحملة مسبقاً
 
     final String? token = CacheHelper().getData(key: 'token');
-
-
     if (token == null) {
       throw Exception('Token is missing!');
     }
@@ -49,7 +48,7 @@ class _BrowsePageState extends State<BrowsePage> {
           history.add(currentResponse!);
         }
         currentResponse = newResponse;
-        selectedElement = null;
+        expandedElement = null;
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -62,11 +61,11 @@ class _BrowsePageState extends State<BrowsePage> {
     if (history.isNotEmpty) {
       setState(() {
         currentResponse = history.removeLast();
-        selectedElement = null;
+        expandedElement = null;
       });
     }
   }
-//Todo:check in
+
   Future<void> checkInFile(int fileId) async {
     final url = Uri.parse('http://localhost:8091/document/check-in');
     final int myId = CacheHelper().getData(key: "myid") ?? 1;
@@ -78,7 +77,6 @@ class _BrowsePageState extends State<BrowsePage> {
       'Accept': 'application/json',
     };
 
-    // بناء الطلب باستخدام MultipartRequest
     final request = http.MultipartRequest('POST', url)
       ..headers.addAll(headers)
       ..fields['id'] = fileId.toString()
@@ -86,35 +84,47 @@ class _BrowsePageState extends State<BrowsePage> {
 
     try {
       final response = await request.send();
-
-      // انتظر استجابة الطلب
       final responseData = await http.Response.fromStream(response);
-
-      print(response.statusCode);
-      print(responseData.body);
 
       if (response.statusCode == 200) {
         setState(() {
-          selectedElement['locked'] = true; // تحديث الحالة إلى محجوزة
+          expandedElement['locked'] = true;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('File checked in successfully!'),backgroundColor: Colors.green,),
+          const SnackBar(content: Text('File checked in successfully!'), backgroundColor: Colors.green),
         );
       } else {
         throw Exception('Failed to check in file: ${response.statusCode}');
       }
     } catch (e) {
-      print(e);
       throw Exception('Failed to check in file');
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(automaticallyImplyLeading: false,
+
+        actions: [
+          Tooltip(message: "add new file",
+            child: TextButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UploadFilesPage(groupId: widget.groupId, folderId: widget.folderId),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.add_box_outlined, color: Colors.white),
+              label: const Text('Add file', style: TextStyle(color: Colors.white)),
+            ),
+          ),
+        ],
+      ),
       body: FutureBuilder<Map<String, dynamic>>(
-        future: fetchFolderContent(parentId: widget.folderId), // تحميل المحتوى الأساسي
+        future: fetchFolderContent(parentId: widget.folderId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -125,253 +135,103 @@ class _BrowsePageState extends State<BrowsePage> {
           } else {
             currentResponse = snapshot.data;
 
-            return Column(
+            return ListView(
+              padding: const EdgeInsets.all(16),
               children: [
-                Container(
-                  color: Theme.of(context).appBarTheme.backgroundColor,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  child: Row(
+                ...currentResponse!['folders'].map<Widget>((folder) {
+                  final isExpanded = expandedElement == folder;
+                  return Column(
                     children: [
-                      if (history.isNotEmpty)
-                        IconButton(
-                          icon: const Icon(Icons.arrow_back, color: Colors.white),
-                          onPressed: goBack,
-                        ),
-                      const SizedBox(width: 8),
-                      const Text(
-                        "Files",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                      InkWell(
+                        onTap: () => navigateToFolder(folder['id']),
+                        child: ListTile(
+                          leading: Icon(Icons.folder, color: Colors.yellow[700]),
+                          title: Text(folder['folderName']),
                         ),
                       ),
-                      const Spacer(),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                        child: Tooltip(
-                          message: 'Add new file',
-                          child: TextButton.icon(
-                            onPressed: () {
-                              Navigator.push(context, MaterialPageRoute(
-                                builder: (context)=>UploadFilesPage(groupId: widget.groupId, folderId: widget.folderId),
-                              ));
-                            },
-                            icon: Icon(
-                              Icons.add_box_outlined,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                            label: Text( 'Add file',
-                                style: Theme.of(context).textTheme.displayMedium),
-                            style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12.0, vertical: 6.0),
-                              backgroundColor: Colors.grey[300],
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                                side: BorderSide(color: Colors.grey[400]!),
-                              ),
-                            ),
+                      if (isExpanded)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            borderRadius: BorderRadius.circular(8),
                           ),
+                          child: const Text('Folder details here'),
+                        ),
+                    ],
+                  );
+                }).toList(),
+                ...currentResponse!['documents'].map<Widget>((document) {
+                  final isExpanded = expandedElement == document;
+                  return Column(
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          setState(() {
+                            expandedElement = isExpanded ? null : document;
+                          });
+                        },
+                        child: ListTile(
+                          leading: Icon(
+                            Icons.insert_drive_file,
+                            color: document['locked'] == true ? Colors.red : Colors.green,
+                          ),
+                          title: Text(document['subject']),
+                          trailing: Icon(isExpanded ? Icons.expand_less : Icons.expand_more),
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 250,
-                        padding: const EdgeInsets.all(16),
-                        color: Theme.of(context).appBarTheme.backgroundColor,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: ListView(
+                      if (isExpanded)
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Details: ${document['note'] ?? 'No details available'}',
+                                style:  TextStyle(color: Theme.of(context).primaryColor,fontSize: 14),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Date modified: ${DateFormat('yyyy-MM-dd – hh:mm a').format(DateTime.parse(document['creationDate']))}',
+                                style:  TextStyle(color: Theme.of(context).primaryColor,fontSize: 14),
+                              ),
+                              const SizedBox(height: 8),
+                              Row(
                                 children: [
-                                  ...currentResponse!["folders"].map<Widget>((folder) {
-                                    return InkWell(
-                                      onTap: () => navigateToFolder(folder['id']),
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.folder, color: Colors.yellow[700]),
-                                            const SizedBox(width: 8),
-                                            Text(folder['folderName'],
-                                                style: const TextStyle(color: Colors.white)),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  }).toList(),
-                                  const Divider(color: Colors.white),
-                                  ...currentResponse!["documents"].map<Widget>((document) {
-                                    return Tooltip(
-                                      message: "press to show details",
-                                      child: InkWell(
-                                        onTap: () => setState(() {
-                                          selectedElement = document;
-                                        }),
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-                                          child: Row(
-                                            children: [
-                                              const Icon(Icons.insert_drive_file, color: Colors.white),
-                                              const SizedBox(width: 8),
-                                              Text(document['subject'],
-                                                  style: const TextStyle(color: Colors.white)),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  }).toList(),
+                                  Icon(
+                                    document['locked'] ? Icons.lock : Icons.lock_open,
+                                    color: document['locked'] ? Colors.red : Colors.green,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    document['locked'] ? 'File is locked' : 'File is not locked',
+                                    style: TextStyle(
+                                      color: document['locked'] ? Colors.red : Colors.green,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ],
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      // التفاصيل
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-          // الكود المعدل
-          child: selectedElement == null
-          ? currentResponse!["folders"].isEmpty &&
-          currentResponse!["documents"].isEmpty
-          ? const Center(
-          child: Text(
-          "This folder is empty",
-          style: TextStyle(
-          fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          )
-              : const Center(
-          child: Text(
-          "Select a folder or file to view details",
-          style: TextStyle(
-          fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          )
-              :Card(
-            elevation: 4,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // عرض أيقونة وفوقها اسم الملف أو اسم المجلد
-                  Center(
-                    child: Column(
-                      children: [
-                        Icon(
-                          selectedElement['folderName'] != null
-                              ? Icons.folder
-                              : Icons.insert_drive_file,
-                          color: selectedElement['folderName'] != null
-                              ? Colors.yellow[700]
-                              : Colors.grey,
-                          size: 64,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          selectedElement['subject'] ?? selectedElement['folderName'],
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                              const SizedBox(height: 10,),
+                              if (document['locked'] == false)
+                                ElevatedButton.icon(
+                                  onPressed: () {
+                                    checkInFile(document['id']);
+                                  },
+                                  icon: const Icon(Icons.check_circle_outline),
+                                  label: const Text('Check In'),
+                                ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  // عرض تفاصيل عامة
-                  const Divider(),
-                  Text(
-                    'Details:',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    selectedElement['note'] ?? 'No details available',
-                    style: const TextStyle(fontSize: 14, color: Colors.black87),
-                  ),
-
-
-                  const SizedBox(height: 16),
-                  Text(
-                    'Date modified:',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    DateFormat('yyyy-MM-dd – hh:mm a')
-                        .format(DateTime.parse(selectedElement['creationDate'])),
-                    style: const TextStyle(fontSize: 14, color: Colors.black87),
-                  ),
-                  const SizedBox(height: 16),
-                  // حالة القفل
-                  if (selectedElement['locked'] != null)
-                    Row(
-                      children: [
-                        Icon(
-                          selectedElement['locked']
-                              ? Icons.lock
-                              : Icons.lock_open,
-                          color: selectedElement['locked'] ? Colors.red : Colors.green,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          selectedElement['locked']
-                              ? 'File is currently locked'
-                              : 'File is not locked',
-                          style: TextStyle(
-                            color: selectedElement['locked'] ? Colors.red : Colors.green,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  const SizedBox(height: 16),
-                  // زر Check In
-                  if (selectedElement['locked'] == false)
-                    ElevatedButton.icon(
-                      onPressed: () {print(selectedElement['id']);
-
-                      // وظيفة Check In
-                        checkInFile(selectedElement['id']);
-                      },
-                      icon: const Icon(Icons.check_circle_outline),
-                      label: const Text('Check In'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        foregroundColor: Colors.white,
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ),
-
-                        ),
-                      ),
                     ],
-                  ),
-                ),
+                  );
+                }).toList(),
               ],
             );
           }

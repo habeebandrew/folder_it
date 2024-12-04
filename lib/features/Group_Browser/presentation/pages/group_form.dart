@@ -55,7 +55,7 @@ class _GroupFormState extends State<GroupForm> {
       backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
       body: LayoutBuilder(
         builder: (context, constraints) {
-          bool isMobile = constraints.maxWidth < 600;
+          bool isMobile = constraints.maxWidth < 737;
 
           return Row(
             children: [
