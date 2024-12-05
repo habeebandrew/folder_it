@@ -105,22 +105,48 @@ class _BrowsePageState extends State<BrowsePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(automaticallyImplyLeading: false,
-
+        
         actions: [
-          Tooltip(message: "add new file",
-            child: TextButton.icon(
-              onPressed: () {
-                Navigator.push(
+          Tooltip(
+            message: 'add new file',
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextButton.icon(
+                onPressed: () {
+                  Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => UploadFilesPage(groupId: widget.groupId, folderId: widget.folderId),
+                    builder: (context) => UploadFilesPage(
+                     groupId: widget.groupId, folderId: widget.folderId, 
+                     vsId: '', fileName: '',),
                   ),
-                );
-              },
-              icon: const Icon(Icons.add_box_outlined, color: Colors.white),
-              label: const Text('Add file', style: TextStyle(color: Colors.white)),
+                ).then((_){
+                  setState(() {
+                    currentResponse =null;
+                  });
+                  
+                });
+                },
+                icon: Icon(
+                  Icons.add_box_outlined,
+                  color: Theme.of(context).primaryColor,
+                ),
+                label: Text('add file',
+                    style: Theme.of(context).textTheme.displayMedium),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12.0, vertical: 6.0),
+                  backgroundColor: Colors.grey[300],
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                    side: BorderSide(color: Colors.grey[400]!),
+                  ),
+                ),
+              ),
             ),
           ),
+
+
         ],
       ),
       body: FutureBuilder<Map<String, dynamic>>(
@@ -217,6 +243,29 @@ class _BrowsePageState extends State<BrowsePage> {
                                   ),
                                 ],
                               ),
+                               if (document['locked'] == true)
+                              const SizedBox(height: 10,),
+                              if (document['locked'] == true)
+                                ElevatedButton.icon(
+                                  onPressed: () {
+                                    
+                                     Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => UploadFilesPage(
+                                        groupId: widget.groupId, folderId: widget.folderId, 
+                                        vsId: document['vsid'], fileName: document['subject'],),
+                                      ),
+                                    ).then((_){
+                                      setState(() {
+                                        currentResponse = null;
+                                      });
+                                      
+                                    });
+                                  },
+                                  icon: const Icon(Icons.check_circle_outline),
+                                  label: const Text('Check out'),
+                                ),
                               const SizedBox(height: 10,),
                               if (document['locked'] == false)
                                 ElevatedButton.icon(

@@ -55,6 +55,7 @@ class _MembersPageState extends State<MembersPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        title: const Text(''),
         actions: [
           Tooltip(
             message: 'Invite new member',
