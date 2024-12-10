@@ -10,7 +10,11 @@ class BrowsePage extends StatefulWidget {
   final int userId;
   final int folderId;
 
-  BrowsePage({super.key, required this.groupId, required this.userId, required this.folderId});
+  BrowsePage(
+      {super.key,
+      required this.groupId,
+      required this.userId,
+      required this.folderId});
 
   @override
   State<BrowsePage> createState() => _BrowsePageState();
@@ -20,16 +24,23 @@ class _BrowsePageState extends State<BrowsePage> {
   Map<String, dynamic>? currentResponse;
   dynamic expandedElement; // العنصر المفتوح
   List<Map<String, dynamic>> history = [];
+  List<int> selectedFiles = [];
+  bool loading = false;
 
-  Future<Map<String, dynamic>> fetchFolderContent({required int parentId}) async {
-    if (currentResponse != null) return currentResponse!; // استخدام البيانات المحملة مسبقاً
+
+  Future<Map<String, dynamic>> fetchFolderContent(
+      {required int parentId}) async {
+    if (currentResponse != null){
+      return currentResponse!;
+    } // استخدام البيانات المحملة مسبقاً
 
     final String? token = CacheHelper().getData(key: 'token');
     if (token == null) {
       throw Exception('Token is missing!');
     }
 
-    final url = Uri.parse('http://localhost:8091/folder/content?parentId=$parentId&userId=${widget.userId}');
+    final url = Uri.parse(
+        'http://localhost:8091/folder/content?parentId=$parentId&userId=${widget.userId}');
     final response = await http.get(url, headers: {
       'Authorization': 'Bearer $token',
     });
@@ -66,7 +77,11 @@ class _BrowsePageState extends State<BrowsePage> {
     }
   }
 
-  Future<void> checkInFile(int fileId) async {
+  Future<void> checkInSelectedFiles() async {
+    if (selectedFiles.isEmpty) return;
+    setState(() {
+      loading =true; 
+    });
     final url = Uri.parse('http://localhost:8091/document/check-in');
     final int myId = CacheHelper().getData(key: "myid") ?? 1;
     final String? token = CacheHelper().getData(key: 'token');
@@ -77,10 +92,17 @@ class _BrowsePageState extends State<BrowsePage> {
       'Accept': 'application/json',
     };
 
-    final request = http.MultipartRequest('POST', url)
-      ..headers.addAll(headers)
-      ..fields['id'] = fileId.toString()
-      ..fields['userId'] = myId.toString();
+    final request = http.MultipartRequest('POST', url); // أضف `userId`
+
+    // Append each file ID to the formatted string
+    for (int i = 0; i < selectedFiles.length; i++) {
+      request.fields.addAll({'id${i + 1}': selectedFiles[i].toString()});
+    }
+    request.fields.addAll({'userId': myId.toString()});
+
+    print(request.fields);
+
+    request.headers.addAll(headers);
 
     try {
       final response = await request.send();
@@ -88,24 +110,40 @@ class _BrowsePageState extends State<BrowsePage> {
 
       if (response.statusCode == 200) {
         setState(() {
-          expandedElement['locked'] = true;
+          loading =false;
+          for (final fileId in selectedFiles) {
+            final document = currentResponse!['documents']
+                .firstWhere((doc) => doc['id'] == fileId, orElse: () => null);
+            if (document != null) {
+              document['locked'] = true;
+            }
+          }
+          selectedFiles.clear();
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('File checked in successfully!'), backgroundColor: Colors.green),
+          const SnackBar(
+              content: Text('Files checked in successfully!'),
+              backgroundColor: Colors.green),
         );
       } else {
-        throw Exception('Failed to check in file: ${response.statusCode}');
+        //throw Exception('Failed to check in files: ${response.statusCode}');
+         ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to check in files')),
+      );
       }
     } catch (e) {
-      throw Exception('Failed to check in file');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(automaticallyImplyLeading: false,
-        
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         actions: [
           Tooltip(
             message: 'add new file',
@@ -114,18 +152,20 @@ class _BrowsePageState extends State<BrowsePage> {
               child: TextButton.icon(
                 onPressed: () {
                   Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => UploadFilesPage(
-                     groupId: widget.groupId, folderId: widget.folderId, 
-                     vsId: '', fileName: '',),
-                  ),
-                ).then((_){
-                  setState(() {
-                    currentResponse =null;
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UploadFilesPage(
+                        groupId: widget.groupId,
+                        folderId: widget.folderId,
+                        vsId: '',
+                        fileName: '',
+                      ),
+                    ),
+                  ).then((_) {
+                    setState(() {
+                      currentResponse = null;
+                    });
                   });
-                  
-                });
                 },
                 icon: Icon(
                   Icons.add_box_outlined,
@@ -145,8 +185,6 @@ class _BrowsePageState extends State<BrowsePage> {
               ),
             ),
           ),
-
-
         ],
       ),
       body: FutureBuilder<Map<String, dynamic>>(
@@ -171,13 +209,15 @@ class _BrowsePageState extends State<BrowsePage> {
                       InkWell(
                         onTap: () => navigateToFolder(folder['id']),
                         child: ListTile(
-                          leading: Icon(Icons.folder, color: Colors.yellow[700]),
+                          leading:
+                              Icon(Icons.folder, color: Colors.yellow[700]),
                           title: Text(folder['folderName']),
                         ),
                       ),
                       if (isExpanded)
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
                           decoration: BoxDecoration(
                             color: Colors.grey[200],
                             borderRadius: BorderRadius.circular(8),
@@ -189,6 +229,7 @@ class _BrowsePageState extends State<BrowsePage> {
                 }).toList(),
                 ...currentResponse!['documents'].map<Widget>((document) {
                   final isExpanded = expandedElement == document;
+                  final isSelected = selectedFiles.contains(document['id']);
                   return Column(
                     children: [
                       InkWell(
@@ -198,18 +239,37 @@ class _BrowsePageState extends State<BrowsePage> {
                           });
                         },
                         child: ListTile(
-                          leading: Icon(
-                            Icons.insert_drive_file,
-                            color: document['locked'] == true ? Colors.red : Colors.green,
+                          leading: document['locked'] == false
+                              ? Checkbox(
+                                  value: isSelected,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      if (value == true) {
+                                        selectedFiles.add(document['id']);
+                                      } else {
+                                        selectedFiles.remove(document['id']);
+                                      }
+                                    });
+                                  },
+                                )
+                              : null,
+                          title: Text(
+                            document['subject'],
+                            style: TextStyle(
+                                color: document['locked']
+                                    ? Colors.red
+                                    : Colors.green),
                           ),
-                          title: Text(document['subject']),
-                          trailing: Icon(isExpanded ? Icons.expand_less : Icons.expand_more),
+                          trailing: Icon(isExpanded
+                              ? Icons.expand_less
+                              : Icons.expand_more),
                         ),
                       ),
                       if (isExpanded)
                         AnimatedContainer(
                           duration: const Duration(milliseconds: 300),
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
                           decoration: BoxDecoration(
                             color: Colors.grey[200],
                             borderRadius: BorderRadius.circular(8),
@@ -219,61 +279,67 @@ class _BrowsePageState extends State<BrowsePage> {
                             children: [
                               Text(
                                 'Details: ${document['note'] ?? 'No details available'}',
-                                style:  TextStyle(color: Theme.of(context).primaryColor,fontSize: 14),
+                                style: TextStyle(
+                                    color: Theme.of(context).primaryColor,
+                                    fontSize: 14),
                               ),
                               const SizedBox(height: 8),
                               Text(
                                 'Date modified: ${DateFormat('yyyy-MM-dd – hh:mm a').format(DateTime.parse(document['creationDate']))}',
-                                style:  TextStyle(color: Theme.of(context).primaryColor,fontSize: 14),
+                                style: TextStyle(
+                                    color: Theme.of(context).primaryColor,
+                                    fontSize: 14),
                               ),
                               const SizedBox(height: 8),
                               Row(
                                 children: [
                                   Icon(
-                                    document['locked'] ? Icons.lock : Icons.lock_open,
-                                    color: document['locked'] ? Colors.red : Colors.green,
+                                    document['locked']
+                                        ? Icons.lock
+                                        : Icons.lock_open,
+                                    color: document['locked']
+                                        ? Colors.red
+                                        : Colors.green,
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
-                                    document['locked'] ? 'File is locked' : 'File is not locked',
+                                    document['locked']
+                                        ? 'File is locked'
+                                        : 'File is not locked',
                                     style: TextStyle(
-                                      color: document['locked'] ? Colors.red : Colors.green,
+                                      color: document['locked']
+                                          ? Colors.red
+                                          : Colors.green,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ],
                               ),
-                               if (document['locked'] == true)
-                              const SizedBox(height: 10,),
+                              if (document['locked'] == true)
+                                const SizedBox(
+                                  height: 10,
+                                ),
                               if (document['locked'] == true)
                                 ElevatedButton.icon(
                                   onPressed: () {
-                                    
-                                     Navigator.push(
+                                    Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => UploadFilesPage(
-                                        groupId: widget.groupId, folderId: widget.folderId, 
-                                        vsId: document['vsid'], fileName: document['subject'],),
+                                          groupId: widget.groupId,
+                                          folderId: widget.folderId,
+                                          vsId: document['vsid'],
+                                          fileName: document['subject'],
+                                        ),
                                       ),
-                                    ).then((_){
+                                    ).then((_) {
                                       setState(() {
                                         currentResponse = null;
                                       });
-                                      
                                     });
                                   },
                                   icon: const Icon(Icons.check_circle_outline),
                                   label: const Text('Check out'),
-                                ),
-                              const SizedBox(height: 10,),
-                              if (document['locked'] == false)
-                                ElevatedButton.icon(
-                                  onPressed: () {
-                                    checkInFile(document['id']);
-                                  },
-                                  icon: const Icon(Icons.check_circle_outline),
-                                  label: const Text('Check In'),
                                 ),
                             ],
                           ),
@@ -286,6 +352,13 @@ class _BrowsePageState extends State<BrowsePage> {
           }
         },
       ),
+      floatingActionButton: selectedFiles.isNotEmpty
+          ? FloatingActionButton.extended(
+              onPressed: () => checkInSelectedFiles(),
+              label:Text(loading==false?'Check In Selected':'Checking..'),
+              icon: const Icon(Icons.check_circle),
+            )
+          : null,
     );
   }
 }

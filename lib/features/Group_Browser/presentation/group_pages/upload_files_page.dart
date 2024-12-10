@@ -72,6 +72,7 @@ class _MyFilePageState extends State<UploadFilesPage> {
           'file',
           fileBytes,
           filename: file.name,
+          //contentType: MediaType(file.mime)
         ),
       );
       request.headers.addAll(headers);
