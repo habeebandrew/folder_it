@@ -199,154 +199,189 @@ class _BrowsePageState extends State<BrowsePage> {
           } else {
             currentResponse = snapshot.data;
 
-            return ListView(
-              padding: const EdgeInsets.all(16),
+            return Column(
               children: [
-                ...currentResponse!['folders'].map<Widget>((folder) {
-                  final isExpanded = expandedElement == folder;
-                  return Column(
+                Row(
+                 mainAxisAlignment: MainAxisAlignment.spaceAround,
+
+                 children: [
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        
+                        selectedFiles = List<int>.from(
+                          currentResponse!['documents']
+                              .where((doc) => doc['locked'] == false)
+                              .map((doc) => doc['id']),
+                        );
+                        print(selectedFiles.toString());
+                      });
+                    },
+                    child: const Text('Select All'),
+                  ),
+                  const SizedBox(width:15.0),
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        selectedFiles.clear();
+                      });
+                    },
+                    child: const Text('Undo Select'),
+                  ),
+                 ],
+                ),
+                Expanded(
+                  child: ListView(
+                    padding: const EdgeInsets.all(16),
                     children: [
-                      InkWell(
-                        onTap: () => navigateToFolder(folder['id']),
-                        child: ListTile(
-                          leading:
-                              Icon(Icons.folder, color: Colors.yellow[700]),
-                          title: Text(folder['folderName']),
-                        ),
-                      ),
-                      if (isExpanded)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Text('Folder details here'),
-                        ),
-                    ],
-                  );
-                }).toList(),
-                ...currentResponse!['documents'].map<Widget>((document) {
-                  final isExpanded = expandedElement == document;
-                  final isSelected = selectedFiles.contains(document['id']);
-                  return Column(
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          setState(() {
-                            expandedElement = isExpanded ? null : document;
-                          });
-                        },
-                        child: ListTile(
-                          leading: document['locked'] == false
-                              ? Checkbox(
-                                  value: isSelected,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      if (value == true) {
-                                        selectedFiles.add(document['id']);
-                                      } else {
-                                        selectedFiles.remove(document['id']);
-                                      }
-                                    });
-                                  },
-                                )
-                              : null,
-                          title: Text(
-                            document['subject'],
-                            style: TextStyle(
-                                color: document['locked']
-                                    ? Colors.red
-                                    : Colors.green),
-                          ),
-                          trailing: Icon(isExpanded
-                              ? Icons.expand_less
-                              : Icons.expand_more),
-                        ),
-                      ),
-                      if (isExpanded)
-                        AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Details: ${document['note'] ?? 'No details available'}',
-                                style: TextStyle(
-                                    color: Theme.of(context).primaryColor,
-                                    fontSize: 14),
+                      ...currentResponse!['folders'].map<Widget>((folder) {
+                        final isExpanded = expandedElement == folder;
+                        return Column(
+                          children: [
+                            InkWell(
+                              onTap: () => navigateToFolder(folder['id']),
+                              child: ListTile(
+                                leading:
+                                    Icon(Icons.folder, color: Colors.yellow[700]),
+                                title: Text(folder['folderName']),
                               ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Date modified: ${DateFormat('yyyy-MM-dd – hh:mm a').format(DateTime.parse(document['creationDate']))}',
-                                style: TextStyle(
-                                    color: Theme.of(context).primaryColor,
-                                    fontSize: 14),
+                            ),
+                            if (isExpanded)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[200],
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Text('Folder details here'),
                               ),
-                              const SizedBox(height: 8),
-                              Row(
-                                children: [
-                                  Icon(
-                                    document['locked']
-                                        ? Icons.lock
-                                        : Icons.lock_open,
-                                    color: document['locked']
-                                        ? Colors.red
-                                        : Colors.green,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    document['locked']
-                                        ? 'File is locked'
-                                        : 'File is not locked',
-                                    style: TextStyle(
+                          ],
+                        );
+                      }).toList(),
+                      ...currentResponse!['documents'].map<Widget>((document) {
+                        final isExpanded = expandedElement == document;
+                        final isSelected = selectedFiles.contains(document['id']);
+                        return Column(
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                setState(() {
+                                  expandedElement = isExpanded ? null : document;
+                                });
+                              },
+                              child: ListTile(
+                                leading: document['locked'] == false
+                                    ? Checkbox(
+                                        value: isSelected,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            if (value == true) {
+                                              selectedFiles.add(document['id']);
+                                            } else {
+                                              selectedFiles.remove(document['id']);
+                                            }
+                                          });
+                                        },
+                                      )
+                                    : null,
+                                title: Text(
+                                  document['subject'],
+                                  style: TextStyle(
                                       color: document['locked']
                                           ? Colors.red
-                                          : Colors.green,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
+                                          : Colors.green),
+                                ),
+                                trailing: Icon(isExpanded
+                                    ? Icons.expand_less
+                                    : Icons.expand_more),
                               ),
-                              if (document['locked'] == true)
-                                const SizedBox(
-                                  height: 10,
+                            ),
+                            if (isExpanded)
+                              AnimatedContainer(
+                                duration: const Duration(milliseconds: 300),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[200],
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
-                              if (document['locked'] == true)
-                                ElevatedButton.icon(
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => UploadFilesPage(
-                                          groupId: widget.groupId,
-                                          folderId: widget.folderId,
-                                          vsId: document['vsid'],
-                                          fileName: document['subject'],
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Details: ${document['note'] ?? 'No details available'}',
+                                      style: TextStyle(
+                                          color: Theme.of(context).primaryColor,
+                                          fontSize: 14),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'Date modified: ${DateFormat('yyyy-MM-dd – hh:mm a').format(DateTime.parse(document['creationDate']))}',
+                                      style: TextStyle(
+                                          color: Theme.of(context).primaryColor,
+                                          fontSize: 14),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          document['locked']
+                                              ? Icons.lock
+                                              : Icons.lock_open,
+                                          color: document['locked']
+                                              ? Colors.red
+                                              : Colors.green,
                                         ),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          document['locked']
+                                              ? 'File is locked'
+                                              : 'File is not locked',
+                                          style: TextStyle(
+                                            color: document['locked']
+                                                ? Colors.red
+                                                : Colors.green,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    if (document['locked'] == true)
+                                      const SizedBox(
+                                        height: 10,
                                       ),
-                                    ).then((_) {
-                                      setState(() {
-                                        currentResponse = null;
-                                      });
-                                    });
-                                  },
-                                  icon: const Icon(Icons.check_circle_outline),
-                                  label: const Text('Check out'),
+                                    if (document['locked'] == true)
+                                      ElevatedButton.icon(
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => UploadFilesPage(
+                                                groupId: widget.groupId,
+                                                folderId: widget.folderId,
+                                                vsId: document['vsid'],
+                                                fileName: document['subject'],
+                                              ),
+                                            ),
+                                          ).then((_) {
+                                            setState(() {
+                                              currentResponse = null;
+                                            });
+                                          });
+                                        },
+                                        icon: const Icon(Icons.check_circle_outline),
+                                        label: const Text('Check out'),
+                                      ),
+                                  ],
                                 ),
-                            ],
-                          ),
-                        ),
+                              ),
+                          ],
+                        );
+                      }).toList(),
                     ],
-                  );
-                }).toList(),
+                  ),
+                ),
               ],
             );
           }
