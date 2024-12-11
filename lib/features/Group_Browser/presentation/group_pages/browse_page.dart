@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:folder_it/features/Group_Browser/presentation/group_pages/upload_files_page.dart';
 import 'package:http/http.dart' as http;
+import 'package:universal_html/html.dart' as html;
 import 'dart:convert';
+
 import 'package:intl/intl.dart';
 import '../../../../core/databases/cache/cache_helper.dart';
 
@@ -27,10 +29,9 @@ class _BrowsePageState extends State<BrowsePage> {
   List<int> selectedFiles = [];
   bool loading = false;
 
-
   Future<Map<String, dynamic>> fetchFolderContent(
       {required int parentId}) async {
-    if (currentResponse != null){
+    if (currentResponse != null) {
       return currentResponse!;
     } // استخدام البيانات المحملة مسبقاً
 
@@ -80,7 +81,7 @@ class _BrowsePageState extends State<BrowsePage> {
   Future<void> checkInSelectedFiles() async {
     if (selectedFiles.isEmpty) return;
     setState(() {
-      loading =true; 
+      loading = true;
     });
     final url = Uri.parse('http://localhost:8091/document/check-in');
     final int myId = CacheHelper().getData(key: "myid") ?? 1;
@@ -110,7 +111,7 @@ class _BrowsePageState extends State<BrowsePage> {
 
       if (response.statusCode == 200) {
         setState(() {
-          loading =false;
+          loading = false;
           for (final fileId in selectedFiles) {
             final document = currentResponse!['documents']
                 .firstWhere((doc) => doc['id'] == fileId, orElse: () => null);
@@ -127,9 +128,9 @@ class _BrowsePageState extends State<BrowsePage> {
         );
       } else {
         //throw Exception('Failed to check in files: ${response.statusCode}');
-         ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to check in files')),
-      );
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to check in files')),
+        );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -137,6 +138,49 @@ class _BrowsePageState extends State<BrowsePage> {
       );
     }
   }
+
+  Future<String> getTempFile(String vsId) async {
+    final int myId = CacheHelper().getData(key: "myid") ?? 1;
+    final String? token = CacheHelper().getData(key: 'token');
+    var headers = {
+      'Authorization': 'Bearer $token',
+    };
+    var request = http.Request(
+        'GET',
+        Uri.parse(
+            'http://127.0.0.1:8091/document/temp?userId=$myId&vsId=$vsId'
+        )
+    );
+    request.headers.addAll(headers); 
+    http.StreamedResponse response = await request.send();
+    var res =await response.stream.bytesToString();
+    print(res);
+    if (response.statusCode == 200) {
+      return res;
+    } else {
+      return 'something went wrong';
+    }
+  }
+
+ Future<void> downloadFile(String fileName) async {
+  final String? token = CacheHelper().getData(key: 'token');
+
+  final url = Uri.parse('http://localhost:8091/document/files/$fileName');
+  final response = await http.get(url, headers: {
+    'Authorization': 'Bearer $token',
+  });
+
+  if (response.statusCode == 200) {
+    final blob = html.Blob([response.bodyBytes]);
+    final url = html.Url.createObjectUrlFromBlob(blob);
+    final anchor = html.AnchorElement(href: url)
+      ..download = fileName
+      ..click();
+    html.Url.revokeObjectUrl(url);
+  } else {
+    print("Error: ${response.reasonPhrase}");
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -202,33 +246,31 @@ class _BrowsePageState extends State<BrowsePage> {
             return Column(
               children: [
                 Row(
-                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-
-                 children: [
-                  TextButton(
-                    onPressed: () {
-                      setState(() {
-                        
-                        selectedFiles = List<int>.from(
-                          currentResponse!['documents']
-                              .where((doc) => doc['locked'] == false)
-                              .map((doc) => doc['id']),
-                        );
-                        print(selectedFiles.toString());
-                      });
-                    },
-                    child: const Text('Select All'),
-                  ),
-                  const SizedBox(width:15.0),
-                  TextButton(
-                    onPressed: () {
-                      setState(() {
-                        selectedFiles.clear();
-                      });
-                    },
-                    child: const Text('Undo Select'),
-                  ),
-                 ],
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          selectedFiles = List<int>.from(
+                            currentResponse!['documents']
+                                .where((doc) => doc['locked'] == false)
+                                .map((doc) => doc['id']),
+                          );
+                          print(selectedFiles.toString());
+                        });
+                      },
+                      child: const Text('Select All'),
+                    ),
+                    const SizedBox(width: 15.0),
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          selectedFiles.clear();
+                        });
+                      },
+                      child: const Text('Undo Select'),
+                    ),
+                  ],
                 ),
                 Expanded(
                   child: ListView(
@@ -241,8 +283,8 @@ class _BrowsePageState extends State<BrowsePage> {
                             InkWell(
                               onTap: () => navigateToFolder(folder['id']),
                               child: ListTile(
-                                leading:
-                                    Icon(Icons.folder, color: Colors.yellow[700]),
+                                leading: Icon(Icons.folder,
+                                    color: Colors.yellow[700]),
                                 title: Text(folder['folderName']),
                               ),
                             ),
@@ -261,13 +303,15 @@ class _BrowsePageState extends State<BrowsePage> {
                       }).toList(),
                       ...currentResponse!['documents'].map<Widget>((document) {
                         final isExpanded = expandedElement == document;
-                        final isSelected = selectedFiles.contains(document['id']);
+                        final isSelected =
+                            selectedFiles.contains(document['id']);
                         return Column(
                           children: [
                             InkWell(
                               onTap: () {
                                 setState(() {
-                                  expandedElement = isExpanded ? null : document;
+                                  expandedElement =
+                                      isExpanded ? null : document;
                                 });
                               },
                               child: ListTile(
@@ -279,19 +323,53 @@ class _BrowsePageState extends State<BrowsePage> {
                                             if (value == true) {
                                               selectedFiles.add(document['id']);
                                             } else {
-                                              selectedFiles.remove(document['id']);
+                                              selectedFiles
+                                                  .remove(document['id']);
                                             }
                                           });
                                         },
                                       )
                                     : null,
-                                title: Text(
-                                  document['subject'],
-                                  style: TextStyle(
-                                      color: document['locked']
-                                          ? Colors.red
-                                          : Colors.green),
-                                ),
+                                title: document['locked'] == false
+                                    ? Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          document['subject'],
+                                          style: TextStyle(
+                                              color: document['locked']
+                                                  ? Colors.red
+                                                  : Colors.green),
+                                        ),
+
+                                        ElevatedButton.icon(
+                                            onPressed: () {
+                                              getTempFile(document['vsid']).then((value){
+                                                if(value != 'something went wrong'){
+                                                    downloadFile(value);
+                                                   
+                                                }else{
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    const SnackBar(
+                                                        content: Text('can not download file'),
+                                                        backgroundColor: Colors.red),
+                                                  );
+                                                }
+                                              });
+                                            },
+                                            style: Theme.of(context).elevatedButtonTheme.style,
+                                            icon: const Icon(
+                                                Icons.download_outlined),
+                                            label: const Text('Download file'),
+                                          ),
+                                      ])
+                                    : Text(
+                                        document['subject'],
+                                        style: TextStyle(
+                                            color: document['locked']
+                                                ? Colors.red
+                                                : Colors.green),
+                                      ),
                                 trailing: Icon(isExpanded
                                     ? Icons.expand_less
                                     : Icons.expand_more),
@@ -357,7 +435,8 @@ class _BrowsePageState extends State<BrowsePage> {
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (context) => UploadFilesPage(
+                                              builder: (context) =>
+                                                  UploadFilesPage(
                                                 groupId: widget.groupId,
                                                 folderId: widget.folderId,
                                                 vsId: document['vsid'],
@@ -370,7 +449,8 @@ class _BrowsePageState extends State<BrowsePage> {
                                             });
                                           });
                                         },
-                                        icon: const Icon(Icons.check_circle_outline),
+                                        icon: const Icon(
+                                            Icons.check_circle_outline),
                                         label: const Text('Check out'),
                                       ),
                                   ],
@@ -390,7 +470,8 @@ class _BrowsePageState extends State<BrowsePage> {
       floatingActionButton: selectedFiles.isNotEmpty
           ? FloatingActionButton.extended(
               onPressed: () => checkInSelectedFiles(),
-              label:Text(loading==false?'Check In Selected':'Checking..'),
+              label:
+                  Text(loading == false ? 'Check In Selected' : 'Checking in ..'),
               icon: const Icon(Icons.check_circle),
             )
           : null,
