@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:folder_it/features/Group_Browser/presentation/pages/group_form.dart';
 import 'package:go_router/go_router.dart';
@@ -22,12 +24,21 @@ class _GroupsState extends State<Groups> {
   late Future<List<Group>> groups;
 
   int myId = CacheHelper().getData(key: "myid")??1;
-  String mytoken = CacheHelper().getData(key: 'token');
+  // String mytoken = CacheHelper().getData(key: 'token');
+  ValueNotifier<String?> tokenNotifier = ValueNotifier<String?>(CacheHelper().getData(key: 'token'));
 
   @override
   void initState() {
     super.initState();
     groups = _loadDataForCategory();
+    _startTokenUpdater();
+
+  }
+  void _startTokenUpdater() {
+    Timer.periodic(Duration(seconds: 5), (timer) async {
+      String? newToken = CacheHelper().getData(key: 'token');
+      tokenNotifier.value = newToken;
+    });
   }
 
   Future<List<Group>> _loadDataForCategory() async {
@@ -62,7 +73,7 @@ class _GroupsState extends State<Groups> {
       final response = await http.get(
         Uri.parse(url),
         headers: {
-          'Authorization':"Bearer $mytoken"
+          'Authorization':"Bearer ${tokenNotifier.value}"
         }
       );
       if (response.statusCode == 200) {
@@ -152,40 +163,40 @@ class _GroupsState extends State<Groups> {
             ),
             const SizedBox(height: 20),
             Expanded(
-              child: FutureBuilder<List<Group>>(
-                future: groups,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(
-                      child: Text(
-                        snapshot.error.toString(),
-                        style: const TextStyle(color: Colors.red),
-                        textAlign: TextAlign.center,
-                      ),
-                    );
-                  } else if (snapshot.hasData) {
-                    final groups = applyFilters(snapshot.data!);
-                    if (groups.isEmpty) {
-                      return const Center(child: Text('No groups available'));
+                child: FutureBuilder<List<Group>>(
+                  future: groups,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(
+                        child: Text(
+                          snapshot.error.toString(),
+                          style: const TextStyle(color: Colors.red),
+                          textAlign: TextAlign.center,
+                        ),
+                      );
+                    } else if (snapshot.hasData) {
+                      final groups = applyFilters(snapshot.data!);
+                      if (groups.isEmpty) {
+                        return const Center(child: Text('No groups available'));
+                      }
+                      return GridView.builder(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: columns,
+                          crossAxisSpacing: 15,
+                          mainAxisSpacing: 15,
+                        ),
+                        itemCount: groups.length,
+                        itemBuilder: (context, index) {
+                          return _buildGroupBox(groups[index]);
+                        },
+                      );
+                    } else {
+                      return CircularProgressIndicator();
                     }
-                    return GridView.builder(
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: columns,
-                        crossAxisSpacing: 15,
-                        mainAxisSpacing: 15,
-                      ),
-                      itemCount: groups.length,
-                      itemBuilder: (context, index) {
-                        return _buildGroupBox(groups[index]);
-                      },
-                    );
-                  } else {
-                    return const Center(child: Text('Unexpected error occurred'));
-                  }
-                },
-              ),
+                  },
+                ),
             ),
           ],
         ),

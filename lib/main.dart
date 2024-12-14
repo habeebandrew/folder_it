@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'package:go_router/go_router.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:folder_it/core/Util/app_bloc_observer.dart';
@@ -22,7 +25,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        
         BlocProvider(
           create: (context) => ThemeCubit(),
         ),
@@ -41,12 +43,113 @@ class MyApp extends StatelessWidget {
             routerConfig: router,
             theme: ThemeColors.ligthTheme,
             darkTheme: ThemeColors.darkTheme,
-            themeMode: isDarkTheme
-                ? ThemeMode.dark
-                : ThemeMode.light,
+            themeMode: isDarkTheme ? ThemeMode.dark : ThemeMode.light,
           );
         },
       ),
+    );
+  }
+}
+
+class TokenHandler {
+  /// تحديث التوكن بعد مرور 10 ثوانٍ
+  Future<void> startTokenProcess(BuildContext context) async {
+    await Future.delayed(Duration(seconds: 20), () async {
+      print('fist refresh token');
+      try {
+        final newToken = await _refreshToken();
+        if (newToken != null) {
+          await CacheHelper().saveData(key: 'token', value: newToken);
+          print("updating token: $newToken");
+          //TODO:بدي حط التوككن الجديدة مكان القديمة ***********************
+          // إضافة أي عملية عند نجاح التحديث (مثلاً، حفظ التوكن)
+        } else {
+          print("update token failed");
+        }
+      } catch (error) {
+        print("error loading token: $error");
+      }
+
+      // بعد 10 ثوانٍ إضافية، عرض رسالة تسجيل الدخول
+      Future.delayed(Duration(seconds: 60), (
+
+
+          ) {
+
+        _showLogoutMessage(context);
+      });
+    });
+  }
+
+  /// طلب تحديث التوكن
+  Future<String?> _refreshToken() async {
+    String mytoken = CacheHelper().getData(key: 'token');
+    String refreshToken = CacheHelper().getData(key: 'refreshToken');
+    String username = CacheHelper().getData(key: 'username');
+    String password = CacheHelper().getData(key: 'password');
+    // print(mytoken);
+    // print(refreshToken);
+    // print(username);
+    // print(password);
+
+    const url = 'http://localhost:8091/auth/refresh-token';
+
+    final headers = {
+      'Authorization': 'Bearer $mytoken',
+      'Content-Type': 'application/json',
+      'Accept-Type': 'application/json',
+    };
+
+    final body = jsonEncode({
+      'userName': username,
+      'password': password,
+      'refreshToken': refreshToken,
+    });
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: headers,
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        return response.body;
+      } else {
+        print("error loading token: ${response.statusCode}");
+        return null;
+      }
+    } catch (error) {
+      print("error: $error");
+      return null;
+    }
+  }
+
+  /// عرض رسالة انتهاء الجلسة
+  /// TODO:بدي خلي يرح لل تسجيل الدخول +حذف القيم
+  void _showLogoutMessage(BuildContext context) {
+    final validContext = Navigator.of(context).overlay!.context;
+    showDialog(
+      barrierDismissible: false,
+      context: validContext,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("انتهاء الجلسة"),
+          content: Text("يجب تسجيل الدخول مرة أخرى."),
+          actions: [
+            TextButton(
+              onPressed: () {
+
+
+                Navigator.of(context).pop();
+                context.go('/login',extra: null);
+
+              },
+              child: Text("موافق"),
+            ),
+          ],
+        );
+      },
     );
   }
 }

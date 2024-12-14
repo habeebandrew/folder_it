@@ -21,6 +21,7 @@ class ApiKey {
   static String recordStatus = "recordStatus";
   static String userRoleGroups = "userRoleGroups";
   static String token = "token";
+  static String refreshToken = "refreshToken";
   static String modifiedDate ="modifiedDate";
   static String inviteId = "inviteId";
   static String inviteStatus = "inviteStatus";

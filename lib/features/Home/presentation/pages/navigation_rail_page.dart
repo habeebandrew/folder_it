@@ -6,6 +6,7 @@ import 'package:folder_it/features/Home/domain/usecases/get_navigation_items_use
 import 'package:folder_it/features/Home/presentation/cubit/theme_cubit.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/databases/cache/cache_helper.dart';
+import '../../../../main.dart';
 import '../cubit/navigation_cubit.dart';
 import 'my_files_page.dart';
 import 'package:http/http.dart' as http;
@@ -13,13 +14,31 @@ import '../../../Groups/presentation/pages/View_Groups.dart';
 import '../widgets/custom_navigation_rail.dart';
 import 'package:badges/badges.dart' as badges;
 
-class NavigationRailPage extends StatelessWidget {
+class NavigationRailPage extends StatefulWidget {
   const NavigationRailPage({super.key, required this.notificationCount});
   //!طبعا هاي بتجي من ال api
   final int notificationCount;
 
   @override
+  State<NavigationRailPage> createState() => _NavigationRailPageState();
+}
+
+class _NavigationRailPageState extends State<NavigationRailPage> {
+  bool _hasRun = false; // علامة لمنع تكرار التنفيذ
+  void initState() {
+    super.initState();
+
+//     //   تشغيل الكود مرة وحدة
+    if (!_hasRun) {
+      _hasRun = true; //   لتجنب التكرار
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        TokenHandler().startTokenProcess(context);
+      });
+    }
+  }
+  @override
   Widget build(BuildContext context) {
+
     final width = MediaQuery.of(context).size.width;
     final bool isSmallScreen = width < 600;
     final bool isLargeScreen = width > 800;
@@ -68,7 +87,7 @@ class NavigationRailPage extends StatelessWidget {
                     '3',
                     style: TextStyle(color: Colors.white),
                   ),
-                  showBadge: notificationCount > 0,
+                  showBadge: widget.notificationCount > 0,
                   position: badges.BadgePosition.topEnd(top: 0, end: 0),
                   badgeStyle: const badges.BadgeStyle(
                     badgeColor: Colors.red,

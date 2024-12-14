@@ -20,6 +20,7 @@ class UserModel  {
     bool recordStatus;
     dynamic userRoleGroups;
     String?token;
+    String?refreshToken;
 
     UserModel({
         required this.id,
@@ -30,6 +31,8 @@ class UserModel  {
         required this.recordStatus,
         required this.userRoleGroups,
         required this.token,
+        required this.refreshToken,
+
     });
 
     factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
@@ -41,6 +44,8 @@ class UserModel  {
         recordStatus: json[ApiKey.recordStatus],
         userRoleGroups: json[ApiKey.userRoleGroups],
         token: json[ApiKey.token],
+        refreshToken: json[ApiKey.refreshToken],
+
     );
 
     Map<String, dynamic> toJson() => {
@@ -52,5 +57,7 @@ class UserModel  {
         ApiKey.recordStatus: recordStatus,
         ApiKey.userRoleGroups: userRoleGroups,
         ApiKey.token: token,
+        ApiKey.refreshToken: refreshToken,
+
     };
 }
