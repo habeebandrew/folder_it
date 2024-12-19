@@ -8,9 +8,10 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/Group_Browser/presentation/pages/group_form.dart';
 import '../../features/Groups/presentation/pages/GroupCreationPage.dart';
+import '../../features/admin/admin_screen.dart';
 
 final GoRouter router = GoRouter(
-  initialLocation: '/login',
+  initialLocation: '/AdminScreen',
   routes: [
     GoRoute(
       path: '/GroupCreationPage',
@@ -58,6 +59,10 @@ final GoRouter router = GoRouter(
       path: '/inviteMemeber',
       builder: (context, state) =>  const InviteMemberPage(groupId: 0,),
     ),
+    GoRoute(
+      path: '/AdminScreen',
+      builder: (context, state) =>   AdminScreen(),
+    ),
   ],
 );
 //? للتنقل
@@ -65,7 +70,7 @@ final GoRouter router = GoRouter(
  *
     ElevatedButton(
     onPressed: () {
-    context.go('/signup');
+    context.go('/AdminScreen');
     },
     child: Text('Sign Up'),
     )
