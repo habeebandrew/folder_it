@@ -54,7 +54,7 @@ class MyApp extends StatelessWidget {
 class TokenHandler {
   /// تحديث التوكن بعد مرور 10 ثوانٍ
   Future<void> startTokenProcess(BuildContext context) async {
-    await Future.delayed(Duration(seconds: 20), () async {
+    await Future.delayed(Duration(minutes: 20), () async {
       print('fist refresh token');
       try {
         final newToken = await _refreshToken();
@@ -71,7 +71,7 @@ class TokenHandler {
       }
 
       // بعد 10 ثوانٍ إضافية، عرض رسالة تسجيل الدخول
-      Future.delayed(Duration(seconds: 60), (
+      Future.delayed(Duration(minutes: 60), (
 
 
           ) {
