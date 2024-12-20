@@ -1,9 +1,11 @@
 // lib/presentation/pages/navigation_rail_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:folder_it/features/Group_Browser/presentation/group_pages/my_task_on_group.dart';
 import 'package:folder_it/features/Groups/presentation/pages/invites_page.dart';
 import 'package:folder_it/features/Home/domain/usecases/get_navigation_items_usecase.dart';
 import 'package:folder_it/features/Home/presentation/cubit/theme_cubit.dart';
+import 'package:folder_it/features/Home/presentation/pages/mytasks.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/databases/cache/cache_helper.dart';
 import '../../../../main.dart';
@@ -191,6 +193,8 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
                       return const MyFilePage();
                     case NavigationState.group:
                       return const Groups();
+                    case NavigationState.myTasks:
+                      return const MyTasks();
                     case NavigationState.Report:
                       return
 

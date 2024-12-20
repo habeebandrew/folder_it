@@ -151,7 +151,7 @@ class _MyFilePageState extends State<UploadFilesPage> {
               backgroundColor: Colors.green,
             ),
           );
-          Navigator.pop(context);
+          Navigator.pop(context, true);
           
         }
         if (json.decode(res)['message'] ==

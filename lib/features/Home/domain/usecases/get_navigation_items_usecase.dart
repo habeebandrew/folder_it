@@ -17,6 +17,11 @@ class GetNavigationItemsUseCase {
         activeIcon: Icon(Icons.group),
       ),
       const NavigationItem(
+        label: 'My Tasks',
+        icon: Icon(Icons.task_alt_outlined),
+        activeIcon: Icon(Icons.task_alt_outlined),
+      ),
+      const NavigationItem(
         label: 'Log Out',
         icon: Icon(Icons.logout_outlined),
         activeIcon: Icon(Icons.logout_rounded),

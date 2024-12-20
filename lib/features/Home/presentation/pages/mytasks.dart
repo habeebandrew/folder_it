@@ -7,22 +7,17 @@ import 'package:folder_it/core/databases/cache/cache_helper.dart';
 import 'package:folder_it/features/Group_Browser/presentation/group_pages/upload_files_page.dart';
 import 'package:http/http.dart' as http;
 
-class MyTaskOnGroup extends StatefulWidget {
-  final int userId;
-  final int groupId;
-  final int folderId;
+class MyTasks extends StatefulWidget {
 
-  const MyTaskOnGroup(
-      {super.key,
-      required this.userId,
-      required this.groupId,
-      required this.folderId});
+
+  const MyTasks(
+      {super.key});
 
   @override
-  State<MyTaskOnGroup> createState() => _MyTaskOnGroupState();
+  State<MyTasks> createState() => _MyTaskOnGroupState();
 }
 
-class _MyTaskOnGroupState extends State<MyTaskOnGroup> {
+class _MyTaskOnGroupState extends State<MyTasks> {
   List<dynamic> documents = [];
   int currentPage = 0;
   bool isLoading = false;
@@ -35,34 +30,41 @@ class _MyTaskOnGroupState extends State<MyTaskOnGroup> {
   }
 
   Future<Map<String, dynamic>> fetchLockedDocuments({
-    required int userId,
-    required int groupId,
-    required int size,
-    required int start,
-  }) async {
-    final String token = CacheHelper().getData(key: 'token');
+  required int userId,
+  required int size,
+  required int start,
+}) async {
+  final String token = CacheHelper().getData(key: 'token');
 
-    final url = Uri.parse(
-        'http://localhost:8091/document/fetch-my-locked-document?userId=$userId&groupId=$groupId&size=$size&start=$start');
-    final response = await http.get(url, headers: {
-      'Authorization': 'Bearer $token',
-    });
+  final url = Uri.parse(
+      'http://localhost:8091/document/fetch-my-locked-document?userId=$userId&size=$size&start=$start');
+  final response = await http.get(url, headers: {
+    'Authorization': 'Bearer $token',
+  });
 
-    if (response.statusCode == 200) {
-      final responseData = json.decode(response.body);
-      final List<dynamic> parsedList =
-          responseData['list'].map((item) => item['document']).toList();
-      print('doc: $parsedList');
-      return {
-        'extraData': responseData['extraData'],
-        'list': parsedList,
-      };
-    } else {
-      throw Exception('Failed to fetch documents: ${response.statusCode}');
-    }
+  if (response.statusCode == 200) {
+    final responseData = json.decode(response.body);
+
+    // تعديل هنا لتضمين اسم المجموعة مع المستند
+    final List<dynamic> parsedList = responseData['list']
+        .map((item) => {
+              'document': item['document'],
+              'groupName': item['groupName'], // إضافة اسم المجموعة
+            })
+        .toList();
+
+    return {
+      'extraData': responseData['extraData'],
+      'list': parsedList,
+    };
+  } else {
+    throw Exception('Failed to fetch documents: ${response.statusCode}');
   }
+}
+
 
   Future<void> fetchInitialDocuments({bool reset = false}) async {
+    final int userId = CacheHelper().getData(key: 'myid');
     try {
       if (reset) {
         setState(() {
@@ -77,8 +79,7 @@ class _MyTaskOnGroupState extends State<MyTaskOnGroup> {
       });
 
       final data = await fetchLockedDocuments(
-        userId: widget.userId,
-        groupId: widget.groupId,
+        userId: userId,
         size: 3,
         start: currentPage,
       );
@@ -142,7 +143,8 @@ class _MyTaskOnGroupState extends State<MyTaskOnGroup> {
                     itemCount: documents.length + (hasMoreData ? 1 : 0),
                     itemBuilder: (context, index) {
                       if (index < documents.length) {
-                        final document = documents[index];
+                         final document = documents[index]['document'];
+                         final groupName = documents[index]['groupName'];
                         return ExpansionTile(
                           title: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -157,8 +159,8 @@ class _MyTaskOnGroupState extends State<MyTaskOnGroup> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => UploadFilesPage(
-                                        groupId: widget.groupId,
-                                        folderId: widget.folderId,
+                                        groupId: 0,
+                                        folderId: 0,
                                         vsId: document['vsid'],
                                         fileName: document['subject'],
                                       ),
@@ -187,13 +189,13 @@ class _MyTaskOnGroupState extends State<MyTaskOnGroup> {
                                     style: const TextStyle(fontSize: 14),
                                   ),
                                   const SizedBox(height: 8),
-                                  const Row(
+                                   Row(
                                     children: [
-                                      Icon(Icons.lock, color: Colors.red),
-                                      SizedBox(width: 8),
+                                      const Icon(Icons.lock, color: Colors.red),
+                                      const SizedBox(width: 8),
                                       Text(
-                                        'File is locked',
-                                        style: TextStyle(
+                                        'locked this File in $groupName',
+                                        style: const TextStyle(
                                           color: Colors.red,
                                           fontWeight: FontWeight.bold,
                                         ),
