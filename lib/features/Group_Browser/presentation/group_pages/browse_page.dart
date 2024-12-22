@@ -425,34 +425,7 @@ class _BrowsePageState extends State<BrowsePage> {
                                         ),
                                       ],
                                     ),
-                                    if (document['locked'] == true)
-                                      const SizedBox(
-                                        height: 10,
-                                      ),
-                                    if (document['locked'] == true)
-                                      ElevatedButton.icon(
-                                        onPressed: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  UploadFilesPage(
-                                                groupId: widget.groupId,
-                                                folderId: widget.folderId,
-                                                vsId: document['vsid'],
-                                                fileName: document['subject'],
-                                              ),
-                                            ),
-                                          ).then((_) {
-                                            setState(() {
-                                              currentResponse = null;
-                                            });
-                                          });
-                                        },
-                                        icon: const Icon(
-                                            Icons.check_circle_outline),
-                                        label: const Text('Check out'),
-                                      ),
+                                    
                                   ],
                                 ),
                               ),

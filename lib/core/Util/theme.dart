@@ -147,8 +147,8 @@ class ThemeColors{
                       borderRadius: BorderRadius.circular(8),
                     ),
                     elevation: 5,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 60, vertical: 16),
+                    padding:
+                      const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
                   ),
                 ),
                 inputDecorationTheme: const InputDecorationTheme(

@@ -12,11 +12,11 @@ class GroupForm extends StatefulWidget {
   final bool isOtherFilter;
 
   const GroupForm({
-    Key? key,
+    super.key,
     required this.groupId,
     required this.folderId,
     required this.isOtherFilter,
-  }) : super(key: key);
+  });
 
   @override
   State<GroupForm> createState() => _GroupFormState();
@@ -125,17 +125,25 @@ class _GroupFormState extends State<GroupForm> {
                             ),
                           ),
                           _buildMenuButton(
+                            label: "My Tasks",
+                            icon: Icons.task_alt_outlined,
+                            isMobile: isMobile,
+                            onTap: () => _changePage(
+                              MyTaskOnGroup(
+                              userId:userId,
+                              groupId:widget.groupId,
+                              folderId:widget.folderId
+                            ), 
+                            "My Tasks"
+                            ),
+                          ),
+                          _buildMenuButton(
                             label: "Setting",
                             icon: Icons.settings,
                             isMobile: isMobile,
                             onTap: () => _changePage(const SettingsPage(), "Setting"),
                           ),
-                          _buildMenuButton(
-                            label: "My Tasks",
-                            icon: Icons.task_alt_outlined,
-                            isMobile: isMobile,
-                            onTap: () => _changePage( mytaskongroup(), "mytaskongroup"),
-                          ),
+
                           widget.isOtherFilter!=true ?
                           _buildMenuButton(
                             label: "Permissions",
