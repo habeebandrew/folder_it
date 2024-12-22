@@ -74,8 +74,8 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
                       },
                       icon:Icon(
                         isDarkTheme
-                        ?Icons.dark_mode
-                        :Icons.light_mode,
+                            ?Icons.dark_mode
+                            :Icons.light_mode,
                         color: Colors.yellow,
                       )
                   ),
@@ -142,7 +142,7 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
               child: TextButton(
                 onPressed: () {},
                 child:
-                    const Icon(Icons.question_mark_sharp, color: Colors.yellow),
+                const Icon(Icons.question_mark_sharp, color: Colors.yellow),
               ),
             ),
             const SizedBox(
@@ -152,22 +152,22 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
         ),
         bottomNavigationBar: isSmallScreen
             ? BlocBuilder<NavigationCubit, NavigationState>(
-                builder: (context, state) {
-                  final cubit = context.read<NavigationCubit>();
-                  return BottomNavigationBar(
-                    currentIndex: NavigationState.values.indexOf(state),
-                    onTap: (index) =>
-                        cubit.navigateTo(NavigationState.values[index]),
-                    items: cubit.items
-                        .map((item) => BottomNavigationBarItem(
-                              icon: item.icon,
-                              activeIcon: item.activeIcon,
-                              label: item.label,
-                            ))
-                        .toList(),
-                  );
-                },
-              )
+          builder: (context, state) {
+            final cubit = context.read<NavigationCubit>();
+            return BottomNavigationBar(
+              currentIndex: NavigationState.values.indexOf(state),
+              onTap: (index) =>
+                  cubit.navigateTo(NavigationState.values[index]),
+              items: cubit.items
+                  .map((item) => BottomNavigationBarItem(
+                icon: item.icon,
+                activeIcon: item.activeIcon,
+                label: item.label,
+              ))
+                  .toList(),
+            );
+          },
+        )
             : null,
         body: Row(
           children: <Widget>[
