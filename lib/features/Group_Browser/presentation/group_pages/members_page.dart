@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:folder_it/core/databases/cache/cache_helper.dart';
+import 'package:folder_it/features/Group_Browser/presentation/group_pages/members_log.dart';
 import 'package:folder_it/features/Groups/presentation/pages/invite_member_page.dart';
 import 'package:http/http.dart' as http;
 
@@ -10,10 +11,8 @@ class MembersPage extends StatefulWidget {
   final int groupId;
   final bool isOtherFilter;
 
-
-
-
-  const MembersPage({super.key, required this.groupId,required this.isOtherFilter});
+  const MembersPage(
+      {super.key, required this.groupId, required this.isOtherFilter});
 
   @override
   State<MembersPage> createState() => _MembersPageState();
@@ -21,7 +20,7 @@ class MembersPage extends StatefulWidget {
 
 class _MembersPageState extends State<MembersPage> {
   late Future<List<Member>> _membersFuture;
-  String mytoken= CacheHelper().getData(key: 'token');
+  String mytoken = CacheHelper().getData(key: 'token');
 
   @override
   void initState() {
@@ -30,15 +29,11 @@ class _MembersPageState extends State<MembersPage> {
   }
 
   Future<List<Member>> fetchMembers(int groupId) async {
-    final url =
-    Uri.parse('http://localhost:8091/group/get-members-of-group?groupId=$groupId');
+    final url = Uri.parse(
+        'http://localhost:8091/group/get-members-of-group?groupId=$groupId');
     try {
-      final response = await http.get(
-       url,
-       headers: {
-        'Authorization':'Bearer $mytoken'
-       }
-      );
+      final response =
+          await http.get(url, headers: {'Authorization': 'Bearer $mytoken'});
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
         return data.map((member) => Member.fromJson(member)).toList();
@@ -66,7 +61,7 @@ class _MembersPageState extends State<MembersPage> {
                   showDialog(
                     context: context,
                     builder: (context) {
-                      return InviteMemberPage(groupId:widget.groupId);
+                      return InviteMemberPage(groupId: widget.groupId);
                     },
                   );
                 },
@@ -107,66 +102,85 @@ class _MembersPageState extends State<MembersPage> {
             itemCount: members.length,
             itemBuilder: (context, index) {
               final member = members[index];
-              return Card(
-                margin: const EdgeInsets.symmetric(vertical: 6.0),
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: Theme.of(context).primaryColor,
-                    child: Text(
-                      member.userName[0].toUpperCase(),
-                      style: const TextStyle(color: Colors.white),
+              return Tooltip(
+                message:  widget.isOtherFilter || member.roleId ==1?'user':'show user log',
+                child: InkWell(
+                  onTap: widget.isOtherFilter || member.roleId ==1
+                  ?null
+                  : () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MembersLog(
+                                groupId: widget.groupId,
+                                userId: member.userId,
+                              ),
+                            ),
+                          );
+                  },
+                  child: Card(
+                    margin: const EdgeInsets.symmetric(vertical: 6.0),
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: Theme.of(context).primaryColor,
+                        child: Text(
+                          member.userName[0].toUpperCase(),
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      title: Text(
+                        member.userName,
+                      ),
+                      trailing: member.roleId == 1
+                          ? const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.verified,
+                                  color: Colors.blue,
+                                ),
+                                SizedBox(width: 4.0),
+                                Text(
+                                  'Admin',
+                                  style: TextStyle(
+                                      color: Colors.blue,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            )
+                          : widget.isOtherFilter
+                              ? PopupMenuButton<String>(
+                                  onSelected: (value) {},
+                                  itemBuilder: (BuildContext context) {
+                                    return [
+                                      const PopupMenuItem<String>(
+                                        value: '',
+                                        child: Text('Member info'),
+                                      ),
+                                    ];
+                                  },
+                                  icon: const Icon(
+                                    Icons.info,
+                                    color: Colors.blueGrey,
+                                  ),
+                                )
+                              : PopupMenuButton<String>(
+                                  onSelected: (value) {
+                                    _showDeleteConfirmation(
+                                        member.userId, widget.groupId);
+                                  },
+                                  itemBuilder: (BuildContext context) {
+                                    return [
+                                      const PopupMenuItem<String>(
+                                        value: 'remove',
+                                        child: Text('Remove Member'),
+                                      ),
+                                    ];
+                                  },
+                                  icon: const Icon(Icons.more_vert),
+                              ),
                     ),
                   ),
-                  title: Text(
-                    member.userName,
-                  ),
-                  trailing: member.roleId == 1
-                      ? const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.verified,
-                        color: Colors.blue,
-                      ),
-                      SizedBox(width: 4.0),
-                      Text(
-                        'Admin',
-                        style: TextStyle(
-                            color: Colors.blue, fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  )
-                      : widget.isOtherFilter
-                      ?PopupMenuButton<String>(
-                    onSelected: (value) {
-
-                    },
-                    itemBuilder: (BuildContext context) {
-                      return [
-                        const PopupMenuItem<String>(
-                          value: '',
-                          child: Text('Member info'),
-                        ),
-                      ];
-                    },
-                    icon: const Icon(Icons.info,color: Colors.blueGrey,),
-                  )
-                      : PopupMenuButton<String>(
-                    onSelected: (value) {
-                      _showDeleteConfirmation(
-                          member.userId, widget.groupId);
-                    },
-                    itemBuilder: (BuildContext context) {
-                      return [
-                        const PopupMenuItem<String>(
-                          value: 'remove',
-                          child: Text('Remove Member'),
-                        ),
-                      ];
-                    },
-                    icon: const Icon(Icons.more_vert),
-                  ),
-
                 ),
               );
             },
@@ -207,16 +221,12 @@ class _MembersPageState extends State<MembersPage> {
   }
 
   Future<void> deleteMember(int userId, int groupId) async {
-
     final url = Uri.parse(
         'http://localhost:8091/group/delete-member-from-group?userId=$userId&groupId=$groupId');
     try {
       String mytoken = CacheHelper().getData(key: 'token');
-      final response = await http.post(url,headers:{
-
-      'Authorization':"Bearer $mytoken"}
-
-      );
+      final response =
+          await http.post(url, headers: {'Authorization': "Bearer $mytoken"});
 
       if (response.statusCode == 200) {
         setState(() {
