@@ -114,6 +114,7 @@ class _MembersPageState extends State<MembersPage> {
                               builder: (context) => MembersLog(
                                 groupId: widget.groupId,
                                 userId: member.userId,
+                                userName:member.userName
                               ),
                             ),
                           );

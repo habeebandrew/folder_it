@@ -6,9 +6,10 @@ import 'package:folder_it/core/databases/cache/cache_helper.dart';
 
 class MembersLog extends StatefulWidget {
   final int userId;
+  final String userName;
   final int groupId;
 
-  const MembersLog({super.key, required this.userId,required this.groupId});
+  const MembersLog({super.key, required this.userId, required this.userName, required this.groupId});
 
   @override
   State<MembersLog> createState() => _MembersLogState();
@@ -86,14 +87,6 @@ class _MembersLogState extends State<MembersLog> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Text(
-                //   'Action: ${log['action']}',
-                //   style: const TextStyle(
-                //     fontWeight: FontWeight.bold,
-                //     fontSize: 16,
-                //     color: Colors.black87,
-                //   ),
-                // ),
                 Icon(
                   Icons.event_note,
                   color: Colors.blue.shade700,
@@ -102,14 +95,6 @@ class _MembersLogState extends State<MembersLog> {
             ),
             const Divider(), // Add a divider for better separation
             const SizedBox(height: 8),
-            // Text(
-            //   'Group: ${log['relatedGroup']}',
-            //   style: TextStyle(
-            //     fontSize: 14,
-            //     color: Colors.grey.shade600,
-            //   ),
-            // ),
-            // const SizedBox(height: 4),
             Text(
               'Date: $formattedDate',
               style: TextStyle(
@@ -136,7 +121,7 @@ class _MembersLogState extends State<MembersLog> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('User Logs'),
+        title:  Text('${widget.userName} Log'),
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
