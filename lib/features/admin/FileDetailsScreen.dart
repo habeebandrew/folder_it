@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-//Todo:تحسين تصميم
 
 class FileDetailsScreen extends StatefulWidget {
   final String vsid;
@@ -51,20 +50,27 @@ class _FileDetailsScreenState extends State<FileDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+
       appBar: AppBar(
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+
         title: Text(
           'File Details',
-          style: GoogleFonts.roboto(fontSize: 20, fontWeight: FontWeight.w600),
+          style: GoogleFonts.roboto(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(16.0),
         child: _logs.isEmpty && !_isLoading
             ? Center(
           child: Text(
             'No logs available.',
-            style: GoogleFonts.roboto(fontSize: 16),
+            style: GoogleFonts.roboto(fontSize: 16, color: Colors.grey),
           ),
         )
             : Column(
@@ -76,34 +82,55 @@ class _FileDetailsScreenState extends State<FileDetailsScreen> {
                   final log = _logs[index];
                   return Card(
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    elevation: 4,
-                    margin: EdgeInsets.symmetric(vertical: 6),
+                    elevation: 6,
+                    margin: const EdgeInsets.symmetric(vertical: 8),
                     child: ListTile(
+                      leading: const CircleAvatar(
+                        backgroundColor:Color(0xFF121212),
+                        child: Icon(
+                          Icons.event_note,
+                          color: Colors.white,
+                        ),
+                      ),
                       title: Text(
                         'Action: ${log['action']}',
-                        style: GoogleFonts.roboto(fontSize: 16),
+                        style: GoogleFonts.roboto(fontSize: 16, fontWeight: FontWeight.w500),
                       ),
                       subtitle: Text(
-                        'User: ${log['relatedUser']}',
+                        'User: ${log['relatedUser']}\nDate: ${log['creationDate']}',
                         style: GoogleFonts.roboto(fontSize: 14),
-                      ),
-                      trailing: Text(
-                        log['creationDate'],
-                        style: GoogleFonts.roboto(fontSize: 12),
                       ),
                     ),
                   );
                 },
               ),
             ),
-            if (_hasMore)
-              ElevatedButton(
+            if (_isLoading)
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: CircularProgressIndicator(),
+              ),
+            if (_hasMore && !_isLoading)
+              ElevatedButton.icon(
                 onPressed: _fetchLogs,
-                child: _isLoading
-                    ? CircularProgressIndicator(color: Colors.white)
-                    : Text('Load More'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF121212),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                icon: const Icon(Icons.add),
+                label: const Text('Load More'),
+              ),
+            if (!_hasMore)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'You have reached the end of the logs.',
+                  style: GoogleFonts.roboto(fontSize: 14, color: Colors.grey),
+                ),
               ),
           ],
         ),

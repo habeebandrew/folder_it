@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'FileDetailsScreen.dart';
-//Todo:تحسين تصميم
+
 class FileListScreen extends StatefulWidget {
   @override
   _FileListScreenState createState() => _FileListScreenState();
@@ -12,7 +12,7 @@ class FileListScreen extends StatefulWidget {
 
 class _FileListScreenState extends State<FileListScreen> {
   int _currentPage = 0;
-  int _pageSize = 3; // عدد العناصر الجديدة لكل تحميل
+  int _pageSize = 3;
   bool _isLoading = false;
   bool _hasMore = true;
   List<dynamic> _files = [];
@@ -32,7 +32,7 @@ class _FileListScreenState extends State<FileListScreen> {
       setState(() {
         _currentPage += _pageSize;
         _files.addAll(fetchedFiles);
-        _hasMore = fetchedFiles.length == _pageSize; // إذا كان العدد أقل من _pageSize يعني انتهاء البيانات
+        _hasMore = fetchedFiles.length == _pageSize;
       });
     }
 
@@ -57,43 +57,69 @@ class _FileListScreenState extends State<FileListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+
       appBar: AppBar(
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+
         title: Text(
           'File List',
           style: GoogleFonts.roboto(fontSize: 20, fontWeight: FontWeight.w600),
         ),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: _files.isEmpty && !_isLoading
-            ? Center(
-          child: Text(
-            'No files available.',
-            style: GoogleFonts.roboto(fontSize: 16),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.blue.shade100, Colors.blue.shade50],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
-        )
-            : ListView.builder(
-          itemCount: _files.length + 1, // +1 للزر "Load More"
-          itemBuilder: (context, index) {
-            if (index == _files.length) {
-              // العنصر الأخير هو زر "Load More"
-              return _hasMore
-                  ? Center(
-                child: ElevatedButton(
-                  onPressed: _fetchFiles,
-                  child: _isLoading
-                      ? const CircularProgressIndicator(
-                    color: Colors.white,
-                  )
-                      : const Text('Load More'),
-                ),
-              )
-                  : const SizedBox(); // إخفاء الزر عند انتهاء البيانات
-            }
-
-            return _buildFileCard(_files[index]);
-          },
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: _files.isEmpty && !_isLoading
+              ? Center(
+            child: Text(
+              'No files available.',
+              style: GoogleFonts.roboto(
+                fontSize: 16,
+                color: Colors.blueGrey,
+              ),
+            ),
+          )
+              : ListView.builder(
+            itemCount: _files.length + 1,
+            itemBuilder: (context, index) {
+              if (index == _files.length) {
+                return _hasMore
+                    ? Center(
+                  child: OutlinedButton(
+                    onPressed: _fetchFiles,
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: Colors.blue),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: _isLoading
+                        ? const CircularProgressIndicator(
+                      color: Colors.blue,
+                    )
+                        : Text(
+                      'Load More',
+                      style: GoogleFonts.roboto(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                )
+                    : const SizedBox();
+              }
+              return _buildFileCard(_files[index]);
+            },
+          ),
         ),
       ),
     );
@@ -104,21 +130,69 @@ class _FileListScreenState extends State<FileListScreen> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15),
       ),
-      elevation: 4,
-      child: ListTile(
-        title: Text(
-          file['subject'],
-          style: GoogleFonts.roboto(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        subtitle: Text(
-          file['note'],
-          style: GoogleFonts.roboto(fontSize: 14),
-        ),
-        trailing: const Icon(Icons.arrow_forward_ios),
+      elevation: 5,
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(15),
         onTap: () => _viewDetails(file['vsid']),
+        child: Row(
+          children: [
+            // صورة مصغرة
+            Container(
+              width: 80,
+              height: 80,
+              decoration: const BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(15),
+                  bottomLeft: Radius.circular(15),
+                ),
+                image: DecorationImage(
+                  image: AssetImage('assets/icons/favicon.png'), // ضع هنا مسار الصورة الصحيح
+                  fit: BoxFit.fill, // لجعل الصورة تغطي الحاوية بالكامل
+                ),
+              ),
+            ),
+
+            // تفاصيل الملف
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      file['subject'],
+                      style: GoogleFonts.roboto(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.blue.shade900,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      file['note'],
+                      style: GoogleFonts.roboto(
+                        fontSize: 14,
+                        color: Colors.grey.shade700,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            // أيقونة
+            Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: Icon(
+                Icons.arrow_forward_ios,
+                size: 20,
+                color: Colors.blue.shade700,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
