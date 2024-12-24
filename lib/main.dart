@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -11,15 +12,30 @@ import 'package:folder_it/features/Groups/presentation/cubit/group_cubit.dart';
 import 'package:folder_it/features/Home/presentation/cubit/theme_cubit.dart';
 import 'package:folder_it/features/User/presentation/cubit/user_cubit.dart';
 
+import 'localization/localization.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await CacheHelper().init();
   Bloc.observer = MyBlocObserver();
-  runApp(const MyApp());
+  runApp(  MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp extends StatefulWidget {
+   MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  Locale _locale = Locale('en');
+ // اللغة الافتراضية
+  void _setLocale(Locale locale) {
+    setState(() {
+      _locale = locale;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +54,17 @@ class MyApp extends StatelessWidget {
       child: BlocBuilder<ThemeCubit, bool>(
         builder: (context, isDarkTheme) {
           return MaterialApp.router(
+            localizationsDelegates: const [
+              AppLocalizationDelegate(), // إضافة المزود
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('en'), // الإنجليزية
+              Locale('ar'), // العربية
+            ],
+            locale: const Locale('en'), // اللغة الافتراضية
             debugShowCheckedModeBanner: false,
             title: 'Folder it now',
             routerConfig: router,

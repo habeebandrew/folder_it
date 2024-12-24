@@ -8,6 +8,7 @@ import 'package:folder_it/features/Home/presentation/cubit/theme_cubit.dart';
 import 'package:folder_it/features/Home/presentation/pages/mytasks.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/databases/cache/cache_helper.dart';
+import '../../../../localization/localization.dart';
 import '../../../../main.dart';
 import '../cubit/navigation_cubit.dart';
 import 'my_files_page.dart';
@@ -67,17 +68,21 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
             BlocBuilder<ThemeCubit, bool>(
               builder: (context, isDarkTheme) {
                 return Tooltip(
-                  message: isDarkTheme?"dark mode":"light mode",
+                  message: isDarkTheme
+                      ? AppLocalization.of(context)
+                      ?.translate("dark_mode") ??
+                      ""
+                      : AppLocalization.of(context)
+                      ?.translate("light_mode") ??
+                      "",
                   child: IconButton(
-                      onPressed: () {
-                        ThemeCubit.get(context).toggleTheme();
-                      },
-                      icon:Icon(
-                        isDarkTheme
-                            ?Icons.dark_mode
-                            :Icons.light_mode,
-                        color: Colors.yellow,
-                      )
+                    onPressed: () {
+                      ThemeCubit.get(context).toggleTheme();
+                    },
+                    icon: Icon(
+                      isDarkTheme ? Icons.dark_mode : Icons.light_mode,
+                      color: Colors.yellow,
+                    ),
                   ),
                 );
               },
