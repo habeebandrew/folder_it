@@ -4,6 +4,7 @@ import 'package:folder_it/core/Util/responsive_view.dart';
 import 'package:folder_it/features/User/presentation/cubit/user_cubit.dart';
 import 'package:folder_it/features/User/presentation/widgets/custom_form_field.dart';
 import 'package:go_router/go_router.dart';
+import 'package:folder_it/localization/localization.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -12,17 +13,15 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        //backgroundColor: Theme.of(context).primaryColor,
-        title:  Row(
+        title: Row(
           children: [
             const Icon(Icons.folder, color: Colors.yellow, size: 30),
             const SizedBox(width: 10),
             Text(
-              "FOLDERIT",
+              AppLocalization.of(context)?.translate("app_title") ?? "",
               style: TextStyle(
                 color: Colors.white,
                 fontSize: Theme.of(context).textTheme.bodyLarge!.fontSize,
-                
               ),
             ),
           ],
@@ -34,7 +33,7 @@ class LoginScreen extends StatelessWidget {
               context.go('/signup');
             },
             child: Text(
-              "Sign up",
+              AppLocalization.of(context)?.translate("sign_up") ?? "",
               style: TextStyle(
                 color: Theme.of(context).textTheme.bodySmall!.color,
                 fontSize: Theme.of(context).textTheme.bodySmall!.fontSize,
@@ -47,8 +46,8 @@ class LoginScreen extends StatelessWidget {
               UserCubit.get(context).clearControllers();
               context.go('/login');
             },
-            child:Text(
-              "Login",
+            child: Text(
+              AppLocalization.of(context)?.translate("login") ?? "",
               style: TextStyle(
                 color: Theme.of(context).textTheme.bodySmall!.color,
                 fontSize: Theme.of(context).textTheme.bodySmall!.fontSize,
@@ -92,7 +91,7 @@ class LoginForm extends StatelessWidget {
           child: Container(
             width: width,
             padding:
-                const EdgeInsets.symmetric(vertical: 30.0, horizontal: 25.0),
+            const EdgeInsets.symmetric(vertical: 30.0, horizontal: 25.0),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(20.0),
@@ -116,8 +115,7 @@ class LoginForm extends StatelessWidget {
                       child: LayoutBuilder(
                         builder: (context, constraints) {
                           return SizedBox(
-                            width: constraints.maxWidth *
-                                0.5, // عرض الصورة 80% من مساحة الحاوية
+                            width: constraints.maxWidth * 0.5,
                             child: Image.asset(
                               'assets/images/auth/LOGIN_copy.png',
                               fit: BoxFit.contain,
@@ -130,7 +128,7 @@ class LoginForm extends StatelessWidget {
                     const SizedBox(height: 25),
                     customFormFiled(
                       controller: cubit.userNameController,
-                      label: 'Username',
+                      label: AppLocalization.of(context)?.translate("username") ?? "",
                       validator: (value) {
                         return cubit.validateUserName(value);
                       },
@@ -139,7 +137,7 @@ class LoginForm extends StatelessWidget {
                     const SizedBox(height: 15),
                     customFormFiled(
                       controller: cubit.passwordController,
-                      label: 'Password',
+                      label: AppLocalization.of(context)?.translate("password") ?? "",
                       obscureText: true,
                       validator: (value) {
                         return cubit.validatePassword(value);
@@ -163,17 +161,17 @@ class LoginForm extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              "Remember me",
-                              style: Theme.of(context).textTheme.displayMedium
+                              AppLocalization.of(context)?.translate("remember_me") ?? "",
+                              style: Theme.of(context).textTheme.displayMedium,
                             ),
                           ],
                         ),
 
                         TextButton(
                           onPressed: () {},
-                          child: const Text(
-                            "Forgot password?",
-                            style: TextStyle(color: Colors.blue),
+                          child: Text(
+                            AppLocalization.of(context)?.translate("forgot_password") ?? "",
+                            style: const TextStyle(color: Colors.blue),
                           ),
                         ),
                       ],
@@ -183,19 +181,19 @@ class LoginForm extends StatelessWidget {
                       child: state is UserAuthLoadingState
                           ? const CircularProgressIndicator()
                           : ElevatedButton(
-                              style: Theme.of(context).elevatedButtonTheme.style,
-                              onPressed: () async {
-                                await cubit.login(
-                                  context,
-                                  cubit.userNameController.text,
-                                  cubit.passwordController.text,
-                                );
-                              },
-                              child: Text(
-                                'Sign In',
-                                style: Theme.of(context).textTheme.bodyMedium!.apply(color:Colors.white)
-                              ),
-                            ),
+                        style: Theme.of(context).elevatedButtonTheme.style,
+                        onPressed: () async {
+                          await cubit.login(
+                            context,
+                            cubit.userNameController.text,
+                            cubit.passwordController.text,
+                          );
+                        },
+                        child: Text(
+                          AppLocalization.of(context)?.translate("sign_in") ?? "",
+                          style: Theme.of(context).textTheme.bodyMedium!.apply(color: Colors.white),
+                        ),
+                      ),
                     ),
                     const SizedBox(
                       height: 10,

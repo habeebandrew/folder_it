@@ -19,7 +19,6 @@ import 'package:badges/badges.dart' as badges;
 
 class NavigationRailPage extends StatefulWidget {
   const NavigationRailPage({super.key, required this.notificationCount});
-  //!طبعا هاي بتجي من ال api
   final int notificationCount;
 
   @override
@@ -27,21 +26,26 @@ class NavigationRailPage extends StatefulWidget {
 }
 
 class _NavigationRailPageState extends State<NavigationRailPage> {
-  bool _hasRun = false; // علامة لمنع تكرار التنفيذ
+  bool _hasRun = false;
+
+  @override
   void initState() {
     super.initState();
-
-//     //   تشغيل الكود مرة وحدة
     if (!_hasRun) {
-      _hasRun = true; //   لتجنب التكرار
+      _hasRun = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         TokenHandler().startTokenProcess(context);
       });
     }
   }
+  void _toggleLanguage() {
+    final currentLocale = Localizations.localeOf(context);
+    final newLocale = currentLocale.languageCode == 'en' ? const Locale('ar') : const Locale('en');
+    MyApp.setLocale(context, newLocale);
+  }
+
   @override
   Widget build(BuildContext context) {
-
     final width = MediaQuery.of(context).size.width;
     final bool isSmallScreen = width < 600;
     final bool isLargeScreen = width > 800;
@@ -50,13 +54,12 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
       create: (context) => NavigationCubit(GetNavigationItemsUseCase()),
       child: Scaffold(
         appBar: AppBar(
-          //backgroundColor: Theme.of(context).primaryColor,
           title: Row(
             children: [
               const Icon(Icons.folder, color: Colors.yellow, size: 30),
               const SizedBox(width: 10),
               Text(
-                "FOLDERIT",
+                AppLocalization.of(context)?.translate("app_title") ?? "",
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: Theme.of(context).textTheme.bodyLarge!.fontSize,
@@ -68,12 +71,9 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
             BlocBuilder<ThemeCubit, bool>(
               builder: (context, isDarkTheme) {
                 return Tooltip(
-                  message: isDarkTheme
-                      ? AppLocalization.of(context)
-                      ?.translate("dark_mode") ??
-                      ""
-                      : AppLocalization.of(context)
-                      ?.translate("light_mode") ??
+                  message: AppLocalization.of(context)?.translate(
+                    isDarkTheme ? "dark_mode" : "light_mode",
+                  ) ??
                       "",
                   child: IconButton(
                     onPressed: () {
@@ -87,72 +87,64 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
                 );
               },
             ),
-            Stack(
-              children: [
-                badges.Badge(
-                  badgeContent: const Text(
-                    '3',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  showBadge: widget.notificationCount > 0,
-                  position: badges.BadgePosition.topEnd(top: 0, end: 0),
-                  badgeStyle: const badges.BadgeStyle(
-                    badgeColor: Colors.red,
-                  ),
-                  child: PopupMenuButton<int>(
-                    icon: const Icon(Icons.notifications, color: Colors.yellow),
-                    itemBuilder: (context) => [
-                      const PopupMenuItem(
-                        value: 1,
-                        child: ListTile(
-                          leading: Icon(Icons.message, color: Colors.blue),
-                          title: Text('view invites'),
-                        ),
-                      ),
-                      const PopupMenuItem(
-                        value: 2,
-                        child: ListTile(
-                          leading: Icon(Icons.update, color: Colors.green),
-                          title: Text('new Update '),
-                        ),
-                      ),
-                      const PopupMenuItem(
-                        value: 3,
-                        child: ListTile(
-                          leading: Icon(Icons.warning, color: Colors.red),
-                          title: Text('Warning'),
-                        ),
-                      ),
-                    ],
-                    onSelected: (value) {
-                      if (value == 1) {
-                        showDialog(
-                            context: context,
-                            builder: (context) {
-                              //GroupCubit.get(context).viewMyInvites();
-                              return const InvitesPage();
-                            });
-                      } else if (value == 2) {
-                        // context.go('/update');
-                      } else if (value == 3) {
-                        // context.go('/warnings');
-                      }
-                    },
-                  ),
-                ),
-              ],
+            IconButton(
+              icon: const Icon(Icons.language, color: Colors.yellow),
+              onPressed: _toggleLanguage,
+              tooltip: AppLocalization.of(context)?.translate("tranlate"),
             ),
-            Tooltip(
-              message: 'Instructions',
-              child: TextButton(
-                onPressed: () {},
-                child:
-                const Icon(Icons.question_mark_sharp, color: Colors.yellow),
+            badges.Badge(
+              badgeContent: Text(
+                '${widget.notificationCount}',
+                style: const TextStyle(color: Colors.white),
+              ),
+              showBadge: widget.notificationCount > 0,
+              position: badges.BadgePosition.topEnd(top: 0, end: 0),
+              badgeStyle: const badges.BadgeStyle(
+                badgeColor: Colors.red,
+              ),
+              child: PopupMenuButton<int>(
+                icon: const Icon(Icons.notifications, color: Colors.yellow),
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 1,
+                    child: ListTile(
+                      leading: const Icon(Icons.message, color: Colors.blue),
+                      title: Text(AppLocalization.of(context)?.translate("view_invites") ?? ""),
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 2,
+                    child: ListTile(
+                      leading: const Icon(Icons.update, color: Colors.green),
+                      title: Text(AppLocalization.of(context)?.translate("new_update") ?? ""),
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 3,
+                    child: ListTile(
+                      leading: const Icon(Icons.warning, color: Colors.red),
+                      title: Text(AppLocalization.of(context)?.translate("warning") ?? ""),
+                    ),
+                  ),
+                ],
+                onSelected: (value) {
+                  if (value == 1) {
+                    showDialog(
+                      context: context,
+                      builder: (context) => const InvitesPage(),
+                    );
+                  }
+                },
               ),
             ),
-            const SizedBox(
-              width: 20,
+            Tooltip(
+              message: AppLocalization.of(context)?.translate("instructions") ?? "",
+              child: TextButton(
+                onPressed: () {},
+                child: const Icon(Icons.question_mark_sharp, color: Colors.yellow),
+              ),
             ),
+            const SizedBox(width: 20),
           ],
         ),
         bottomNavigationBar: isSmallScreen
@@ -189,7 +181,7 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
                   );
                 },
               ),
-            const VerticalDivider(thickness: 1, width: 1,color: Colors.grey,),
+            const VerticalDivider(thickness: 1, width: 1, color: Colors.grey),
             Expanded(
               child: BlocBuilder<NavigationCubit, NavigationState>(
                 builder: (context, state) {
@@ -201,24 +193,18 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
                     case NavigationState.myTasks:
                       return const MyTasks();
                     case NavigationState.Report:
-                      return
-
-                        // const logoutPage();
-                        AlertDialog(
-                          title: const Text('تأكيد تسجيل الخروج'),
-                          content: const Text('هل أنت متأكد أنك تريد تسجيل الخروج؟'),
-                          actions: [
-
-                            ElevatedButton(
-                              onPressed: () {
-                                _logout(context); // تنفيذ عملية تسجيل الخروج
-                              },
-                              child: const Text('تأكيد'),
-                            ),
-                          ],
-                        );
-
-
+                      return AlertDialog(
+                        title: Text(AppLocalization.of(context)?.translate("warning") ?? ""),
+                        content: Text(AppLocalization.of(context)?.translate("confirm_logout") ?? ""),
+                        actions: [
+                          ElevatedButton(
+                            onPressed: () {
+                              _logout(context);
+                            },
+                            child: Text(AppLocalization.of(context)?.translate("confirm") ?? ""),
+                          ),
+                        ],
+                      );
                   }
                 },
               ),
@@ -243,17 +229,17 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
 
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('تم تسجيل الخروج بنجاح!')),
+          SnackBar(content: Text(AppLocalization.of(context)?.translate("logout_success") ?? "")),
         );
         context.go("/login");
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('فشل في تسجيل الخروج!')),
+          SnackBar(content: Text(AppLocalization.of(context)?.translate("logout_failure") ?? "")),
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('حدث خطأ أثناء تسجيل الخروج!')),
+        SnackBar(content: Text(AppLocalization.of(context)?.translate("logout_error") ?? "")),
       );
     }
   }

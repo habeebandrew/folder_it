@@ -54,8 +54,3 @@ flutter:
     - assets/images/group/
     - assets/languages/en.json
     - assets/languages/ar.json
-
-l10n:
-  arb-dir: lib/l10n
-  template-arb-file: app_en.arb.arb
-  output-localization-file: l10n.dart

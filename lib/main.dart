@@ -20,18 +20,22 @@ void main() async {
   Bloc.observer = MyBlocObserver();
   runApp(  MyApp());
 }
-
 class MyApp extends StatefulWidget {
-   MyApp({super.key});
+  const MyApp({super.key});
+
+  static void setLocale(BuildContext context, Locale locale) {
+    final _MyAppState? state = context.findAncestorStateOfType<_MyAppState>();
+    state?.setLocale(locale);
+  }
 
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  Locale _locale = Locale('en');
- // اللغة الافتراضية
-  void _setLocale(Locale locale) {
+  Locale _locale = const Locale('en'); // اللغة الافتراضية
+
+  void setLocale(Locale locale) {
     setState(() {
       _locale = locale;
     });
@@ -55,16 +59,16 @@ class _MyAppState extends State<MyApp> {
         builder: (context, isDarkTheme) {
           return MaterialApp.router(
             localizationsDelegates: const [
-              AppLocalizationDelegate(), // إضافة المزود
+              AppLocalizationDelegate(),
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
             supportedLocales: const [
-              Locale('en'), // الإنجليزية
-              Locale('ar'), // العربية
+              Locale('en'),
+              Locale('ar'),
             ],
-            locale: const Locale('en'), // اللغة الافتراضية
+            locale: _locale, // تعيين اللغة الحالية
             debugShowCheckedModeBanner: false,
             title: 'Folder it now',
             routerConfig: router,
