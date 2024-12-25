@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:folder_it/features/Group_Browser/presentation/group_pages/file_log.dart';
 import 'package:folder_it/features/Group_Browser/presentation/group_pages/upload_files_page.dart';
 import 'package:http/http.dart' as http;
 import 'package:universal_html/html.dart' as html;
@@ -402,27 +403,43 @@ class _BrowsePageState extends State<BrowsePage> {
                                     ),
                                     const SizedBox(height: 8),
                                     Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Icon(
-                                          document['locked']
-                                              ? Icons.lock
-                                              : Icons.lock_open,
-                                          color: document['locked']
-                                              ? Colors.red
-                                              : Colors.green,
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              document['locked']
+                                                  ? Icons.lock
+                                                  : Icons.lock_open,
+                                              color: document['locked']
+                                                  ? Colors.red
+                                                  : Colors.green,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              document['locked']
+                                                  ? 'File is locked'
+                                                  : 'File is not locked',
+                                              style: TextStyle(
+                                                color: document['locked']
+                                                    ? Colors.red
+                                                    : Colors.green,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          document['locked']
-                                              ? 'File is locked'
-                                              : 'File is not locked',
-                                          style: TextStyle(
-                                            color: document['locked']
-                                                ? Colors.red
-                                                : Colors.green,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
+                                        TextButton(
+                                          onPressed: (){
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => FileLog(vsid: document['vsid']),
+                                              ),
+                                            );
+                                          },
+                                          child: const Text('see file log'),
+                                        )
                                       ],
                                     ),
                                     

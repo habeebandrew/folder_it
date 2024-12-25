@@ -1,0 +1,138 @@
+import 'package:flutter/material.dart';
+import 'package:folder_it/core/databases/cache/cache_helper.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+class FileLog extends StatefulWidget {
+  final String vsid;
+
+  const FileLog({super.key, required this.vsid});
+
+  @override
+  State<FileLog> createState() => _FileLogState();
+}
+
+class _FileLogState extends State<FileLog> {
+  int _currentPage = 0;
+  final int _pageSize = 4;
+  bool _isLoading = false;
+  bool _hasMore = true;
+  final List<dynamic> _logs = [];
+
+  Future<void> _fetchLogs() async {
+    final String? token = CacheHelper().getData(key: 'token');
+    if (_isLoading || !_hasMore) return;
+
+    setState(() => _isLoading = true);
+
+    final response = await http.get(Uri.parse(
+        'http://localhost:8091/document-log/log-document?vsId=${widget.vsid}&size=$_pageSize&start=$_currentPage'),
+        headers: {
+           'Authorization': 'Bearer $token',
+        }
+    
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final List<dynamic> fetchedLogs = data['list'];
+
+      setState(() {
+        _currentPage += _pageSize;
+        _logs.addAll(fetchedLogs);
+        _hasMore = fetchedLogs.length == _pageSize;
+      });
+    }
+
+    setState(() => _isLoading = false);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchLogs();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'File Details',
+          style: GoogleFonts.roboto(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        centerTitle: true,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: _logs.isEmpty && !_isLoading
+            ? Center(
+          child: Text(
+            'No logs available.',
+            style: GoogleFonts.roboto(fontSize: 16, color: Colors.grey),
+          ),
+        )
+            : Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: _logs.length,
+                itemBuilder: (context, index) {
+                  final log = _logs[index];
+                  return Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 6,
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    child: ListTile(
+                      leading:  CircleAvatar(
+                        backgroundColor:Theme.of(context).primaryColor,
+                        child: const Icon(
+                          Icons.event_note,
+                          color: Colors.white,
+                        ),
+                      ),
+                      title: Text(
+                        'Action: ${log['action']}',
+                        style: GoogleFonts.roboto(fontSize: 16, fontWeight: FontWeight.w500),
+                      ),
+                      subtitle: Text(
+                        'User: ${log['relatedUser']}\nDate: ${log['creationDate']}',
+                        style: GoogleFonts.roboto(fontSize: 14),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            if (_isLoading)
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: CircularProgressIndicator(),
+              ),
+            if (_hasMore && !_isLoading)
+              ElevatedButton.icon(
+                onPressed: _fetchLogs,
+                style: Theme.of(context).elevatedButtonTheme.style,
+                icon: const Icon(Icons.add),
+                label: const Text('Load More'),
+              ),
+            if (!_hasMore)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'You have reached the end of the logs.',
+                  style: GoogleFonts.roboto(fontSize: 14, color: Colors.grey),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
