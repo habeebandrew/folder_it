@@ -6,6 +6,9 @@ import 'package:folder_it/features/User/presentation/cubit/user_cubit.dart';
 import 'package:folder_it/features/User/presentation/widgets/custom_form_field.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../localization/localization.dart';
+import '../../../../main.dart';
+
 class SignupScreen extends StatelessWidget {
   const SignupScreen({super.key});
 
@@ -14,16 +17,15 @@ class SignupScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
-        title:  Row(
+        title: Row(
           children: [
             const Icon(Icons.folder, color: Colors.yellow, size: 30),
             const SizedBox(width: 10),
             Text(
-              "FOLDERIT",
+              AppLocalization.of(context)?.translate('app_title') ?? 'FOLDERIT',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: Theme.of(context).textTheme.bodyLarge!.fontSize,
-                
               ),
             ),
           ],
@@ -34,8 +36,8 @@ class SignupScreen extends StatelessWidget {
               UserCubit.get(context).clearControllers();
               context.go('/signup');
             },
-            child:  Text(
-              "Sign up",
+            child: Text(
+              AppLocalization.of(context)?.translate("sign_up") ?? "",
               style: TextStyle(
                 color: Theme.of(context).textTheme.bodySmall!.color,
                 fontSize: Theme.of(context).textTheme.bodySmall!.fontSize,
@@ -49,7 +51,7 @@ class SignupScreen extends StatelessWidget {
               context.go('/login');
             },
             child: Text(
-              "Login",
+              AppLocalization.of(context)?.translate("login") ?? "",
               style: TextStyle(
                 color: Theme.of(context).textTheme.bodySmall!.color,
                 fontSize: Theme.of(context).textTheme.bodySmall!.fontSize,
@@ -92,8 +94,7 @@ class SignUpForm extends StatelessWidget {
         return Center(
           child: Container(
             width: width,
-            padding:
-                const EdgeInsets.symmetric(vertical: 30.0, horizontal: 25.0),
+            padding: const EdgeInsets.symmetric(vertical: 30.0, horizontal: 25.0),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(20.0),
@@ -130,7 +131,7 @@ class SignUpForm extends StatelessWidget {
                     const SizedBox(height: 5),
                     customFormFiled(
                       controller: cubit.userNameController,
-                      label: 'Username',
+                      label: AppLocalization.of(context)?.translate('username') ?? 'Username',
                       validator: (value) {
                         return cubit.validateUserName(value);
                       },
@@ -139,7 +140,7 @@ class SignUpForm extends StatelessWidget {
                     const SizedBox(height: 15),
                     customFormFiled(
                       controller: cubit.emailController,
-                      label: 'email',
+                      label: AppLocalization.of(context)?.translate('email') ?? 'Email',
                       validator: (value) {
                         return cubit.validateEmail(value);
                       },
@@ -148,7 +149,7 @@ class SignUpForm extends StatelessWidget {
                     const SizedBox(height: 15),
                     customFormFiled(
                       controller: cubit.passwordController,
-                      label: 'Password',
+                      label: AppLocalization.of(context)?.translate('password') ?? 'Password',
                       obscureText: true,
                       validator: (value) {
                         return cubit.validatePassword(value);
@@ -169,30 +170,34 @@ class SignUpForm extends StatelessWidget {
                             },
                           ),
                         ),
-                        Text("Remember me",style: Theme.of(context).textTheme.displayMedium),
+                        Text(
+                          AppLocalization.of(context)?.translate('remember_me') ?? 'Remember me',
+                          style: Theme.of(context).textTheme.displayMedium,
+                        ),
                       ],
                     ),
-                    //const SizedBox(height: 5),
                     Center(
                       child: state is UserAuthLoadingState
                           ? const CircularProgressIndicator()
                           : ElevatedButton(
-                              style: Theme.of(context).elevatedButtonTheme.style,
-                              onPressed: () async {
-                                await cubit.signUp(
-                                  context,
-                                  cubit.userNameController.text,
-                                  cubit.emailController.text,
-                                  cubit.passwordController.text,
-                                );
-                              },
-                              child:  Text(
-                                'Sign Up',
-                                style:Theme.of(context).textTheme.bodyMedium!.apply(color:Colors.white)
-                                )
-                              ),
-                            ),
-                    
+                        style: Theme.of(context).elevatedButtonTheme.style,
+                        onPressed: () async {
+                          await cubit.signUp(
+                            context,
+                            cubit.userNameController.text,
+                            cubit.emailController.text,
+                            cubit.passwordController.text,
+                          );
+                        },
+                        child: Text(
+                          AppLocalization.of(context)?.translate('sign_up') ?? 'Sign Up',
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium!
+                              .apply(color: Colors.white),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
