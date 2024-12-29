@@ -434,7 +434,7 @@ class _BrowsePageState extends State<BrowsePage> {
                                             Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                builder: (context) => FileLog(vsid: document['vsid']),
+                                                builder: (context) => FileLog(vsid: document['vsid'],fileName:document['subject']),
                                               ),
                                             );
                                           },

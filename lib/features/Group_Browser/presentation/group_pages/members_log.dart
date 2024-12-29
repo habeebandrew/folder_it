@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:pdf/widgets.dart' as pw;
+import 'dart:html' as html;
+import 'package:csv/csv.dart';
 import 'package:intl/intl.dart';
 import 'package:folder_it/core/databases/cache/cache_helper.dart';
 
@@ -68,6 +71,55 @@ class _MembersLogState extends State<MembersLog> {
       fetchUserLogs();
     }
   }
+    void exportToCSV(List<dynamic> logs) {
+    List<List<dynamic>> rows = [];
+    rows.add(["Action" , "Date"]);
+
+    for (var log in logs) {
+      rows.add([log['logNote'] , log['creationDate']]);
+    }
+
+    String csv = const ListToCsvConverter().convert(rows);
+    final blob = html.Blob([csv], 'text/csv');
+    final url = html.Url.createObjectUrlFromBlob(blob);
+    final anchor = html.AnchorElement(href: url);
+    anchor.setAttribute('download', '${widget.userName} log.csv');
+    anchor.click();
+    html.Url.revokeObjectUrl(url);
+  }
+
+  void exportToPDF(List<dynamic> logs) async {
+    final pdf = pw.Document();
+    pdf.addPage(
+      pw.Page(
+        build: (pw.Context context) {
+          return pw.Column(
+            children: [
+              pw.Text('${widget.userName} Log', style: const pw.TextStyle(fontSize: 24)),
+              pw.SizedBox(height: 20),
+              pw.TableHelper.fromTextArray(
+                headers: ["Action","Date"],
+                data: logs
+                    .map((log) => [
+                          log['logNote'],
+                          log['creationDate']
+                        ])
+                    .toList(),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    final bytes = await pdf.save();
+    final blob = html.Blob([bytes], 'application/pdf');
+    final url = html.Url.createObjectUrlFromBlob(blob);
+    final anchor = html.AnchorElement(href: url);
+      anchor.setAttribute('download', '${widget.userName} logs.pdf');
+      anchor.click();
+    html.Url.revokeObjectUrl(url);
+  }
 
   Widget buildLogCard(Map<String, dynamic> log) {
     String formattedDate = DateFormat('yyyy-MM-dd – hh:mm a')
@@ -122,6 +174,42 @@ class _MembersLogState extends State<MembersLog> {
     return Scaffold(
       appBar: AppBar(
         title:  Text('${widget.userName} Log'),
+        actions: [
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert),
+            tooltip: 'export option',
+            offset: const Offset(0, 40), 
+            onSelected: (value) {
+              if (value == 'csv' && logs.isNotEmpty) {
+                exportToCSV(logs);
+              } else if (value == 'pdf' && logs.isNotEmpty) {
+                exportToPDF(logs);
+              }
+            },
+            itemBuilder: (BuildContext context) {
+              return [
+                 PopupMenuItem<String>(
+                  value: 'csv',
+                  child: Row(
+                    children: [
+                      Icon(Icons.file_copy_outlined,color: Theme.of(context).primaryColor,),
+                      const Text('Export to CSV'),
+                    ],
+                  ),
+                ),
+                 PopupMenuItem<String>(
+                  value: 'pdf',
+                  child: Row(
+                    children: [
+                      Icon(Icons.picture_as_pdf_outlined,color: Theme.of(context).primaryColor,),
+                      const Text('Export to PDF'),
+                    ],
+                  ),
+                ),
+              ];
+            },
+          ),
+        ],
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
