@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:folder_it/features/Groups/presentation/cubit/group_cubit.dart';
 import 'package:folder_it/features/User/presentation/widgets/custom_form_field.dart';
+import '../../../../localization/localization.dart';
 
 class InviteMemberPage extends StatelessWidget {
   final int groupId;
@@ -12,7 +13,7 @@ class InviteMemberPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocConsumer<GroupCubit, GroupState>(
       listener: (context, state) {
-         if (state is GroupFailureState) {
+        if (state is GroupFailureState) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
@@ -24,8 +25,8 @@ class InviteMemberPage extends StatelessWidget {
 
         if (state is GroupSuccessState) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('member invited'),
+            SnackBar(
+              content: Text(AppLocalization.of(context)?.translate('member_invited') ?? 'Member invited'),
               backgroundColor: Colors.green,
               behavior: SnackBarBehavior.floating,
             ),
@@ -58,16 +59,16 @@ class InviteMemberPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 15.0),
                 Text(
-                  'Invite New Member to Group',
+                  AppLocalization.of(context)?.translate('invite_new_member') ?? 'Invite New Member to Group',
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    fontWeight: FontWeight.bold,
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 20.0),
                 customFormFiled(
                   controller: cubit.userNameController,
-                  label: 'name',
+                  label: AppLocalization.of(context)?.translate('name') ?? 'Name',
                   prefixIcon: Icons.person,
                 ),
                 const SizedBox(height: 30.0),
@@ -79,34 +80,33 @@ class InviteMemberPage extends StatelessWidget {
                       onPressed: state is GroupLoadingState
                           ? null
                           : () {
-                              cubit.inviteMember(
-                                userName: cubit.userNameController.text,
-                                groupId: groupId,
-                                context: context,
-                              );
-                            },
+                        cubit.inviteMember(
+                          userName: cubit.userNameController.text,
+                          groupId: groupId,
+                          context: context,
+                        );
+                      },
                       child: state is GroupLoadingState
                           ? const CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2.0,
-                            )
-                          : const Text(
-                              'Invite',
-                              style: TextStyle(color: Colors.white),
-                            ),
+                        color: Colors.white,
+                        strokeWidth: 2.0,
+                      )
+                          : Text(
+                        AppLocalization.of(context)?.translate('invite') ?? 'Invite',
+                        style: const TextStyle(color: Colors.white),
+                      ),
                     ),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.grey.shade400,
-                        
                       ),
                       onPressed: () {
                         cubit.userNameController.clear();
                         Navigator.of(context).pop();
                       },
-                      child: const Text(
-                        'Cancel',
-                        style: TextStyle(color: Colors.black),
+                      child: Text(
+                        AppLocalization.of(context)?.translate('cancel') ?? 'Cancel',
+                        style: const TextStyle(color: Colors.black),
                       ),
                     ),
                   ],
