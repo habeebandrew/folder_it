@@ -8,11 +8,12 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/Group_Browser/presentation/pages/group_form.dart';
 import '../../features/Groups/presentation/pages/GroupCreationPage.dart';
+import '../../features/admin/CombinedScreen.dart';
 import '../../features/admin/FileListScreen.dart';
 import '../../features/admin/admin_screen.dart';
 
 final GoRouter router = GoRouter(
-  initialLocation: '/FileListScreen',
+  initialLocation: '/CombinedScreen',
   routes: [
     GoRoute(
       path: '/GroupCreationPage',
@@ -69,6 +70,10 @@ final GoRouter router = GoRouter(
       builder: (context, state) =>   FileListScreen(),
     ),
 
+    GoRoute(
+      path: '/CombinedScreen',
+      builder: (context, state) =>   CombinedScreen(),
+    ),
   ],
 );
 //? للتنقل

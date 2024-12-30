@@ -65,13 +65,13 @@ class _AdminScreenState extends State<AdminScreen> {
     String formattedDate = DateFormat('MMMM d, y').format(DateTime.parse(user['creationDate']));
 
     return Card(
-      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       elevation: 4, // Add slight shadow for a 3D effect
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12), // Rounded corners for better UI
       ),
       child: ListTile(
-        contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 16), // Adjust padding for better spacing
+        contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16), // Adjust padding for better spacing
         leading: CircleAvatar(
           radius: 30, // Slightly larger avatar
           backgroundColor: Colors.blue.shade100,
@@ -86,7 +86,7 @@ class _AdminScreenState extends State<AdminScreen> {
         ),
         title: Text(
           user['userName'],
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
             color: Colors.black87,
@@ -99,12 +99,12 @@ class _AdminScreenState extends State<AdminScreen> {
             children: [
               Text(
                 user['email'],
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   color: Colors.black54,
                 ),
               ),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Text(
                 'Created: $formattedDate',
                 style: TextStyle(
@@ -112,9 +112,9 @@ class _AdminScreenState extends State<AdminScreen> {
                   color: Colors.grey.shade600,
                 ),
               ),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Container(
-                padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                 decoration: BoxDecoration(
                   color: user['recordStatus'] ? Colors.green.shade50 : Colors.red.shade50,
                   borderRadius: BorderRadius.circular(4),
@@ -153,17 +153,17 @@ class _AdminScreenState extends State<AdminScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Admin Screen'),
+        title: const Center(child: Text('Users List')),
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return Container(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Column(
               children: [
                 Expanded(
                   child: users.isEmpty && isLoading
-                      ? Center(child: CircularProgressIndicator())
+                      ? const Center(child: CircularProgressIndicator())
                       : ListView.builder(
                     itemCount: users.length + (users.length < totalRows ? 1 : 0),
                     itemBuilder: (context, index) {
@@ -174,15 +174,15 @@ class _AdminScreenState extends State<AdminScreen> {
                           child: ElevatedButton(
                             onPressed: isLoading ? null : loadMore,
                             child: isLoading
-                                ? CircularProgressIndicator()
-                                : Text('Load More'),
+                                ? const CircularProgressIndicator()
+                                : const Text('Load More'),
                           ),
                         );
                       }
                     },
                   ),
                 ),
-                if (isLoading) CircularProgressIndicator(),
+                if (isLoading) const CircularProgressIndicator(),
               ],
             ),
           );
