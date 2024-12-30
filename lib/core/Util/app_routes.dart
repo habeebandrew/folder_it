@@ -13,7 +13,7 @@ import '../../features/admin/FileListScreen.dart';
 import '../../features/admin/admin_screen.dart';
 
 final GoRouter router = GoRouter(
-  initialLocation: '/CombinedScreen',
+  initialLocation: '/login',
   routes: [
     GoRoute(
       path: '/GroupCreationPage',

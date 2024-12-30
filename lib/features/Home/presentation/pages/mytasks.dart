@@ -195,14 +195,19 @@ class _MyTaskOnGroupState extends State<MyTasks> {
                           const Icon(Icons.lock, color: Colors.red),
                           const SizedBox(width: 8),
                           Text(
-                            AppLocalization.of(context)?.translate(
-                                "locked_in_group") ??
-                                "Locked this file in $groupName",
+                            AppLocalization.of(context)!.translate(
+                                "locked_in_group")
+                               ,
                             style: const TextStyle(
                               color: Colors.red,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
+                          const SizedBox(width: 10,),
+                          Text(groupName,   style: const TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
+                          ),)
                         ],
                       ),
                       const SizedBox(height: 8),
