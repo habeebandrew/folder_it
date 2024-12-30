@@ -28,9 +28,9 @@ class _CombinedScreenState extends State<CombinedScreen> with SingleTickerProvid
         centerTitle: true,
         bottom: TabBar(
           controller: _tabController,
-          labelColor: Colors.white, // لون النص للتبويب النشط
-          unselectedLabelColor: Colors.white70, // لون النص للتبويب غير النشط
-          tabs: [
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white70,
+          tabs: const [
             Tab(icon: Icon(Icons.admin_panel_settings,color: Colors.white,), text: 'Admin'),
             Tab(icon: Icon(Icons.file_copy,color: Colors.white,), text: 'Files'),
           ],
