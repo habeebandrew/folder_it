@@ -38,15 +38,21 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
       });
     }
   }
+
   void _toggleLanguage() {
     final currentLocale = Localizations.localeOf(context);
-    final newLocale = currentLocale.languageCode == 'en' ? const Locale('ar') : const Locale('en');
+    final newLocale = currentLocale.languageCode == 'en'
+        ? const Locale('ar')
+        : const Locale('en');
     MyApp.setLocale(context, newLocale);
   }
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
+    final width = MediaQuery
+        .of(context)
+        .size
+        .width;
     final bool isSmallScreen = width < 600;
     final bool isLargeScreen = width > 800;
 
@@ -57,12 +63,16 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
           title: Row(
             children: [
               const Icon(Icons.folder, color: Colors.yellow, size: 30),
-              const SizedBox(width: 10),
+              // const SizedBox(width: 10),
               Text(
                 AppLocalization.of(context)?.translate("app_title") ?? "",
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: Theme.of(context).textTheme.bodyLarge!.fontSize,
+                  fontSize: Theme
+                      .of(context)
+                      .textTheme
+                      .bodyLarge!
+                      .fontSize,
                 ),
               ),
             ],
@@ -104,26 +114,30 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
               ),
               child: PopupMenuButton<int>(
                 icon: const Icon(Icons.notifications, color: Colors.yellow),
-                itemBuilder: (context) => [
+                itemBuilder: (context) =>
+                [
                   PopupMenuItem(
                     value: 1,
                     child: ListTile(
                       leading: const Icon(Icons.message, color: Colors.blue),
-                      title: Text(AppLocalization.of(context)?.translate("view_invites") ?? ""),
+                      title: Text(AppLocalization.of(context)?.translate(
+                          "view_invites") ?? ""),
                     ),
                   ),
                   PopupMenuItem(
                     value: 2,
                     child: ListTile(
                       leading: const Icon(Icons.update, color: Colors.green),
-                      title: Text(AppLocalization.of(context)?.translate("new_update") ?? ""),
+                      title: Text(AppLocalization.of(context)?.translate(
+                          "new_update") ?? ""),
                     ),
                   ),
                   PopupMenuItem(
                     value: 3,
                     child: ListTile(
                       leading: const Icon(Icons.warning, color: Colors.red),
-                      title: Text(AppLocalization.of(context)?.translate("warning") ?? ""),
+                      title: Text(AppLocalization.of(context)?.translate(
+                          "warning") ?? ""),
                     ),
                   ),
                 ],
@@ -137,33 +151,32 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
                 },
               ),
             ),
-            Tooltip(
-              message: AppLocalization.of(context)?.translate("instructions") ?? "",
-              child: TextButton(
-                onPressed: () {},
-                child: const Icon(Icons.question_mark_sharp, color: Colors.yellow),
-              ),
-            ),
-            const SizedBox(width: 20),
+            // Tooltip(
+            //   message: AppLocalization.of(context)?.translate("instructions") ??
+            //       "",
+            //   child: TextButton(
+            //     onPressed: () {},
+            //     child: const Icon(
+            //         Icons.question_mark_sharp, color: Colors.yellow),
+            //   ),
+            // ),
+            // const SizedBox(width: 20),
           ],
         ),
-        bottomNavigationBar: isSmallScreen
-            ? BlocBuilder<NavigationCubit, NavigationState>(
-          builder: (context, state) {
-            final cubit = context.read<NavigationCubit>();
-            return BottomNavigationBar(
-              currentIndex: NavigationState.values.indexOf(state),
-              onTap: (index) =>
-                  cubit.navigateTo(NavigationState.values[index]),
-              items: cubit.items
-                  .map((item) => BottomNavigationBarItem(
-                icon: item.icon,
-                activeIcon: item.activeIcon,
-                label: item.label,
-              ))
-                  .toList(),
-            );
-          },
+        drawer: isSmallScreen
+            ? Drawer(
+          child: BlocBuilder<NavigationCubit, NavigationState>(
+            builder: (context, state) {
+              final cubit = context.read<NavigationCubit>();
+              return CustomNavigationRail(
+                selectedIndex: NavigationState.values.indexOf(state),
+                onDestinationSelected: (index) =>
+                    cubit.navigateTo(NavigationState.values[index]),
+                extended: true,
+                items: cubit.items,
+              );
+            },
+          ),
         )
             : null,
         body: Row(
@@ -181,7 +194,8 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
                   );
                 },
               ),
-            const VerticalDivider(thickness: 1, width: 1, color: Colors.grey),
+            if (!isSmallScreen)
+              const VerticalDivider(thickness: 1, width: 1, color: Colors.grey),
             Expanded(
               child: BlocBuilder<NavigationCubit, NavigationState>(
                 builder: (context, state) {
@@ -194,14 +208,17 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
                       return const MyTasks();
                     case NavigationState.Report:
                       return AlertDialog(
-                        title: Text(AppLocalization.of(context)?.translate("warning") ?? ""),
-                        content: Text(AppLocalization.of(context)?.translate("confirm_logout") ?? ""),
+                        title: Text(AppLocalization.of(context)?.translate(
+                            "warning") ?? ""),
+                        content: Text(AppLocalization.of(context)?.translate(
+                            "confirm_logout") ?? ""),
                         actions: [
                           ElevatedButton(
                             onPressed: () {
                               _logout(context);
                             },
-                            child: Text(AppLocalization.of(context)?.translate("confirm") ?? ""),
+                            child: Text(AppLocalization.of(context)?.translate(
+                                "confirm") ?? ""),
                           ),
                         ],
                       );
@@ -217,29 +234,26 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
 
   Future<void> _logout(BuildContext context) async {
     const url = 'http://localhost:8091/auth/logout';
-    try {
-      String mytoken = CacheHelper().getData(key: 'token');
 
-      final response = await http.post(
-        Uri.parse(url),
-        headers: {
-          'Authorization': 'Bearer $mytoken',
-        },
-      );
+    String mytoken = CacheHelper().getData(key: 'token');
 
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalization.of(context)?.translate("logout_success") ?? "")),
-        );
-        context.go("/login");
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalization.of(context)?.translate("logout_failure") ?? "")),
-        );
-      }
-    } catch (e) {
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Authorization': 'Bearer $mytoken',
+      },
+    );
+
+    if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalization.of(context)?.translate("logout_error") ?? "")),
+        SnackBar(content: Text(
+            AppLocalization.of(context)?.translate("logout_success") ?? "")),
+      );
+      context.go("/login");
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(
+            AppLocalization.of(context)?.translate("logout_failure") ?? "")),
       );
     }
   }
