@@ -191,7 +191,7 @@ class _BrowsePageState extends State<BrowsePage> {
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         actions: [
           Tooltip(
-            message: 'add new file',
+            message: 'Add new file',
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextButton.icon(
@@ -216,11 +216,15 @@ class _BrowsePageState extends State<BrowsePage> {
                   Icons.add_box_outlined,
                   color: Theme.of(context).primaryColor,
                 ),
-                label: Text('add file',
-                    style: Theme.of(context).textTheme.displayMedium),
+                label: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    'Add File',
+                    style: Theme.of(context).textTheme.displayMedium,
+                  ),
+                ),
                 style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 12.0, vertical: 6.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
                   backgroundColor: Colors.grey[300],
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
@@ -244,227 +248,191 @@ class _BrowsePageState extends State<BrowsePage> {
           } else {
             currentResponse = snapshot.data;
 
-            return Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                return Column(
                   children: [
-                    TextButton(
-                      onPressed: () {
-                        setState(() {
-                          selectedFiles = List<int>.from(
-                            currentResponse!['documents']
-                                .where((doc) => doc['locked'] == false)
-                                .map((doc) => doc['id']),
-                          );
-                          print(selectedFiles.toString());
-                        });
-                      },
-                      child: const Text('Select All'),
-                    ),
-                    const SizedBox(width: 15.0),
-                    TextButton(
-                      onPressed: () {
-                        setState(() {
-                          selectedFiles.clear();
-                        });
-                      },
-                      child: const Text('Undo Select'),
-                    ),
-                  ],
-                ),
-                Expanded(
-                  child: ListView(
-                    padding: const EdgeInsets.all(16),
-                    children: [
-                      ...currentResponse!['folders'].map<Widget>((folder) {
-                        final isExpanded = expandedElement == folder;
-                        return Column(
-                          children: [
-                            InkWell(
-                              onTap: () => navigateToFolder(folder['id']),
-                              child: ListTile(
-                                leading: Icon(Icons.folder,
-                                    color: Colors.yellow[700]),
-                                title: Text(folder['folderName']),
-                              ),
-                            ),
-                            if (isExpanded)
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 8),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[200],
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: const Text('Folder details here'),
-                              ),
-                          ],
-                        );
-                      }).toList(),
-                      ...currentResponse!['documents'].map<Widget>((document) {
-                        final isExpanded = expandedElement == document;
-                        final isSelected =
-                            selectedFiles.contains(document['id']);
-                        return Column(
-                          children: [
-                            InkWell(
-                              onTap: () {
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Flexible(
+                            child: ElevatedButton(
+                              onPressed: () {
                                 setState(() {
-                                  expandedElement =
-                                      isExpanded ? null : document;
+                                  selectedFiles = List<int>.from(
+                                    currentResponse!['documents']
+                                        .where((doc) => doc['locked'] == false)
+                                        .map((doc) => doc['id']),
+                                  );
                                 });
                               },
-                              child: ListTile(
-                                leading: document['locked'] == false
-                                    ? Checkbox(
-                                        value: isSelected,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            if (value == true) {
-                                              selectedFiles.add(document['id']);
-                                            } else {
-                                              selectedFiles
-                                                  .remove(document['id']);
-                                            }
-                                          });
-                                        },
-                                      )
-                                    : null,
-                                title: document['locked'] == false
-                                    ? Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          document['subject'],
-                                          style: TextStyle(
-                                              color: document['locked']
-                                                  ? Colors.red
-                                                  : Colors.green),
-                                        ),
-
-                                        ElevatedButton.icon(
-                                            onPressed: () {
-                                              getTempFile(document['vsid']).then((value){
-                                                if(value != 'something went wrong'){
-                                                    downloadFile(value);
-                                                   
-                                                }else{
-                                                  ScaffoldMessenger.of(context).showSnackBar(
-                                                    const SnackBar(
-                                                        content: Text('can not download file'),
-                                                        backgroundColor: Colors.red),
-                                                  );
-                                                }
-                                              });
-                                            },
-                                            style: Theme.of(context).elevatedButtonTheme.style,
-                                            icon: const Icon(
-                                                Icons.download_outlined),
-                                            label: const Text('Download file'),
-                                          ),
-                                      ])
-                                    : Text(
-                                        document['subject'],
-                                        style: TextStyle(
-                                            color: document['locked']
-                                                ? Colors.red
-                                                : Colors.green),
-                                      ),
-                                trailing: Icon(isExpanded
-                                    ? Icons.expand_less
-                                    : Icons.expand_more),
-                              ),
+                              child: const Text('Select All'),
                             ),
-                            if (isExpanded)
-                              AnimatedContainer(
-                                duration: const Duration(milliseconds: 300),
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 8),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[200],
-                                  borderRadius: BorderRadius.circular(8),
+                          ),
+                          const SizedBox(width: 8.0),
+                          Flexible(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                setState(() {
+                                  selectedFiles.clear();
+                                });
+                              },
+                              child: const Text('Undo Select'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: ListView(
+                        padding: const EdgeInsets.all(16),
+                        children: [
+                          ...currentResponse!['folders'].map<Widget>((folder) {
+                            final isExpanded = expandedElement == folder;
+                            return Column(
+                              children: [
+                                InkWell(
+                                  onTap: () => navigateToFolder(folder['id']),
+                                  child: ListTile(
+                                    leading: Icon(Icons.folder, color: Colors.yellow[700]),
+                                    title: Text(folder['folderName']),
+                                  ),
                                 ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Details: ${document['note'] ?? 'No details available'}',
-                                      style: TextStyle(
-                                          color: Theme.of(context).primaryColor,
-                                          fontSize: 14),
+                                if (isExpanded)
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[200],
+                                      borderRadius: BorderRadius.circular(8),
                                     ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      'Date modified: ${DateFormat('yyyy-MM-dd – hh:mm a').format(DateTime.parse(document['creationDate']))}',
-                                      style: TextStyle(
-                                          color: Theme.of(context).primaryColor,
-                                          fontSize: 14),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Row(
+                                    child: const Text('Folder details here'),
+                                  ),
+                              ],
+                            );
+                          }).toList(),
+                          ...currentResponse!['documents'].map<Widget>((document) {
+                            final isExpanded = expandedElement == document;
+                            final isSelected = selectedFiles.contains(document['id']);
+                            return Column(
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      expandedElement = isExpanded ? null : document;
+                                    });
+                                  },
+                                  child: ListTile(
+                                    leading: document['locked'] == false
+                                        ? Checkbox(
+                                      value: isSelected,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          if (value == true) {
+                                            selectedFiles.add(document['id']);
+                                          } else {
+                                            selectedFiles.remove(document['id']);
+                                          }
+                                        });
+                                      },
+                                    )
+                                        : null,
+                                    title: document['locked'] == false
+                                        ? Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Row(
-                                          children: [
-                                            Icon(
-                                              document['locked']
-                                                  ? Icons.lock
-                                                  : Icons.lock_open,
+                                        Expanded(
+                                          child: Text(
+                                            document['subject'],
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
                                               color: document['locked']
                                                   ? Colors.red
                                                   : Colors.green,
                                             ),
-                                            const SizedBox(width: 8),
-                                            Text(
-                                              document['locked']
-                                                  ? 'File is locked'
-                                                  : 'File is not locked',
-                                              style: TextStyle(
-                                                color: document['locked']
-                                                    ? Colors.red
-                                                    : Colors.green,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ],
+                                          ),
                                         ),
-                                        TextButton(
-                                          onPressed: (){
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) => FileLog(vsid: document['vsid'],fileName:document['subject']),
-                                              ),
-                                            );
+                                        ElevatedButton.icon(
+                                          onPressed: () {
+                                            getTempFile(document['vsid']).then((value) {
+                                              if (value != 'something went wrong') {
+                                                downloadFile(value);
+                                              } else {
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                  const SnackBar(
+                                                    content: Text('Cannot download file'),
+                                                    backgroundColor: Colors.red,
+                                                  ),
+                                                );
+                                              }
+                                            });
                                           },
-                                          child: const Text('see file log'),
-                                        )
+                                          style: Theme.of(context).elevatedButtonTheme.style,
+                                          icon: const Icon(Icons.download_outlined),
+                                          label: const Text('Download'),
+                                        ),
+                                      ],
+                                    )
+                                        : Text(
+                                      document['subject'],
+                                      style: TextStyle(
+                                        color: document['locked'] ? Colors.red : Colors.green,
+                                      ),
+                                    ),
+                                    trailing: Icon(isExpanded ? Icons.expand_less : Icons.expand_more),
+                                  ),
+                                ),
+                                if (isExpanded)
+                                  AnimatedContainer(
+                                    duration: const Duration(milliseconds: 300),
+                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[200],
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Details: ${document['note'] ?? 'No details available'}',
+                                          style: TextStyle(
+                                            color: Theme.of(context).primaryColor,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          'Date modified: ${DateFormat('yyyy-MM-dd – hh:mm a').format(DateTime.parse(document['creationDate']))}',
+                                          style: TextStyle(
+                                            color: Theme.of(context).primaryColor,
+                                            fontSize: 14,
+                                          ),
+                                        ),
                                       ],
                                     ),
-                                    
-                                  ],
-                                ),
-                              ),
-                          ],
-                        );
-                      }).toList(),
-                    ],
-                  ),
-                ),
-              ],
+                                  ),
+                              ],
+                            );
+                          }).toList(),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
             );
           }
         },
       ),
       floatingActionButton: selectedFiles.isNotEmpty
           ? FloatingActionButton.extended(
-              onPressed: () => checkInSelectedFiles(),
-              label:
-                  Text(loading == false ? 'Check In Selected' : 'Checking in ..'),
-              icon: const Icon(Icons.check_circle),
-            )
+        onPressed: () => checkInSelectedFiles(),
+        label: Text(loading == false ? 'Check In Selected' : 'Checking in ..'),
+        icon: const Icon(Icons.check_circle),
+      )
           : null,
     );
   }
+
 }
