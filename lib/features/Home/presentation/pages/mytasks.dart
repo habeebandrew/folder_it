@@ -95,7 +95,7 @@ class _MyTaskOnGroupState extends State<MyTasks> {
     }
   }
 
-  Future<String> cancelCheckIn(String fileId, String vsId) async {
+  Future<String?> cancelCheckIn(String fileId, String vsId) async {
     final String token = CacheHelper().getData(key: 'token');
     final int userId = CacheHelper().getData(key: "myid");
     var headers = {'Authorization': 'Bearer $token'};
@@ -110,7 +110,9 @@ class _MyTaskOnGroupState extends State<MyTasks> {
     var res = await response.stream.bytesToString();
 
     if (response.statusCode == 200) {
-      return json.decode(res)['message'];
+
+      return AppLocalization.of(context)?.translate("cancel_success");
+      // json.decode(res)['message'];
     } else {
       return AppLocalization.of(context)?.translate("cancel_failed") ??
           'Something went wrong';
@@ -229,7 +231,7 @@ class _MyTaskOnGroupState extends State<MyTasks> {
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(
                                 SnackBar(
-                                  content: Text(value),
+                                  content: Text(value!),
                                   backgroundColor: Colors.green,
                                 ),
                               );
@@ -237,7 +239,7 @@ class _MyTaskOnGroupState extends State<MyTasks> {
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(
                                 SnackBar(
-                                  content: Text(value),
+                                  content: Text(value!),
                                   backgroundColor: Colors.red,
                                 ),
                               );
