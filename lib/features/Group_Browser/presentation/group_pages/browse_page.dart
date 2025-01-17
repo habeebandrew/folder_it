@@ -7,6 +7,7 @@ import 'dart:convert';
 
 import 'package:intl/intl.dart';
 import '../../../../core/databases/cache/cache_helper.dart';
+import '../../../../localization/localization.dart';
 
 class BrowsePage extends StatefulWidget {
   final int groupId;
@@ -15,9 +16,9 @@ class BrowsePage extends StatefulWidget {
 
   BrowsePage(
       {super.key,
-      required this.groupId,
-      required this.userId,
-      required this.folderId});
+        required this.groupId,
+        required this.userId,
+        required this.folderId});
 
   @override
   State<BrowsePage> createState() => _BrowsePageState();
@@ -152,7 +153,7 @@ class _BrowsePageState extends State<BrowsePage> {
             'http://127.0.0.1:8091/document/temp?userId=$myId&vsId=$vsId'
         )
     );
-    request.headers.addAll(headers); 
+    request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
     var res =await response.stream.bytesToString();
     print(res);
@@ -163,25 +164,25 @@ class _BrowsePageState extends State<BrowsePage> {
     }
   }
 
- Future<void> downloadFile(String fileName) async {
-  final String? token = CacheHelper().getData(key: 'token');
+  Future<void> downloadFile(String fileName) async {
+    final String? token = CacheHelper().getData(key: 'token');
 
-  final url = Uri.parse('http://localhost:8091/document/files/$fileName');
-  final response = await http.get(url, headers: {
-    'Authorization': 'Bearer $token',
-  });
+    final url = Uri.parse('http://localhost:8091/document/files/$fileName');
+    final response = await http.get(url, headers: {
+      'Authorization': 'Bearer $token',
+    });
 
-  if (response.statusCode == 200) {
-    final blob = html.Blob([response.bodyBytes]);
-    final url = html.Url.createObjectUrlFromBlob(blob);
-    final anchor = html.AnchorElement(href: url)
-      ..download = fileName
-      ..click();
-    html.Url.revokeObjectUrl(url);
-  } else {
-    print("Error: ${response.reasonPhrase}");
+    if (response.statusCode == 200) {
+      final blob = html.Blob([response.bodyBytes]);
+      final url = html.Url.createObjectUrlFromBlob(blob);
+      final anchor = html.AnchorElement(href: url)
+        ..download = fileName
+        ..click();
+      html.Url.revokeObjectUrl(url);
+    } else {
+      print("Error: ${response.reasonPhrase}");
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -191,7 +192,7 @@ class _BrowsePageState extends State<BrowsePage> {
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         actions: [
           Tooltip(
-            message: 'Add new file',
+            message: AppLocalization.of(context)!.translate("Add_new_file") ?? "Add_new_file",
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextButton.icon(
@@ -219,7 +220,7 @@ class _BrowsePageState extends State<BrowsePage> {
                 label: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(
-                    'Add File',
+                    AppLocalization.of(context)!.translate("Add_new_file") ?? "Add_new_file",
                     style: Theme.of(context).textTheme.displayMedium,
                   ),
                 ),
@@ -268,7 +269,7 @@ class _BrowsePageState extends State<BrowsePage> {
                                   );
                                 });
                               },
-                              child: const Text('Select All'),
+                              child:  Text(AppLocalization.of(context)!.translate("Select_All") ?? "Select_All",),//
                             ),
                           ),
                           const SizedBox(width: 8.0),
@@ -279,7 +280,7 @@ class _BrowsePageState extends State<BrowsePage> {
                                   selectedFiles.clear();
                                 });
                               },
-                              child: const Text('Undo Select'),
+                              child:  Text(AppLocalization.of(context)!.translate("Undo_Select") ?? "Undo_Select",),//
                             ),
                           ),
                         ],
@@ -370,7 +371,7 @@ class _BrowsePageState extends State<BrowsePage> {
                                           },
                                           style: Theme.of(context).elevatedButtonTheme.style,
                                           icon: const Icon(Icons.download_outlined),
-                                          label: const Text('Download'),
+                                          label:  Text(AppLocalization.of(context)!.translate("Download") ?? "Download",),//
                                         ),
                                       ],
                                     )
@@ -428,7 +429,7 @@ class _BrowsePageState extends State<BrowsePage> {
       floatingActionButton: selectedFiles.isNotEmpty
           ? FloatingActionButton.extended(
         onPressed: () => checkInSelectedFiles(),
-        label: Text(loading == false ? 'Check In Selected' : 'Checking in ..'),
+        label: Text(loading == false ? AppLocalization.of(context)!.translate("Check_In_Selected") ?? "Check_In_Selected" :AppLocalization.of(context)!.translate("Checking_in") ?? "Checking_in",),//
         icon: const Icon(Icons.check_circle),
       )
           : null,

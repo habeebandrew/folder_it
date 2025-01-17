@@ -7,6 +7,8 @@ import 'package:folder_it/core/databases/cache/cache_helper.dart';
 import 'package:folder_it/features/Group_Browser/presentation/group_pages/upload_files_page.dart';
 import 'package:http/http.dart' as http;
 
+import '../../../../localization/localization.dart';
+
 class MyTaskOnGroup extends StatefulWidget {
   final int userId;
   final int groupId;
@@ -169,7 +171,7 @@ class _MyTaskOnGroupState extends State<MyTaskOnGroup> {
                                   }
                                 },
                                 icon: const Icon(Icons.check_circle_outline),
-                                label: const Text('Check out'),
+                                label:  Text(AppLocalization.of(context)!.translate("Check_out") ?? "Check_out",),//
                               ),
                             ],
                           ),
@@ -236,7 +238,7 @@ class _MyTaskOnGroupState extends State<MyTaskOnGroup> {
                                     icon: const Icon(
                                       Icons.cancel,
                                     ),
-                                    label: const Text('Cancel Check-in'),
+                                    label:  Text(AppLocalization.of(context)!.translate("Cancel_Check_in") ?? "Cancel_Check_in",),//AppLocalization.of(context)!.translate("invite_new_member") ?? "invite_new_member",
                                   ),
                                 ],
                               ),

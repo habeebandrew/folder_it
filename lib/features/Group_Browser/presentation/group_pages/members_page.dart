@@ -5,6 +5,7 @@ import 'package:folder_it/features/Group_Browser/presentation/group_pages/member
 import 'package:folder_it/features/Groups/presentation/pages/invite_member_page.dart';
 import 'package:http/http.dart' as http;
 
+import '../../../../localization/localization.dart';
 import '../member_model/member_model.dart';
 
 class MembersPage extends StatefulWidget {
@@ -53,7 +54,7 @@ class _MembersPageState extends State<MembersPage> {
         title: const Text(''),
         actions: [
           Tooltip(
-            message: 'Invite new member',
+            message: AppLocalization.of(context)!.translate("invite_new_member") ?? "invite_new_member",//invite_new_member
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextButton.icon(
@@ -69,7 +70,7 @@ class _MembersPageState extends State<MembersPage> {
                   Icons.add_box_outlined,
                   color: Theme.of(context).primaryColor,
                 ),
-                label: Text('Invite member',
+                label: Text(AppLocalization.of(context)!.translate("invite_new_member") ?? "invite_new_member",
                     style: Theme.of(context).textTheme.displayMedium),
                 style: TextButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
@@ -156,7 +157,7 @@ class _MembersPageState extends State<MembersPage> {
                                     return [
                                       const PopupMenuItem<String>(
                                         value: '',
-                                        child: Text('Member info'),
+                                        child: Text('Member info'),//
                                       ),
                                     ];
                                   },

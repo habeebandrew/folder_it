@@ -54,5 +54,35 @@
   "cancelButton": "Cancel",
   "deleteButton": "Delete",
   "groupDeletedSuccess": "Group deleted successfully",
-  "groupDeletedFailure": "Failed to delete group: "
+  "groupDeletedFailure": "Failed to delete group: ",
+  "confirm_logout": "confirm logout",
+  "group_name": "group name",
+  "enter_group_name": "enter group name",
+  "between": "Group name must be between 1 and 8 characters",
+  "Usage_Policy": "Usage Policy:",
+  "policy_info": "By creating a group, you agree to the terms and conditions stated in the usage policy.Please ensure that your group complies with our community standards and usage guidelines.Inappropriate or illegal content is strictly prohibited.",
+  "I_agree": "I agree to the terms and conditions",
+  "My_Files": "My Files",
+  "Groups": "Groups",
+  "My_Tasks": "My Tasks",
+  "logout": "Logout",
+  "Sort_by": "Sort by",
+  "Browse": "Browse",
+  "Members": "Members",
+  "Setting": "Setting",
+  "Permissions": "Permissions",
+  "Add_new_file": "Add new file",
+  "Undo_Select": "Undo Select",
+  "Download": "Download",
+  "Check_In_Selected": "Check In Selected",
+  "Checking_in": "Checking_in",
+  "Select_All": "Select All",
+  "Check_out": "check out",
+  "Cancel_Check_in": "Cancel Check in"
+
+
+
+
+
+
 }

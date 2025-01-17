@@ -173,7 +173,7 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
                 onDestinationSelected: (index) =>
                     cubit.navigateTo(NavigationState.values[index]),
                 extended: true,
-                items: cubit.items,
+                items: cubit.getItems(context),
               );
             },
           ),
@@ -190,7 +190,7 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
                     onDestinationSelected: (index) =>
                         cubit.navigateTo(NavigationState.values[index]),
                     extended: isLargeScreen,
-                    items: cubit.items,
+                    items: cubit.getItems(context),
                   );
                 },
               ),
@@ -208,8 +208,11 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
                       return const MyTasks();
                     case NavigationState.Report:
                       return AlertDialog(
-                        title: Text(AppLocalization.of(context)?.translate(
-                            "warning") ?? ""),
+                        title: Row(
+                          children:[const Icon(Icons.warning,color: Colors.red,size: 100,),SizedBox(width: 20,),
+                            Text(AppLocalization.of(context)?.translate(
+                              "warning") ?? ""),],
+                        ),
                         content: Text(AppLocalization.of(context)?.translate(
                             "confirm_logout") ?? ""),
                         actions: [

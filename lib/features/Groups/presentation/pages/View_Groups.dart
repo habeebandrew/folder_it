@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
 import '../../../../core/databases/cache/cache_helper.dart';
+import '../../../../localization/localization.dart';
 import '../../../Group_Browser/presentation/pages/group_form.dart';
 
 class Groups extends StatefulWidget {
@@ -114,14 +115,16 @@ class _GroupsState extends State<Groups> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         title: Text(
-          'Groups',
+          AppLocalization.of(context)?.translate(
+              "Groups") ?? "",
           style: Theme.of(context).textTheme.displayLarge,
         ),
         actions: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12.0),
             child: Tooltip(
-              message: 'Create New Group',
+              message: AppLocalization.of(context)?.translate(
+                  "createGroupButton") ?? "",//
               child: TextButton.icon(
                 onPressed: () {
                   context.go('/GroupCreationPage');
@@ -130,7 +133,8 @@ class _GroupsState extends State<Groups> {
                   Icons.add_box_outlined,
                   color: Theme.of(context).primaryColor,
                 ),
-                label: Text('Create Group',
+                label: Text(AppLocalization.of(context)?.translate(
+                    "createGroupButton") ?? "",
                     style: Theme.of(context).textTheme.displayMedium),
                 style: TextButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
@@ -272,7 +276,8 @@ class _GroupsState extends State<Groups> {
               Icon(Icons.sort, color: Theme.of(context).primaryColor),
               const SizedBox(width: 8),
               Text(
-                "Sort by:",
+                AppLocalization.of(context)?.translate(
+                    "Sort_by") ?? "",
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
@@ -427,8 +432,6 @@ class _GroupsState extends State<Groups> {
       ),
     );
   }
-
-
 
   void _showDeleteConfirmation(int groupId) {
     showDialog(

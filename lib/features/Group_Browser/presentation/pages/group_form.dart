@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/databases/cache/cache_helper.dart';
+import '../../../../localization/localization.dart';
 import '../group_pages/Permissions.dart';
 import '../group_pages/browse_page.dart';
 import '../group_pages/members_page.dart';
@@ -30,15 +31,20 @@ class _GroupFormState extends State<GroupForm> {
   @override
   void initState() {
     super.initState();
-    _selectedLabel = "Browse";
     userId = CacheHelper().getData(key: "myid") ?? 1;
 
-    _selectedPage = BrowsePage(
-      groupId: widget.groupId,
-      folderId: widget.folderId,
-      userId: userId,
-      key: const ValueKey("Browse"),
-    );
+    // تأخير تنفيذ الكود حتى يصبح `context` متاحًا
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        _selectedLabel = AppLocalization.of(context)!.translate("Browse") ?? "Browse";
+        _selectedPage = BrowsePage(
+          groupId: widget.groupId,
+          folderId: widget.folderId,
+          userId: userId,
+          key: ValueKey(AppLocalization.of(context)!.translate("Browse") ?? "Browse"),
+        );
+      });
+    });
   }
 
   @override
@@ -100,7 +106,7 @@ class _GroupFormState extends State<GroupForm> {
                       child: ListView(
                         children: [
                           _buildMenuButton(
-                            label: "Browse",
+                            label: AppLocalization.of(context)!.translate("Browse") ?? "Browse",
                             icon: Icons.open_in_browser,
                             isMobile: isMobile,
                             onTap: () => _changePage(
@@ -109,11 +115,11 @@ class _GroupFormState extends State<GroupForm> {
                                 folderId: widget.folderId,
                                 userId: userId,
                               ),
-                              "Browse",
+                              AppLocalization.of(context)!.translate("Browse") ?? "Browse",
                             ),
                           ),
                           _buildMenuButton(
-                            label: "Members",
+                            label: AppLocalization.of(context)!.translate("Members") ?? "Members",// AppLocalization.of(context)!.translate("Browse") ?? "Browse";
                             icon: Icons.people,
                             isMobile: isMobile,
                             onTap: () => _changePage(
@@ -121,41 +127,41 @@ class _GroupFormState extends State<GroupForm> {
                                 groupId: widget.groupId,
                                 isOtherFilter: widget.isOtherFilter,
                               ),
-                              "Members",
+                              AppLocalization.of(context)!.translate("Members") ?? "Members",
                             ),
                           ),
                           _buildMenuButton(
-                            label: "My Tasks",
+                            label:  AppLocalization.of(context)!.translate("My_Tasks") ?? "My_Tasks",//
                             icon: Icons.task_alt_outlined,
                             isMobile: isMobile,
                             onTap: () => _changePage(
                               MyTaskOnGroup(
-                              userId:userId,
-                              groupId:widget.groupId,
-                              folderId:widget.folderId
-                            ), 
-                            "My Tasks"
+                                userId: userId,
+                                groupId: widget.groupId,
+                                folderId: widget.folderId,
+                              ),
+                              AppLocalization.of(context)!.translate("My_Tasks") ?? "My_Tasks",
                             ),
                           ),
                           _buildMenuButton(
-                            label: "Setting",
+                            label: AppLocalization.of(context)!.translate("Setting") ?? "Setting",
                             icon: Icons.settings,
                             isMobile: isMobile,
-                            onTap: () => _changePage(const SettingsPage(), "Setting"),
+                            onTap: () => _changePage(const SettingsPage(), AppLocalization.of(context)!.translate("Setting") ?? "Setting",),
                           ),
-
-                          widget.isOtherFilter!=true ?
-                          _buildMenuButton(
-                            label: "Permissions",
+                          widget.isOtherFilter != true
+                              ? _buildMenuButton(
+                            label: AppLocalization.of(context)!.translate("Permissions") ?? "Permissions",//
                             icon: Icons.check_box_outlined,
                             isMobile: isMobile,
-                            onTap: () => _changePage( Permissions(
-
-                              groupId: widget.groupId,
-                            ), "Permissions"),
-                          ): 
-                              Text('')
-                           
+                            onTap: () => _changePage(
+                              Permissions(
+                                groupId: widget.groupId,
+                              ),
+                              AppLocalization.of(context)!.translate("Permissions") ?? "Permissions",
+                            ),
+                          )
+                              : Text(''),
                         ],
                       ),
                     ),
