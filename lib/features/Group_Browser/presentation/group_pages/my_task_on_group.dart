@@ -170,8 +170,18 @@ class _MyTaskOnGroupState extends State<MyTaskOnGroup> {
                                     fetchInitialDocuments(reset: true);
                                   }
                                 },
-                                icon: const Icon(Icons.check_circle_outline),
-                                label:  Text(AppLocalization.of(context)!.translate("Check_out") ?? "Check_out",),//
+                                icon: Icon(
+                                  Icons.check_circle_outline,
+                                  size: 18, // تصغير حجم الأيقونة
+                                ),
+                                label: Text(
+                                  AppLocalization.of(context)!.translate("Check_out") ?? "Check_out",
+                                  style: const TextStyle(fontSize: 20), // تصغير حجم النص
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // تقليل الحشو الداخلي
+                                  minimumSize: const Size(10, 30), // تحديد الحد الأدنى للأبعاد
+                                ),
                               ),
                             ],
                           ),

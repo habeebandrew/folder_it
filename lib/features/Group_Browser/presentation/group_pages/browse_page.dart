@@ -369,10 +369,15 @@ class _BrowsePageState extends State<BrowsePage> {
                                               }
                                             });
                                           },
-                                          style: Theme.of(context).elevatedButtonTheme.style,
-                                          icon: const Icon(Icons.download_outlined),
-                                          label:  Text(AppLocalization.of(context)!.translate("Download") ?? "Download",),//
-                                        ),
+                                          style: ElevatedButton.styleFrom(
+                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // تقليل الحشو الداخلي
+                                            minimumSize: const Size(10, 30), // تحديد الحد الأدنى للأبعاد
+                                          ),                                          icon: const Icon(Icons.download_outlined),
+                                          label:  Text(AppLocalization.of(context)!.translate("Download") ?? "Download",),
+
+
+                                        )
+                                        ,
                                       ],
                                     )
                                         : Text(
