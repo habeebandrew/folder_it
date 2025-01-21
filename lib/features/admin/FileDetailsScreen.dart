@@ -19,6 +19,15 @@ class _FileDetailsScreenState extends State<FileDetailsScreen> {
   bool _hasMore = true;
   List<dynamic> _logs = [];
 
+  // خريطة لتحويل قيمة action إلى النص المطلوب
+  final Map<int, String> _actionDescriptions = {
+    1: 'CheckIn',
+    2: 'CancelCheckIn',
+    3: 'CheckOut',
+    4: 'ViewDocument',
+    5: 'CreateNewDocument',
+  };
+
   Future<void> _fetchLogs() async {
     if (_isLoading || !_hasMore) return;
 
@@ -51,10 +60,8 @@ class _FileDetailsScreenState extends State<FileDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
-
       appBar: AppBar(
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
-
         title: Text(
           'File Details',
           style: GoogleFonts.roboto(
@@ -80,6 +87,11 @@ class _FileDetailsScreenState extends State<FileDetailsScreen> {
                 itemCount: _logs.length,
                 itemBuilder: (context, index) {
                   final log = _logs[index];
+                  // الحصول على الوصف بناءً على قيمة action
+                  final actionValue = int.tryParse(log['action'].toString()) ?? 0;
+                  final actionDescription =
+                      _actionDescriptions[actionValue] ?? 'Unknown Action';
+
                   return Card(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -88,15 +100,16 @@ class _FileDetailsScreenState extends State<FileDetailsScreen> {
                     margin: const EdgeInsets.symmetric(vertical: 8),
                     child: ListTile(
                       leading: const CircleAvatar(
-                        backgroundColor:Color(0xFF121212),
+                        backgroundColor: Color(0xFF121212),
                         child: Icon(
                           Icons.event_note,
                           color: Colors.white,
                         ),
                       ),
                       title: Text(
-                        'Action: ${log['action']}',
-                        style: GoogleFonts.roboto(fontSize: 16, fontWeight: FontWeight.w500),
+                        'Action: $actionDescription',
+                        style: GoogleFonts.roboto(
+                            fontSize: 16, fontWeight: FontWeight.w500),
                       ),
                       subtitle: Text(
                         'User: ${log['relatedUser']}\nDate: ${log['creationDate']}',

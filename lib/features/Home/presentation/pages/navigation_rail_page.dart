@@ -6,6 +6,7 @@ import 'package:folder_it/features/Groups/presentation/pages/invites_page.dart';
 import 'package:folder_it/features/Home/domain/usecases/get_navigation_items_usecase.dart';
 import 'package:folder_it/features/Home/presentation/cubit/theme_cubit.dart';
 import 'package:folder_it/features/Home/presentation/pages/mytasks.dart';
+import 'package:folder_it/features/Home/presentation/pages/newupdate.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/databases/cache/cache_helper.dart';
 import '../../../../localization/localization.dart';
@@ -146,6 +147,12 @@ class _NavigationRailPageState extends State<NavigationRailPage> {
                     showDialog(
                       context: context,
                       builder: (context) => const InvitesPage(),
+                    );
+                  }
+                  if (value == 2) {
+                    showDialog(
+                      context: context,
+                      builder: (context) =>  NewUpdate(),
                     );
                   }
                 },
