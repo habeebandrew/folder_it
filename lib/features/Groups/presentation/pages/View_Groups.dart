@@ -472,11 +472,15 @@ class _GroupsState extends State<Groups> {
   }
 
   Future<void> _deleteGroup(int groupId) async {
+    final String token = CacheHelper().getData(key: 'token');
+
     final url = Uri.parse('http://127.0.0.1:8091/group/delete?groupId=$groupId');
     final url1 = "http://127.0.0.1:8091/group/my-groups?creatorId=$myId";
 
     try {
-      final response = await http.post(url);
+      final response = await http.post(url,headers: {
+        'Authorization': 'Bearer $token',
+      });
 
       if (response.statusCode == 200) {
         setState(() {

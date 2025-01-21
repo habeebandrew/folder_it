@@ -26,7 +26,6 @@ class _NewUpdateState extends State<NewUpdate> {
 
     final url =
         'http://localhost:8091/notification/get-my-notifications?relatedUser=1&size=$_pageSize&start=$_currentPage';
-
     try {
       final response = await http.get(Uri.parse(url),headers: {
 
