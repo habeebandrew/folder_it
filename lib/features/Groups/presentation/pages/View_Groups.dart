@@ -340,7 +340,12 @@ class _GroupsState extends State<Groups> {
                   ),
                 ),
               );
-            } else{
+            }
+          else  if (selectedCategory == 'Deleted') {
+              _showDeletedGroupAlert();
+            }
+
+            else{
               Navigator.push(
                 context,
                 MaterialPageRoute(

@@ -10,7 +10,7 @@
   "translate": "تبديل اللغة",
   "loading": "جاري التحميل...",
   "no_documents": "لا توجد مستندات",
-  "check_out": "تنزيل المستند",
+  "check_out": "رفع نسخة جديدة",
   "no_note": "لا توجد ملاحظات",
   "locked_in_group": "تم قفل هذا الملف في",
   "cancel_check_in": "إلغاء الحجز",
@@ -78,7 +78,7 @@
   "Checking_in": "حجز",
   "Select_All": "اختيار الكل",
   "invite_new_member": "إضافة عضو جديد",
-  "Check_out": "إلغاء الحجز",
+  "Check_out": "رفع نسخة جديدة",
   "Cancel_Check_in": "إلغاء الحجز"
 
 

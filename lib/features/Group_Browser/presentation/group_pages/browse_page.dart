@@ -184,6 +184,123 @@ class _BrowsePageState extends State<BrowsePage> {
     }
   }
 
+
+
+  Future<List<Map<String, dynamic>>> fetchFileVersions(String vsId) async {
+    final String? token = CacheHelper().getData(key: 'token');
+    final url = Uri.parse('http://localhost:8091/document/fetch-all-documents-with-vsid?vsId=$vsId');
+    final response = await http.get(url, headers: {
+      'Authorization': 'Bearer $token',
+    });
+
+    if (response.statusCode == 200) {
+      return List<Map<String, dynamic>>.from(json.decode(response.body));
+    } else {
+      throw Exception('Failed to fetch file versions');
+    }
+  }
+
+  Future<void> restoreFileVersion(BuildContext context, int fileId, String vsId) async {
+    final String? token = CacheHelper().getData(key: 'token');
+    final url = Uri.parse('http://localhost:8091/document/restore-document');
+
+    final headers = {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/x-www-form-urlencoded',
+    };
+
+    final body = {
+      'id': fileId.toString(),
+      'vsId': vsId,
+    };
+
+    try {
+      final response = await http.post(url, headers: headers, body: body);
+
+      if (response.statusCode == 200) {
+        // إغلاق الحوار وإظهار رسالة النجاح
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('version restored successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+      else if(response.statusCode==201){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(' the file already locked '),
+            backgroundColor: Colors.red,
+          ),
+        );
+
+      }
+      else {
+        throw Exception('Failed to restore version: ${response.statusCode}');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(' error: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+
+  void showFileVersionsDialog(BuildContext context, String vsId) async {
+    try {
+      final fileVersions = await fetchFileVersions(vsId);
+      print("versions: $fileVersions");
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('File Versions'),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: fileVersions.length,
+                itemBuilder: (context, index) {
+                  final version = fileVersions[index];
+                  return ListTile(
+                    title: Text(
+                      'Version ${version['majorVersion']}.${version['minorVersion']}',
+                      style: TextStyle(
+                        fontWeight: version['currentVersion'] ? FontWeight.bold : FontWeight.normal,
+                      ),
+                    ),
+
+                    trailing: ElevatedButton(
+                      onPressed: () {
+                        // Handle restore functionality
+                        restoreFileVersion(context, version['id'], vsId);
+                      },
+                      child: const Text('Restore'),
+                    ),
+                  );
+                },
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Close'),
+              ),
+            ],
+          );
+        },
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -393,6 +510,7 @@ class _BrowsePageState extends State<BrowsePage> {
                                   AnimatedContainer(
                                     duration: const Duration(milliseconds: 300),
                                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                    width: double.infinity,
                                     decoration: BoxDecoration(
                                       color: Colors.grey[200],
                                       borderRadius: BorderRadius.circular(8),
@@ -408,13 +526,51 @@ class _BrowsePageState extends State<BrowsePage> {
                                           ),
                                         ),
                                         const SizedBox(height: 8),
-                                        Text(
-                                          'Date modified: ${DateFormat('yyyy-MM-dd – hh:mm a').format(DateTime.parse(document['creationDate']))}',
-                                          style: TextStyle(
-                                            color: Theme.of(context).primaryColor,
-                                            fontSize: 14,
-                                          ),
-                                        ),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Expanded(
+                                              flex: 2,
+                                              child: Row(
+                                                children: [
+                                                  Text(
+                                                    'Date modified: ${DateFormat('yyyy-MM-dd – hh:mm a').format(DateTime.parse(document['creationDate']))}',
+                                                    style: TextStyle(
+                                                      color: Theme.of(context).primaryColor,
+                                                      fontSize: 14,
+                                                    ),
+                                                    overflow: TextOverflow.ellipsis, // لمعالجة النصوص الطويلة
+                                                    maxLines: 1, // تحديد عدد الأسطر المسموح بها
+                                                  ),
+                                                  TextButton(
+                                                      onPressed: (){
+                                                        Navigator.push(context, MaterialPageRoute(builder: (context)=>
+                                                            FileLog(vsid: document['vsid'], fileName: document['subject'])));
+                                                      },
+                                                      child: const Text("file log")
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                            SizedBox(width: 8), // لإضافة مساحة بين النص والزر
+                                            Flexible(
+                                              flex: 1,
+                                              child: TextButton(
+                                                onPressed: () {
+                                                  showFileVersionsDialog(context, document['vsid']);
+                                                },
+                                                child: Text(
+                                                  "Open File Version",
+                                                  style: TextStyle(
+                                                    fontSize: Theme.of(context).textTheme.displayMedium?.fontSize ?? 14,
+                                                  ),
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        )
+
                                       ],
                                     ),
                                   ),

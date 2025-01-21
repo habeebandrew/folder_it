@@ -160,7 +160,7 @@ class _MembersLogState extends State<MembersLog> {
               'Note: ${log['logNote'] ?? "No notes available"}',
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.grey.shade800,
+                // color:Colors.red,
               ),
             ),
           ],

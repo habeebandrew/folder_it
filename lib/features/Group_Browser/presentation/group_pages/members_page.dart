@@ -53,6 +53,7 @@ class _MembersPageState extends State<MembersPage> {
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         title: const Text(''),
         actions: [
+          widget.isOtherFilter==false?
           Tooltip(
             message: AppLocalization.of(context)!.translate("invite_new_member") ?? "invite_new_member",//invite_new_member
             child: Padding(
@@ -83,7 +84,7 @@ class _MembersPageState extends State<MembersPage> {
                 ),
               ),
             ),
-          ),
+          ):Text('')
         ],
       ),
       body: FutureBuilder<List<Member>>(

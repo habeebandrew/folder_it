@@ -170,7 +170,7 @@ class _MyTaskOnGroupState extends State<MyTaskOnGroup> {
                                     fetchInitialDocuments(reset: true);
                                   }
                                 },
-                                icon: Icon(
+                                icon: const Icon(
                                   Icons.check_circle_outline,
                                   size: 18, // تصغير حجم الأيقونة
                                 ),
