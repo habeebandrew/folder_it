@@ -159,7 +159,25 @@ class _BrowsePageState extends State<BrowsePage> {
     print(res);
     if (response.statusCode == 200) {
       return res;
-    } else {
+    }
+    else if(response.statusCode==406){
+      final Map<String, dynamic> jsonResponse = json.decode(res);
+
+      // استخراج الرسالة من JSON
+      String message = jsonResponse.containsKey('message')
+          ? jsonResponse['message']
+          : 'Unknown error occurred';
+
+      // عرض الرسالة في SnackBar
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return res;
+    }
+    else {
       return 'something went wrong';
     }
   }
@@ -456,8 +474,10 @@ class _BrowsePageState extends State<BrowsePage> {
                                       },
                                     )
                                         : null,
-                                    title: document['locked'] == false
-                                        ? Row(
+                                    title:
+                                    // document['locked'] == false
+                                    //     ?
+                                    Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
                                         Expanded(
@@ -496,13 +516,13 @@ class _BrowsePageState extends State<BrowsePage> {
                                         )
                                         ,
                                       ],
-                                    )
-                                        : Text(
-                                      document['subject'],
-                                      style: TextStyle(
-                                        color: document['locked'] ? Colors.red : Colors.green,
-                                      ),
                                     ),
+                                    //     : Text(
+                                    //   document['subject'],
+                                    //   style: TextStyle(
+                                    //     color: document['locked'] ? Colors.red : Colors.green,
+                                    //   ),
+                                    // ),
                                     trailing: Icon(isExpanded ? Icons.expand_less : Icons.expand_more),
                                   ),
                                 ),

@@ -85,7 +85,7 @@ class _MyAppState extends State<MyApp> {
 class TokenHandler {
   /// تحديث التوكن بعد مرور 10 ثوانٍ
   Future<void> startTokenProcess(BuildContext context) async {
-    await Future.delayed(Duration(minutes: 100), () async {
+    await Future.delayed(Duration(minutes: 1000), () async {
       print('fist refresh token');
       try {
         final newToken = await _refreshToken();
@@ -102,7 +102,7 @@ class TokenHandler {
       }
 
       // بعد 10 ثوانٍ إضافية، عرض رسالة تسجيل الدخول
-      Future.delayed(Duration(minutes: 200), (
+      Future.delayed(Duration(minutes: 2000), (
 
 
           ) {
